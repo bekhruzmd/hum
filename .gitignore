@@ -3,6 +3,7 @@ build/
 .build/
 .serena/
 DerivedData/
+*.zip
 *.xcuserdata
 xcuserdata/
 Hum.xcodeproj/project.xcworkspace/xcuserdata/

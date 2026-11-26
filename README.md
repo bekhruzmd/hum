@@ -13,6 +13,12 @@
 
 Hum transforms your music listening experience on macOS. As tracks play in Spotify or Apple Music, synchronized lyrics appear as celestial stars forming authentic constellations and dynamic asterisms across your desktop and screensaver.
 
+<br/><br/>
+
+<a href="https://github.com/bekhruzmd/hum/releases/latest/download/Hum-v0.1.0.zip">
+  <img src="https://img.shields.io/badge/Download%20Hum%20for%20macOS-v0.1.0-007AFF?style=for-the-badge&logo=apple&logoColor=white" alt="Download Hum for macOS" height="46" />
+</a>
+
 </div>
 
 ---
@@ -26,11 +32,16 @@ Hum transforms your music listening experience on macOS. As tracks play in Spoti
 
 ---
 
-### Manual Installation
+### 📥 One-Click Download
 
-1. Download the latest release archive (`Hum.zip`) from the [GitHub Releases](https://github.com/bekhruzmd/hum/releases) page.
-2. Unpack the archive and copy **Hum.app** to your `/Applications` directory.
-3. Copy **Hum.saver** into your `~/Library/Screen Savers/` directory.
+<a href="https://github.com/bekhruzmd/hum/releases/latest/download/Hum-v0.1.0.zip">
+  <img src="https://img.shields.io/badge/Download%20Hum.zip-(v0.1.0)-007AFF?style=for-the-badge&logo=apple&logoColor=white" alt="Download Hum.zip" height="42" />
+</a>
+
+**How to install in 3 simple steps:**
+1. Click the download button above to get **Hum-v0.1.0.zip**.
+2. Double-click the downloaded zip file in your **Downloads** folder to unpack it.
+3. Drag **Hum.app** into your `/Applications` folder, and drag **Hum.saver** into your `~/Library/Screen Savers/` folder.
 
 #### Gatekeeper First-Launch Note
 
