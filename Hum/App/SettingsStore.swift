@@ -37,6 +37,8 @@ final class SettingsStore {
     // Cinematic scene (idle screen, desktop, screensaver)
     var idleStyle: IdleStyle { didSet { defaults.set(idleStyle.rawValue, forKey: "idleStyle") } }
     var cinematicEffect: LyricEffectKind { didSet { defaults.set(cinematicEffect.rawValue, forKey: "cinematicEffect") } }
+    /// Write the screensaver feed. Turned on when the user installs the Hum screensaver.
+    var screensaverFeed: Bool { didSet { defaults.set(screensaverFeed, forKey: "screensaverFeed") } }
 
     // Idle screen & sounds
     /// Minutes of inactivity before the idle screen appears; 0 = off.
@@ -67,6 +69,7 @@ final class SettingsStore {
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
         idleStyle = IdleStyle(rawValue: defaults.string(forKey: "idleStyle") ?? "") ?? .cinematic
         cinematicEffect = LyricEffectKind(rawValue: defaults.string(forKey: "cinematicEffect") ?? "") ?? .constellation
+        screensaverFeed = defaults.bool(forKey: "screensaverFeed")
         idleMinutes = defaults.integer(forKey: "idleMinutes")
         needleDropSound = defaults.bool(forKey: "needleDropSound")
         crackleSound = defaults.bool(forKey: "crackleSound")

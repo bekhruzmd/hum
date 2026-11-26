@@ -30,6 +30,8 @@ struct IdleSoundsSettingsTab: View {
                     .foregroundStyle(.secondary)
             }
 
+            ScreensaverSection(settings: settings)
+
             Section {
                 Toggle("Needle drop when playback starts", isOn: $settings.needleDropSound)
                 Toggle("Soft vinyl crackle while playing", isOn: $settings.crackleSound)
@@ -46,5 +48,44 @@ struct IdleSoundsSettingsTab: View {
             }
         }
         .formStyle(.grouped)
+    }
+}
+
+/// Install the Hum screensaver and keep its feed on.
+private struct ScreensaverSection: View {
+    @Bindable var settings: SettingsStore
+    @State private var installed = ScreensaverInstaller.isInstalled
+    @State private var error: String?
+
+    var body: some View {
+        Section {
+            HStack {
+                Text(installed ? "Hum screensaver is installed" : "Show Hum as your Mac's screensaver")
+                Spacer()
+                Button(installed ? "Reinstall" : "Install Screen Saver") { install() }
+            }
+            Toggle("Send the current song to the screensaver", isOn: $settings.screensaverFeed)
+            if let error {
+                Text(error).font(.caption).foregroundStyle(.red)
+            }
+        } header: {
+            Text("Screensaver")
+        } footer: {
+            Text("After installing, pick Hum in System Settings › Screen Saver. It shows the cinematic scene with live lyrics, and your lock settings keep working. macOS may ask once to let Hum access data from other apps; allow it so the screensaver can see what's playing.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func install() {
+        error = nil
+        do {
+            try ScreensaverInstaller.install()
+            installed = true
+            settings.screensaverFeed = true
+            ScreensaverInstaller.openScreenSaverSettings()
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 }

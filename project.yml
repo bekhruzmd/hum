@@ -29,6 +29,41 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"
+    dependencies:
+      - target: HumSaver
+        embed: true
+        copy:
+          destination: resources
+
+  # The Hum screensaver. Shares the scene and effect code with the app; it gets now-playing
+  # data from a feed file the app writes (see ScreensaverFeed).
+  HumSaver:
+    type: bundle
+    platform: macOS
+    sources:
+      - path: HumSaver
+        excludes:
+          - "Info.plist"
+      - Hum/Effects
+      - Hum/Surfaces/Cinematic/CinematicScene.swift
+      - Hum/Surfaces/Cinematic/MonochromeArtwork.swift
+      - Hum/Surfaces/Cinematic/ScreensaverFeed.swift
+      - Hum/Lyrics/WordTimingEstimator.swift
+      - Hum/Lyrics/LyricsModels.swift
+      - Hum/Playback/AlbumPalette.swift
+      - Hum/App/SettingsTypes.swift
+    settings:
+      base:
+        PRODUCT_NAME: Hum
+        PRODUCT_MODULE_NAME: HumSaver
+        PRODUCT_BUNDLE_IDENTIFIER: com.yourname.hum.saver
+        WRAPPER_EXTENSION: saver
+        INFOPLIST_FILE: HumSaver/Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        SKIP_INSTALL: YES
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
 
   HumTests:
     type: bundle.unit-test

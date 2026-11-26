@@ -62,3 +62,32 @@ final class HotkeyStoreTests: XCTestCase {
         XCTAssertEqual(reloaded.bindings[.playPause], nextCombo)
     }
 }
+
+final class ScreensaverFeedTests: XCTestCase {
+    func testRoundTripAndTiming() throws {
+        let lines = WordTimingEstimator.timedLines(from: LRCParser.parse("[00:01.00]hello there"), trackDuration: 100)
+        let feed = ScreensaverFeed(
+            track: SceneTrackInfo(title: "t", artist: "a", album: "b"),
+            lyricAnchor: 10, anchorDate: 1000, isPlaying: true,
+            lines: lines, effect: "constellation", artworkFile: "artwork-1.img"
+        )
+        let decoded = try JSONDecoder().decode(ScreensaverFeed.self, from: JSONEncoder().encode(feed))
+        XCTAssertEqual(decoded, feed)
+        XCTAssertEqual(decoded.lyricTime(at: Date(timeIntervalSince1970: 1002.5)), 12.5, accuracy: 1e-9)
+        var paused = decoded
+        paused.isPlaying = false
+        XCTAssertEqual(paused.lyricTime(at: Date(timeIntervalSince1970: 5000)), 10)
+        XCTAssertEqual(decoded.effectKind, .constellation)
+    }
+
+    @MainActor func testTargetsOnlyExistingContainers() throws {
+        let home = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: home) }
+        XCTAssertEqual(ScreensaverFeedWriter.targetDirectories(home: home).count, 1, "only the plain Application Support path")
+        let container = home.appendingPathComponent("Library/Containers/\(ScreensaverFeedWriter.hostContainerIDs[0])/Data/Library/Application Support")
+        try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        let targets = ScreensaverFeedWriter.targetDirectories(home: home)
+        XCTAssertEqual(targets.count, 2)
+        XCTAssertEqual(targets.first?.lastPathComponent, ScreensaverFeed.folderName)
+    }
+}

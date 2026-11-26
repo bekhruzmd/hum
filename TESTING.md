@@ -107,3 +107,18 @@ the ♪ in the menu bar.
 - [ ] Menu bar › Lyrics in Menu Bar: the ♪ becomes the current line (long lines end in "…").
       Pause → back to ♪. Turn it off → ♪.
 - [ ] The island's controls and scrubber still look right (white on black).
+
+## Cinematic scene, Constellation lyrics, screensaver
+- [ ] Settings › Lyrics › Effect › Constellation: each word lands as a star with a small label, lines
+      join it to earlier words (some triangles), a turning sparkle ring marks the current word, and
+      the word appears large beside it. The previous line stays faint on the left.
+- [ ] Menu bar › Start Idle Screen: the Cinematic style. Black-and-white cover slowly drifting,
+      smoke wisps, a thin frame with the album title breaking its top edge, date and serif clock,
+      constellation lyrics, title/artist bottom-right. Any input dismisses it.
+- [ ] Settings › Idle & Sounds › Style "Classic" → the earlier colorful idle screen.
+- [ ] Menu bar › Desktop › Cinematic → the same scene behind your desktop icons.
+- [ ] Settings › Idle & Sounds › Install Screen Saver → System Settings › Screen Saver opens; pick
+      "Hum". The preview tile shows the scene. If macOS asks to let Hum access other apps' data, allow it.
+- [ ] Play a song and start the screensaver (hot corner or wait). The scene shows the playing song
+      with lyrics in time. Pause in your player → within ~1 s the lyrics stop moving.
+- [ ] With "Require password after screen saver" on, waking still asks for your Mac password as usual.

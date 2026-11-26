@@ -14,6 +14,8 @@ final class NowPlayingStore {
 
     private(set) var status: Status = .nothingPlaying
     private(set) var artworkImage: NSImage?
+    /// The encoded cover bytes behind `artworkImage` (for the screensaver feed).
+    @ObservationIgnored private(set) var artworkData: Data?
     private(set) var palette: AlbumPalette = .fallback
 
     var preferredPlayer: PreferredPlayer = .auto {
@@ -121,6 +123,7 @@ final class NowPlayingStore {
         onTrackChange?(track)
         artworkTask?.cancel()
         guard let track else {
+            artworkData = nil
             artworkImage = nil
             palette = .fallback
             return
@@ -129,6 +132,7 @@ final class NowPlayingStore {
         artworkTask = Task { [weak self, artworkLoader] in
             let artwork = await artworkLoader.artwork(for: track, source: source)
             guard !Task.isCancelled, let self, self.currentTrack == track else { return }
+            self.artworkData = artwork?.data
             self.artworkImage = artwork.flatMap { NSImage(data: $0.data) }
             self.palette = artwork?.palette ?? .fallback
         }
