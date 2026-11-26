@@ -25,6 +25,12 @@ final class SettingsStore {
     var islandShowsOverFullScreen: Bool { didSet { defaults.set(islandShowsOverFullScreen, forKey: "islandShowsOverFullScreen") } }
     var islandShowsLyrics: Bool { didSet { defaults.set(islandShowsLyrics, forKey: "islandShowsLyrics") } }
 
+    // Desktop
+    var desktopMode: DesktopMode { didSet { defaults.set(desktopMode.rawValue, forKey: "desktopMode") } }
+    var desktopLyricsBackground: DesktopLyricsBackground {
+        didSet { defaults.set(desktopLyricsBackground.rawValue, forKey: "desktopLyricsBackground") }
+    }
+
     // Playback
     var preferredPlayer: PreferredPlayer { didSet { defaults.set(preferredPlayer.rawValue, forKey: "preferredPlayer") } }
 
@@ -41,6 +47,8 @@ final class SettingsStore {
         islandEnabled = defaults.object(forKey: "islandEnabled") as? Bool ?? true
         islandShowsOverFullScreen = defaults.bool(forKey: "islandShowsOverFullScreen")
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true
+        desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
+        desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
         preferredPlayer = PreferredPlayer(rawValue: defaults.string(forKey: "preferredPlayer") ?? "") ?? .auto
     }
 }

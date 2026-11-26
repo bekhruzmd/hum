@@ -56,3 +56,17 @@ the ♪ in the menu bar.
 - [ ] Stop playback / quit the player → the island disappears; the notch looks normal.
 - [ ] Plug in / unplug a display, or change resolution → the island moves to the right spot.
 - [ ] Menu bar › Show Island toggles it.
+
+## Phase 5: Live desktop
+- [ ] Menu bar › Desktop › Turntable. A turntable appears in the middle of each display, above the
+      wallpaper and **below** desktop icons. Clicks pass through to the desktop.
+- [ ] Play → the tonearm swings onto the record over ~1.4 s and the record spins (33⅓ rpm; the strobe
+      dots on the rim make it visible). Pause → the record stops and the arm swings back to its rest.
+- [ ] Over a song, the arm creeps inward. The label shows the album cover.
+- [ ] Desktop › Lyrics: big lyrics in your effect near the bottom of the screen with the next line below.
+      Settings › Desktop › Background "Blurred album colors" → blurred cover fills the screen.
+- [ ] Switch Spaces → it's on every Space. Mission Control doesn't show it as a window.
+- [ ] Cover the desktop with a maximized window, lock the screen (⌃⌘Q), or turn on Low Power Mode →
+      Activity Monitor shows Hum's CPU drop (rendering pauses).
+- [ ] Connect/disconnect a display → each display gets its own window at the right size.
+- [ ] Desktop › Off removes everything.

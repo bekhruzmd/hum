@@ -10,6 +10,8 @@ struct SettingsView: View {
                 .tabItem { Label("Lyrics", systemImage: "text.quote") }
             IslandSettingsTab(settings: environment.settings)
                 .tabItem { Label("Island", systemImage: "capsule.tophalf.filled") }
+            DesktopSettingsTab(settings: environment.settings)
+                .tabItem { Label("Desktop", systemImage: "menubar.dock.rectangle") }
             GeneralSettingsTab(settings: environment.settings)
                 .tabItem { Label("General", systemImage: "gearshape") }
         }

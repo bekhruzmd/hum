@@ -16,6 +16,9 @@ struct MenuBarContent: View {
             windows.toggleLyrics()
         }
         Toggle("Show Island", isOn: $settings.islandEnabled)
+        Picker("Desktop", selection: $settings.desktopMode) {
+            ForEach(DesktopMode.allCases) { Text($0.displayName).tag($0) }
+        }
         Toggle("Float on Top", isOn: $settings.floatOnTop)
         Toggle("Compact Subtitle Mode", isOn: $settings.compactMode)
 

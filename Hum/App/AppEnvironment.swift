@@ -9,8 +9,10 @@ final class AppEnvironment {
     let nowPlaying = NowPlayingStore()
     let lyrics = LyricsStore()
     let offsets = OffsetStore()
+    let renderGate = RenderGate()
     private(set) lazy var windows = WindowManager(environment: self)
     private(set) lazy var island = IslandController(environment: self)
+    private(set) lazy var desktop = DesktopController(environment: self)
 
     private var started = false
 
@@ -46,7 +48,9 @@ final class AppEnvironment {
         observeContinuously(self) { env in
             env.nowPlaying.preferredPlayer = env.settings.preferredPlayer
         }
+        renderGate.start()
         nowPlaying.start()
         island.start()
+        desktop.start()
     }
 }
