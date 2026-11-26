@@ -1,101 +1,121 @@
-# Hum 🎵✨
+<div align="center">
 
-> Living constellation lyrics and cinematic music visualizers for macOS.
+# 🎵 Hum
 
-Hum brings your music to life on your desktop and screensaver. As songs play in Spotify or Apple Music, lyrics illuminate as stars that trace authentic astronomical constellations and celestial patterns across your screen.
+### Live constellation lyrics and ambient music companion for macOS
+
+[![CI Status](https://github.com/bekhruzmd/hum/actions/workflows/ci.yml/badge.svg)](https://github.com/bekhruzmd/hum/actions/workflows/ci.yml)
+[![macOS Deployment](https://img.shields.io/badge/macOS-14.0%2B-007AFF?logo=apple&logoColor=white)](https://apple.com/macos)
+[![Swift Version](https://img.shields.io/badge/Swift-5.10%2B-F05138?logo=swift&logoColor=white)](https://swift.org)
+[![License](https://img.shields.io/badge/License-MIT-34C759.svg)](LICENSE)
+
+<br/>
+
+Hum transforms your music listening experience on macOS. As tracks play in Spotify or Apple Music, synchronized lyrics appear as celestial stars forming authentic constellations and dynamic asterisms across your desktop and screensaver.
+
+</div>
 
 ---
 
-## ✨ Features
-
-* **🌌 Constellation Lyrics**: Words light up as stars in the sky. Lines alternate between authentic astronomical constellations (*Orion, Ursa Major, Cassiopeia, Cygnus, Crux, Pegasus*) and generative cosmic asterisms (*Aurora, Solaris, Nebula, Phoenix, Pulsar*).
-* **🎶 Word-by-Word Synchronized Lyrics**: Real-time synchronized lyrics with support for global music in any language (English, Russian, Spanish, Japanese, Korean, Uzbek, and more) powered by open community lyrics providers.
-* **🖥️ Cinematic Screensaver**: Fluid Metal refraction shaders and dynamic display-edge glow turn your Mac into an ambient visualizer when idle.
-* **⚙️ Lightweight & Native**: Built entirely in Swift and SwiftUI. Lives comfortably in your menu bar without cluttering your dock.
-
----
-
-## 🚀 Getting Started
+## 📦 Installation
 
 ### System Requirements
-
-* **Operating System**: macOS 14 Sonoma or macOS 15 Sequoia (or later)
-* **Hardware**: Apple Silicon (M1/M2/M3/M4) or Intel Mac
-* **Music Players**: Spotify or Apple Music
-
----
-
-### Installing the App
-
-1. Download the latest release from the [Releases](https://github.com/bekhruzmd/hum/releases) page.
-2. Drag **Hum.app** into your `/Applications` folder.
-3. Open **Hum** from Launchpad or Applications.
-
-> **Note on First Launch:**
-> Since Hum is an independent open-source project without a paid Apple Developer certificate, macOS may show a notice on first launch:
-> * Simply open **System Settings > Privacy & Security**, scroll down, and click **Open Anyway**.
-> * Alternatively, run this single command in Terminal:
->   ```bash
->   xattr -dr com.apple.quarantine "/Applications/Hum.app"
->   ```
+- macOS 14 Sonoma or macOS 15 Sequoia (or later)
+- Apple Silicon (M1/M2/M3/M4) or Intel Mac
+- Spotify or Apple Music desktop client
 
 ---
 
-### Installing the Screensaver
+### Manual Installation
 
-1. Copy `Hum.saver` into your `~/Library/Screen Savers/` folder.
-2. Open **System Settings > Screen Saver** and select **Hum**.
-3. Make sure Hum is running so it can feed current track lyrics to the screensaver.
+1. Download the latest release archive (`Hum.zip`) from the [GitHub Releases](https://github.com/bekhruzmd/hum/releases) page.
+2. Unpack the archive and copy **Hum.app** to your `/Applications` directory.
+3. Copy **Hum.saver** into your `~/Library/Screen Savers/` directory.
 
----
+#### Gatekeeper First-Launch Note
 
-## 🛠️ Building from Source
+Because Hum is an independent community build distributed outside the Mac App Store, macOS displays a developer verification prompt on initial launch. You can permit the application using either of the following steps:
 
-If you want to run or modify Hum yourself, building from source is simple:
-
-### Step 1: Clone the repository
-
-```bash
-git clone https://github.com/bekhruzmd/hum.git
-cd hum
-```
-
-### Step 2: Open in Xcode
-
-```bash
-open Hum.xcodeproj
-```
-
-### Step 3: Run the project
-
-* Select the **Hum** scheme in the top toolbar.
-* Press `Cmd + R` (or click the **Play** button) to build and run the app.
-* To run the unit test suite, press `Cmd + U`.
+* **Terminal Command:**
+  ```bash
+  xattr -dr com.apple.quarantine "/Applications/Hum.app"
+  ```
+* **System Settings:**
+  Navigate to **System Settings > Privacy & Security**, scroll down to the security section, and click **Open Anyway**.
 
 ---
 
-## 📂 Project Structure
+### Screensaver Setup
 
-```text
-├── Hum/                   # Main macOS application
-│   ├── App/               # App lifecycle, environment, and settings
-│   ├── Effects/           # Constellation and lyric animation renderers
-│   ├── Lyrics/            # Synchronized lyrics fetchers and parsers
-│   ├── Playback/          # Spotify and Apple Music state monitoring
-│   └── Surfaces/          # UI surfaces: Menu bar, Settings, and Cinematic scenes
-├── HumSaver/              # Native macOS ScreenSaver bundle
-├── HumTests/              # Automated unit tests and test suites
-└── Hum.xcodeproj/         # Xcode project configuration
-```
+1. Place `Hum.saver` into `~/Library/Screen Savers/`.
+2. Open **System Settings > Screen Saver** and choose **Hum**.
+3. While Hum runs in the background, the screensaver reads playback updates directly and renders full-screen constellation lyrics with Metal refraction shaders.
+
+---
+
+## 💡 How It Works
+
+- **Live Lyric Streaming**: Queries synchronized word-by-word and line-by-line lyric data across international music catalogs via community APIs.
+- **Constellation Mapping**: Dynamically maps lyric words to real constellations (such as Ursa Major, Orion, and Cassiopeia) and procedural asterisms (including Aurora, Solaris, and Nebula).
+- **Directional Advancement**: Word coordinates strictly advance from left to right with natural ascents and descents across the display width.
+- **Ambient Metal Effects**: Renders fluid refraction shaders and edge glow sampled from album artwork palettes.
+
+---
+
+## 🗺️ Project Roadmap
+
+- [x] Word-by-word synchronized lyric rendering
+- [x] Multilingual lyric search supporting international catalogs
+- [x] Catalog of authentic astronomical constellations with canonical asterism links
+- [x] Procedural celestial asterism generator
+- [x] Monotonic forward advancement mechanics
+- [x] Native ScreenSaver bundle powered by Metal shaders
+- [x] Dynamic display-edge glow visualizer
+- [x] Native macOS Settings window (General, Lyrics, Desktop, Idle Sounds)
+- [x] Continuous Integration build and test pipeline
+- [ ] User-customizable constellation pattern designer
+- [ ] Live desktop wallpaper rendering mode
+- [ ] Offline LRC file importer
+
+---
+
+## 🔧 Building from Source
+
+### Prerequisites
+- macOS 14.0 or later
+- Xcode 15.4 or later
+
+### Build Instructions
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/bekhruzmd/hum.git
+   cd hum
+   ```
+
+2. Open the Xcode project:
+   ```bash
+   open Hum.xcodeproj
+   ```
+
+3. Select the **Hum** scheme and press `Cmd + R` to compile and run. To execute the automated test suite, press `Cmd + U`.
 
 ---
 
 ## 🤝 Contributing
 
-Contributions, bug reports, and feature suggestions are welcome! Whether you are an experienced Swift developer or just starting out, feel free to open an issue or submit a pull request. Check out [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome. Feel free to submit issues, propose features, or open pull requests. Please review [CONTRIBUTING.md](CONTRIBUTING.md) for testing guidelines and development practices.
 
 ---
 
-## 📄 License
+## 📑 Acknowledgments
 
-This project is licensed under the [MIT License](LICENSE).
+- **[LRCLIB](https://lrclib.net)**: Community-driven synchronized lyrics database.
+- **[NetEase Music](https://music.163.com)**: Comprehensive synchronized lyric resources for international tracks.
+- **SwiftUI & Metal**: Apple frameworks powering native interface components and shader rendering.
+
+---
+
+## 📜 License
+
+This project is distributed under the terms of the [MIT License](LICENSE).
