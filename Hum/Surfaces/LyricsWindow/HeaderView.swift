@@ -32,6 +32,7 @@ struct HeaderView: View {
     let track: Track
     let artwork: NSImage?
     let isPlaying: Bool
+    let offset: TimeInterval
     let onCompact: () -> Void
 
     var body: some View {
@@ -50,6 +51,17 @@ struct HeaderView: View {
             .accessibilityElement(children: .combine)
 
             Spacer(minLength: 8)
+
+            if offset != 0 {
+                Text(String(format: "%+.1fs", offset))
+                    .font(.caption2.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(.quaternary, in: Capsule())
+                    .help("Lyrics offset for this song. ⌘] earlier, ⌘[ later, ⌘0 reset.")
+                    .accessibilityLabel(String(format: "Lyrics offset %+.1f seconds", offset))
+            }
 
             Image(systemName: isPlaying ? "waveform" : "pause.fill")
                 .font(.caption)

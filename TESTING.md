@@ -28,3 +28,16 @@ the ♪ in the menu bar.
 - [ ] Menu bar: Show/Hide Lyrics Window, Float on Top, Compact Subtitle Mode, Settings…, Quit all work.
 - [ ] Drag the window by its background; close it with the red button and reopen from the menu bar.
 - [ ] Visible lines 1 / 3 / All, alignment, font size and opacity apply live.
+
+## Phase 3: Word-by-word + 5 effects
+- [ ] Settings › Lyrics › Effect: pick each of Karaoke Fill, Big Words, Glow, Typewriter, Wave.
+      The preview animates; the lyrics window switches live.
+- [ ] Words light up in time with the singing (roughly; exact for songs whose LRCLIB entry has word tags).
+- [ ] Pause → the effect freezes and Activity Monitor shows Hum near 0% CPU.
+- [ ] System Settings › Accessibility › Display › Reduce motion ON → every effect becomes a plain bright line.
+- [ ] Lyrics late? With the lyrics window focused press ⌘] a few times → header shows "+0.3s" and lyrics move
+      earlier. ⌘[ goes the other way, ⌘0 resets. Menu bar › Lyrics Offset does the same.
+- [ ] Skip to another song and back → the offset is remembered per song.
+- [ ] Click a line with an offset set → playback lands where that line is sung.
+- [ ] Compact mode shows the current line with the karaoke fill.
+- [ ] Watch Activity Monitor while lyrics animate: Hum should stay under ~5% CPU.

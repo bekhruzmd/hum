@@ -2,9 +2,23 @@ import SwiftUI
 
 struct LyricsSettingsTab: View {
     @Bindable var settings: SettingsStore
+    let palette: AlbumPalette
 
     var body: some View {
         Form {
+            Section {
+                Picker("Effect", selection: $settings.lyricEffect) {
+                    ForEach(LyricEffectKind.allCases) { Text($0.displayName).tag($0) }
+                }
+                EffectPreview(kind: settings.lyricEffect, palette: palette, alignment: settings.lyricAlignment)
+            } header: {
+                Text("Effect")
+            } footer: {
+                Text("With Reduce Motion on, every effect becomes a simple fade.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Text") {
                 LabeledSlider(title: "Font size", value: $settings.fontSize, range: 14...28, step: 1) {
                     "\(Int($0)) pt"
@@ -17,6 +31,12 @@ struct LyricsSettingsTab: View {
                     ForEach(VisibleLinesMode.allCases) { Text($0.displayName).tag($0) }
                 }
                 .pickerStyle(.segmented)
+            }
+
+            Section("Timing") {
+                Text("If lyrics run early or late, press ⌘] (earlier) or ⌘[ (later) in the lyrics window, or use the menu bar › Lyrics Offset. Hum remembers the offset for each song.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
 
             Section("Window") {

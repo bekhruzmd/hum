@@ -8,11 +8,26 @@ final class AppEnvironment {
     let settings = SettingsStore()
     let nowPlaying = NowPlayingStore()
     let lyrics = LyricsStore()
+    let offsets = OffsetStore()
     private(set) lazy var windows = WindowManager(environment: self)
 
     private var started = false
 
     private init() {}
+
+    /// Lyric time for a playback state at `date`: interpolated position plus the track's offset.
+    func lyricTime(_ state: PlaybackState, at date: Date = Date()) -> TimeInterval {
+        state.interpolatedPosition(at: date) + offsets.offset(for: state.track)
+    }
+
+    /// Seeks so that lyric time `time` is what plays.
+    func seek(toLyricTime time: TimeInterval) {
+        nowPlaying.seek(to: time - offsets.offset(for: nowPlaying.currentTrack))
+    }
+
+    func nudgeOffset(by delta: TimeInterval) {
+        offsets.adjust(nowPlaying.currentTrack, by: delta)
+    }
 
     func start() {
         guard !started else { return }

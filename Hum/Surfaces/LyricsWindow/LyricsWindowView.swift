@@ -39,6 +39,7 @@ struct LyricsWindowView: View {
                     track: state.track,
                     artwork: nowPlaying.artworkImage,
                     isPlaying: state.isPlaying,
+                    offset: environment.offsets.offset(for: state.track),
                     onCompact: { setCompact(true) }
                 )
                 .padding(.horizontal, 16)
@@ -65,15 +66,19 @@ struct LyricsWindowView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-        case .loaded(.synced(let lines)):
+        case .loaded(.synced):
             LyricsListView(
-                lines: lines,
+                lines: lyrics.timedLines,
                 playbackState: state,
+                offset: environment.offsets.offset(for: state.track),
+                palette: nowPlaying.palette,
                 fontSize: settings.fontSize,
                 alignment: settings.lyricAlignment,
                 visibleLinesMode: settings.visibleLinesMode,
-                onSeek: { nowPlaying.seek(to: $0) }
+                effect: settings.lyricEffect,
+                onSeek: { environment.seek(toLyricTime: $0) }
             )
+            .background { OffsetShortcuts(environment: environment) }
 
         case .loaded(.plain(let text)):
             ScrollView {
@@ -141,17 +146,14 @@ struct LyricsWindowView: View {
     private func compactLine(state: PlaybackState) -> some View {
         let fallback = "\(state.track.title) — \(state.track.artist)"
         switch lyrics.state {
-        case .loaded(.synced(let lines)):
-            TimelineView(.animation(minimumInterval: 0.2, paused: !state.isPlaying)) { context in
-                let index = LRCParser.activeLineIndex(in: lines, at: state.interpolatedPosition(at: context.date))
-                let text = index.map { lines[$0].displayText } ?? fallback
-                Text(text)
-                    .font(.system(size: min(settings.fontSize, 20), weight: .semibold))
-                    .lineLimit(1)
-                    .id(index ?? -1)
-                    .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.2), value: index)
-            }
+        case .loaded(.synced):
+            CompactLyricLine(
+                environment: environment,
+                lines: lyrics.timedLines,
+                state: state,
+                fallback: fallback,
+                fontSize: min(settings.fontSize, 20)
+            )
         case .loaded(.instrumental):
             Text("\(state.track.title) (Instrumental)")
                 .font(.callout).foregroundStyle(.secondary).lineLimit(1)
@@ -165,6 +167,58 @@ struct LyricsWindowView: View {
         withAnimation(.easeInOut(duration: 0.2)) {
             settings.compactMode = compact
         }
+    }
+}
+
+/// The current line in the compact bar, always drawn with Karaoke Fill (it fits one row).
+private struct CompactLyricLine: View {
+    let environment: AppEnvironment
+    let lines: [TimedLine]
+    let state: PlaybackState
+    let fallback: String
+    let fontSize: Double
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 0.1, paused: !state.isPlaying)) { timeline in
+            let index = lines.activeIndex(at: environment.lyricTime(state, at: timeline.date))
+            Group {
+                if let index {
+                    LiveLyricEffect(
+                        kind: .karaokeFill,
+                        line: lines[index],
+                        palette: environment.nowPlaying.palette,
+                        fontSize: fontSize,
+                        alignment: .leading,
+                        isPlaying: state.isPlaying,
+                        lyricTime: { environment.lyricTime(state, at: $0) }
+                    )
+                    .lineLimit(1)
+                } else {
+                    Text(fallback).font(.callout).foregroundStyle(.secondary).lineLimit(1)
+                }
+            }
+            .id(index ?? -1)
+            .transition(.opacity)
+            .animation(.easeInOut(duration: 0.2), value: index)
+        }
+    }
+}
+
+/// Window-local shortcuts: ⌘] lyrics earlier, ⌘[ later, ⌘0 reset offset.
+private struct OffsetShortcuts: View {
+    let environment: AppEnvironment
+
+    var body: some View {
+        ZStack {
+            Button("") { environment.nudgeOffset(by: OffsetStore.step) }
+                .keyboardShortcut("]", modifiers: .command)
+            Button("") { environment.nudgeOffset(by: -OffsetStore.step) }
+                .keyboardShortcut("[", modifiers: .command)
+            Button("") { environment.offsets.reset(environment.nowPlaying.currentTrack) }
+                .keyboardShortcut("0", modifiers: .command)
+        }
+        .opacity(0)
+        .accessibilityHidden(true)
     }
 }
 

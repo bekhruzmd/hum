@@ -12,8 +12,12 @@ final class LyricsStore {
         case error(String)
     }
 
-    private(set) var state: State = .idle
+    private(set) var state: State = .idle {
+        didSet { rebuildTimedLines() }
+    }
     private(set) var track: Track?
+    /// Synced lines with word timings, rebuilt whenever `state` changes.
+    private(set) var timedLines: [TimedLine] = []
 
     @ObservationIgnored private let service: LyricsService
     @ObservationIgnored private let cache: LyricsCache
@@ -27,6 +31,14 @@ final class LyricsStore {
     var syncedLines: [LyricLine]? {
         if case .loaded(.synced(let lines)) = state { return lines }
         return nil
+    }
+
+    private func rebuildTimedLines() {
+        if case .loaded(.synced(let lines)) = state {
+            timedLines = WordTimingEstimator.timedLines(from: lines, trackDuration: track?.duration ?? 0)
+        } else if !timedLines.isEmpty {
+            timedLines = []
+        }
     }
 
     func update(for newTrack: Track?) {

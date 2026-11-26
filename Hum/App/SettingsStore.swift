@@ -18,6 +18,7 @@ final class SettingsStore {
     var windowOpacity: Double { didSet { defaults.set(windowOpacity, forKey: "windowOpacity") } }
     var floatOnTop: Bool { didSet { defaults.set(floatOnTop, forKey: "floatOnTop") } }
     var tintWithAlbumColors: Bool { didSet { defaults.set(tintWithAlbumColors, forKey: "tintWithAlbumColors") } }
+    var lyricEffect: LyricEffectKind { didSet { defaults.set(lyricEffect.rawValue, forKey: "lyricEffect") } }
 
     // Playback
     var preferredPlayer: PreferredPlayer { didSet { defaults.set(preferredPlayer.rawValue, forKey: "preferredPlayer") } }
@@ -31,6 +32,7 @@ final class SettingsStore {
         windowOpacity = defaults.object(forKey: "windowOpacity") as? Double ?? 0.95
         floatOnTop = defaults.object(forKey: "floatOnTop") as? Bool ?? true
         tintWithAlbumColors = defaults.object(forKey: "tintWithAlbumColors") as? Bool ?? true
+        lyricEffect = LyricEffectKind(rawValue: defaults.string(forKey: "lyricEffect") ?? "") ?? .karaokeFill
         preferredPlayer = PreferredPlayer(rawValue: defaults.string(forKey: "preferredPlayer") ?? "") ?? .auto
     }
 }

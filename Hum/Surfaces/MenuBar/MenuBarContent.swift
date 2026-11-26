@@ -18,6 +18,13 @@ struct MenuBarContent: View {
         Toggle("Float on Top", isOn: $settings.floatOnTop)
         Toggle("Compact Subtitle Mode", isOn: $settings.compactMode)
 
+        Menu("Lyrics Offset") {
+            Button("Earlier (+0.1 s)") { environment.nudgeOffset(by: OffsetStore.step) }
+            Button("Later (−0.1 s)") { environment.nudgeOffset(by: -OffsetStore.step) }
+            Button("Reset") { environment.offsets.reset(environment.nowPlaying.currentTrack) }
+        }
+        .disabled(environment.nowPlaying.currentTrack == nil)
+
         Divider()
 
         Button("Settings…") {

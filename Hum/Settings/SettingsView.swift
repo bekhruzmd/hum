@@ -6,7 +6,7 @@ struct SettingsView: View {
 
     var body: some View {
         TabView {
-            LyricsSettingsTab(settings: environment.settings)
+            LyricsSettingsTab(settings: environment.settings, palette: environment.nowPlaying.palette)
                 .tabItem { Label("Lyrics", systemImage: "text.quote") }
             GeneralSettingsTab(settings: environment.settings)
                 .tabItem { Label("General", systemImage: "gearshape") }
