@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: macos-14
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app || true
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Run Unit Tests (Hum)
+        run: |
+          xcodebuild test \
+            -scheme Hum \
+            -destination 'platform=macOS' \
+            -derivedDataPath build/DD \
+            -resultBundlePath build/TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Build Screensaver (HumSaver)
+        run: |
+          xcodebuild build \
+            -scheme HumSaver \
+            -destination 'platform=macOS' \
+            -derivedDataPath build/DD \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload Test Results on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: build/TestResults.xcresult

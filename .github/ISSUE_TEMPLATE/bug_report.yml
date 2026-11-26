@@ -1,0 +1,51 @@
+name: 🐛 Bug Report
+description: Report a reproducible bug or unexpected behavior in Hum.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve Hum! Please provide as much detail as possible.
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what went wrong.
+    validations:
+      required: true
+  - type: input
+    id: macos-version
+    attributes:
+      label: macOS Version
+      description: e.g. macOS 14.5 Sonoma, macOS 15.1 Sequoia.
+      placeholder: macOS 14.x / 15.x
+    validations:
+      required: true
+  - type: dropdown
+    id: music-player
+    attributes:
+      label: Music Player
+      options:
+        - Spotify
+        - Apple Music
+        - Both / Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: Exact steps to reproduce the issue.
+      placeholder: |
+        1. Open Hum
+        2. Play track '...' in Spotify
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What you expected to happen instead.
+    validations:
+      required: true
