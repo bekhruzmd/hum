@@ -136,7 +136,7 @@ struct TransportControls: View {
             }
             button("forward.fill", label: "Next track", size: 13) { nowPlaying.nextTrack() }
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(.primary)
     }
 
     private func button(_ symbol: String, label: String, size: CGFloat, action: @escaping () -> Void) -> some View {

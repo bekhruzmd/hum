@@ -16,7 +16,7 @@ struct Scrubber: View {
             VStack(spacing: 3) {
                 GeometryReader { proxy in
                     ZStack(alignment: .leading) {
-                        Capsule().fill(.white.opacity(0.18))
+                        Capsule().fill(.primary.opacity(0.18))
                         Capsule().fill(tint).frame(width: max(4, proxy.size.width * fraction))
                     }
                     .frame(height: dragFraction == nil ? 4 : 6)
@@ -40,7 +40,7 @@ struct Scrubber: View {
                     Text("-" + Self.format(max(0, duration - fraction * duration)))
                 }
                 .font(.system(size: 9, weight: .medium).monospacedDigit())
-                .foregroundStyle(.white.opacity(0.5))
+                .foregroundStyle(.secondary)
             }
         }
         .accessibilityElement()

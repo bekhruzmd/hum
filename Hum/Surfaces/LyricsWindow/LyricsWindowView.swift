@@ -7,6 +7,9 @@ struct LyricsWindowView: View {
     private var nowPlaying: NowPlayingStore { environment.nowPlaying }
     private var lyrics: LyricsStore { environment.lyrics }
 
+    @State private var isHovering = false
+    @State private var hideControlsTask: Task<Void, Never>?
+
     var body: some View {
         Group {
             if settings.compactMode {
@@ -57,6 +60,37 @@ struct LyricsWindowView: View {
                     .padding(.horizontal, 16)
                     .padding(.bottom, 12)
             }
+            .overlay(alignment: .bottom) {
+                if isHovering {
+                    ControlBar(nowPlaying: nowPlaying, state: state)
+                        .padding(12)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .background { PlaybackShortcuts(nowPlaying: nowPlaying) }
+            .onContinuousHover { phase in
+                switch phase {
+                case .active: showControls()
+                case .ended: hideControls(after: .milliseconds(300))
+                }
+            }
+        }
+    }
+
+    /// Reveal the control bar on pointer movement; hide it after a few still seconds.
+    private func showControls() {
+        if !isHovering {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) { isHovering = true }
+        }
+        hideControls(after: .seconds(3))
+    }
+
+    private func hideControls(after delay: Duration) {
+        hideControlsTask?.cancel()
+        hideControlsTask = Task {
+            try? await Task.sleep(for: delay)
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeInOut(duration: 0.3)) { isHovering = false }
         }
     }
 
@@ -207,6 +241,47 @@ private struct CompactLyricLine: View {
             .transition(.opacity)
             .animation(.easeInOut(duration: 0.2), value: index)
         }
+    }
+}
+
+/// Glass bar with transport and scrubber, revealed while the pointer is over the window.
+private struct ControlBar: View {
+    let nowPlaying: NowPlayingStore
+    let state: PlaybackState
+
+    var body: some View {
+        VStack(spacing: 6) {
+            TransportControls(nowPlaying: nowPlaying, isPlaying: state.isPlaying)
+            Scrubber(state: state, tint: nowPlaying.palette.highlight) { nowPlaying.seek(to: $0) }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(.white.opacity(0.08)))
+        .shadow(color: .black.opacity(0.2), radius: 10, y: 4)
+    }
+}
+
+/// Space plays/pauses; ← / → seek 5 s back/forward (when the lyrics window is focused).
+private struct PlaybackShortcuts: View {
+    let nowPlaying: NowPlayingStore
+
+    var body: some View {
+        ZStack {
+            Button("") { nowPlaying.playPause() }
+                .keyboardShortcut(.space, modifiers: [])
+            Button("") { skip(-5) }
+                .keyboardShortcut(.leftArrow, modifiers: [])
+            Button("") { skip(5) }
+                .keyboardShortcut(.rightArrow, modifiers: [])
+        }
+        .opacity(0)
+        .accessibilityHidden(true)
+    }
+
+    private func skip(_ seconds: TimeInterval) {
+        guard let state = nowPlaying.playbackState else { return }
+        nowPlaying.seek(to: state.interpolatedPosition() + seconds)
     }
 }
 

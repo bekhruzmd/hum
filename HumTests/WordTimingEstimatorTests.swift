@@ -93,3 +93,28 @@ final class OffsetStoreTests: XCTestCase {
         XCTAssertEqual(store.offset(for: nil), 0)
     }
 }
+
+final class TurntableMotorTests: XCTestCase {
+    func testSpinsUpGraduallyAndCoastsToStop() {
+        let motor = TurntableMotor()
+        var date = Date(timeIntervalSince1970: 0)
+        _ = motor.advance(to: date, playing: true)
+        date += 0.1
+        _ = motor.advance(to: date, playing: true)
+        XCTAssertGreaterThan(motor.speed, 0)
+        XCTAssertLessThan(motor.speed, TurntableView.degreesPerSecond * 0.5, "no instant full speed")
+        for _ in 0..<40 { date += 0.05; _ = motor.advance(to: date, playing: true) }
+        XCTAssertEqual(motor.speed, TurntableView.degreesPerSecond, accuracy: TurntableView.degreesPerSecond * 0.02)
+        for _ in 0..<Int(TurntableMotor.coastDuration / 0.05) { date += 0.05; _ = motor.advance(to: date, playing: false) }
+        XCTAssertEqual(motor.speed, 0, accuracy: 2, "stops within the coast duration")
+    }
+}
+
+final class LyricsTickerClipTests: XCTestCase {
+    @MainActor func testClip() {
+        XCTAssertEqual(LyricsTicker.clip("short"), "short")
+        let long = String(repeating: "a", count: 80)
+        XCTAssertEqual(LyricsTicker.clip(long).count, LyricsTicker.maxLength)
+        XCTAssertTrue(LyricsTicker.clip(long).hasSuffix("…"))
+    }
+}

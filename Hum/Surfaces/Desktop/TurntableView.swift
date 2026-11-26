@@ -4,12 +4,17 @@ import SwiftUI
 /// album cover as the record label, a static light sheen, and a tonearm that swings onto the
 /// record on play, tracks inward over the song, and swings back to its rest on pause.
 ///
-/// The record angle is derived from the playback position, so it stops exactly when the music does.
+/// The platter has weight: it spins up over about a second on play and coasts to a stop on
+/// pause (`TurntableMotor`), like a real belt-drive deck.
 struct TurntableView: View {
     let state: PlaybackState?
     let artwork: NSImage?
     let palette: AlbumPalette
     let animate: Bool
+
+    @State private var motor = TurntableMotor()
+    /// True for the coast-down after pausing, so the timeline keeps ticking until it stops.
+    @State private var isCoasting = false
 
     /// 33⅓ rpm in degrees per second.
     static let degreesPerSecond = 33.333_333 * 360 / 60
@@ -33,6 +38,14 @@ struct TurntableView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .aspectRatio(Self.aspect, contentMode: .fit)
+        .onChange(of: isPlaying) { _, playing in
+            guard !playing else { return }
+            isCoasting = true
+            Task {
+                try? await Task.sleep(for: .seconds(TurntableMotor.coastDuration))
+                isCoasting = false
+            }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(state.map { "Turntable playing \($0.track.title)" } ?? "Turntable")
     }
@@ -80,8 +93,8 @@ struct TurntableView: View {
                     colors: [Color(white: 0.55), Color(white: 0.3), Color(white: 0.62), Color(white: 0.28), Color(white: 0.55)],
                     center: .center
                 ))
-            TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !(animate && isPlaying))) { timeline in
-                let angle = recordAngle(at: timeline.date)
+            TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !(animate && (isPlaying || isCoasting)))) { timeline in
+                let angle = motor.advance(to: timeline.date, playing: isPlaying)
                 ZStack {
                     StrobeDots(count: 60, dotSize: h * 0.008)
                         .fill(Color(white: 0.12))
@@ -147,10 +160,28 @@ struct TurntableView: View {
         }
         .animation(.easeInOut(duration: 0.6), value: isPlaying)
     }
+}
 
-    private func recordAngle(at date: Date) -> Double {
-        guard let state else { return 0 }
-        return (state.interpolatedPosition(at: date) * Self.degreesPerSecond).truncatingRemainder(dividingBy: 360)
+/// Integrates platter angle with simple first-order speed changes toward 33⅓ rpm or rest.
+final class TurntableMotor {
+    static let spinUpRate = 2.6
+    static let coastRate = 2.2
+    static let coastDuration = 2.2
+
+    private(set) var angle: Double = 0
+    private(set) var speed: Double = 0
+    private var lastDate: Date?
+
+    /// Advances to `date` and returns the platter angle in degrees.
+    func advance(to date: Date, playing: Bool) -> Double {
+        let dt = lastDate.map { min(0.1, max(0, date.timeIntervalSince($0))) } ?? 0
+        lastDate = date
+        let target = playing ? TurntableView.degreesPerSecond : 0
+        let rate = playing ? Self.spinUpRate : Self.coastRate
+        speed += (target - speed) * (1 - exp(-rate * dt))
+        if !playing && speed < 0.5 { speed = 0 }
+        angle = (angle + speed * dt).truncatingRemainder(dividingBy: 360)
+        return angle
     }
 }
 

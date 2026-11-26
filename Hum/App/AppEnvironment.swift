@@ -15,6 +15,7 @@ final class AppEnvironment {
     private(set) lazy var windows = WindowManager(environment: self)
     private(set) lazy var island = IslandController(environment: self)
     private(set) lazy var desktop = DesktopController(environment: self)
+    private(set) lazy var ticker = LyricsTicker(environment: self)
     private(set) lazy var idleScreen = IdleScreenController(environment: self)
     private(set) lazy var hotkeys = HotkeyManager(store: hotkeyStore) { [weak self] action in
         self?.perform(action)
@@ -62,6 +63,7 @@ final class AppEnvironment {
         desktop.start()
         idleScreen.start()
         hotkeys.start()
+        ticker.start()
         observeContinuously(self) { env in env.updateSounds() }
     }
 

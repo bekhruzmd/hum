@@ -46,6 +46,7 @@ struct LyricsSettingsTab: View {
                 Toggle("Float on top", isOn: $settings.floatOnTop)
                 Toggle("Tint with album colors", isOn: $settings.tintWithAlbumColors)
                 Toggle("Compact subtitle mode", isOn: $settings.compactMode)
+                Toggle("Show the current line in the menu bar", isOn: $settings.menuBarLyrics)
             }
         }
         .formStyle(.grouped)

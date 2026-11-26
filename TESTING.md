@@ -97,3 +97,13 @@ the ♪ in the menu bar.
       song, then tucks back in (Settings › Island › Peek open when the song changes).
 - [ ] On a Force Touch trackpad, hovering the island gives a light tap.
 - [ ] Activity Monitor while playing with the lyrics window open: Hum stays under ~5% CPU.
+
+## Polish pass 2: controls, weight, menu bar lyrics
+- [ ] Move the pointer over the lyrics window → a glass bar slides up with prev/play/next and a
+      scrubber. Keep still ~3 s or leave → it slides away.
+- [ ] Click the lyrics window, then: Space plays/pauses, ← / → jump 5 s.
+- [ ] Turntable: on play the platter spins up over about a second; on pause it coasts to a stop
+      over ~2 s while the arm lifts away.
+- [ ] Menu bar › Lyrics in Menu Bar: the ♪ becomes the current line (long lines end in "…").
+      Pause → back to ♪. Turn it off → ♪.
+- [ ] The island's controls and scrubber still look right (white on black).

@@ -20,6 +20,8 @@ final class SettingsStore {
     var tintWithAlbumColors: Bool { didSet { defaults.set(tintWithAlbumColors, forKey: "tintWithAlbumColors") } }
     var lyricEffect: LyricEffectKind { didSet { defaults.set(lyricEffect.rawValue, forKey: "lyricEffect") } }
 
+    var menuBarLyrics: Bool { didSet { defaults.set(menuBarLyrics, forKey: "menuBarLyrics") } }
+
     // Island
     var islandEnabled: Bool { didSet { defaults.set(islandEnabled, forKey: "islandEnabled") } }
     var islandShowsOverFullScreen: Bool { didSet { defaults.set(islandShowsOverFullScreen, forKey: "islandShowsOverFullScreen") } }
@@ -52,6 +54,7 @@ final class SettingsStore {
         floatOnTop = defaults.object(forKey: "floatOnTop") as? Bool ?? true
         tintWithAlbumColors = defaults.object(forKey: "tintWithAlbumColors") as? Bool ?? true
         lyricEffect = LyricEffectKind(rawValue: defaults.string(forKey: "lyricEffect") ?? "") ?? .karaokeFill
+        menuBarLyrics = defaults.bool(forKey: "menuBarLyrics")
         islandEnabled = defaults.object(forKey: "islandEnabled") as? Bool ?? true
         islandShowsOverFullScreen = defaults.bool(forKey: "islandShowsOverFullScreen")
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true

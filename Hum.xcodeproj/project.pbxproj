@@ -43,6 +43,7 @@
 		6F1F5BC3F60793F0CCC82EBE /* ArtworkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DE4E6684089D574398509B /* ArtworkLoader.swift */; };
 		71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */; };
 		72017F3BD6DA61DDD334A98F /* PlaybackBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6700C5263256663716CE4892 /* PlaybackBars.swift */; };
+		788696B4910133FC688D1589 /* LyricsTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BB3F55E9CA16FF619FC44A /* LyricsTicker.swift */; };
 		78AFDC76396903BEADCE04B1 /* IslandGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEBAE3AA677A60AB342415 /* IslandGeometry.swift */; };
 		78F4E03517445F65655CCF5B /* TypewriterEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47D4E0620D74779652D07A2 /* TypewriterEffect.swift */; };
 		7D84458CC4F28E1A974476F8 /* RenderGate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CBBDBA185A81060893684A1E /* RenderGate.swift */; };
@@ -123,6 +124,7 @@
 		57B9288A709985A92958A959 /* PlayerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerApp.swift; sourceTree = "<group>"; };
 		585010E332D2C8FFD45F5DF1 /* HumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
+		62BB3F55E9CA16FF619FC44A /* LyricsTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsTicker.swift; sourceTree = "<group>"; };
 		6700C5263256663716CE4892 /* PlaybackBars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackBars.swift; sourceTree = "<group>"; };
 		6E8EC69BCE561E698BEA2DB9 /* WaveEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveEffect.swift; sourceTree = "<group>"; };
 		6FBCFF9AD6EF5660A3B48A2E /* Hum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hum.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -348,6 +350,7 @@
 		D239CE95B94B46343254402D /* MenuBar */ = {
 			isa = PBXGroup;
 			children = (
+				62BB3F55E9CA16FF619FC44A /* LyricsTicker.swift */,
 				626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */,
 			);
 			path = MenuBar;
@@ -518,6 +521,7 @@
 				83DF9C920F9531075CB20666 /* LyricsService.swift in Sources */,
 				41F3656092C85D4BA56A6620 /* LyricsSettingsTab.swift in Sources */,
 				C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */,
+				788696B4910133FC688D1589 /* LyricsTicker.swift in Sources */,
 				1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */,
 				71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */,
 				62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */,

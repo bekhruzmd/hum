@@ -21,6 +21,7 @@ struct MenuBarContent: View {
         }
         Toggle("Float on Top", isOn: $settings.floatOnTop)
         Toggle("Compact Subtitle Mode", isOn: $settings.compactMode)
+        Toggle("Lyrics in Menu Bar", isOn: $settings.menuBarLyrics)
 
         Menu("Lyrics Offset") {
             Button("Earlier (+0.1 s)") { environment.nudgeOffset(by: OffsetStore.step) }
