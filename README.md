@@ -4,7 +4,6 @@
 
 ### Live constellation lyrics and ambient music companion for macOS
 
-[![CI Status](https://github.com/bekhruzmd/hum/actions/workflows/ci.yml/badge.svg)](https://github.com/bekhruzmd/hum/actions/workflows/ci.yml)
 [![macOS Deployment](https://img.shields.io/badge/macOS-14.0%2B-007AFF?logo=apple&logoColor=white)](https://apple.com/macos)
 [![Swift Version](https://img.shields.io/badge/Swift-5.10%2B-F05138?logo=swift&logoColor=white)](https://swift.org)
 [![License](https://img.shields.io/badge/License-MIT-34C759.svg)](LICENSE)
