@@ -15,6 +15,7 @@ struct MenuBarContent: View {
         Button(windows.isLyricsVisible ? "Hide Lyrics Window" : "Show Lyrics Window") {
             windows.toggleLyrics()
         }
+        Toggle("Show Island", isOn: $settings.islandEnabled)
         Toggle("Float on Top", isOn: $settings.floatOnTop)
         Toggle("Compact Subtitle Mode", isOn: $settings.compactMode)
 

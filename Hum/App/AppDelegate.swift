@@ -2,6 +2,7 @@ import AppKit
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        guard !AppEnvironment.isRunningTests else { return }
         let env = AppEnvironment.shared
         env.start()
         env.windows.showLyrics()

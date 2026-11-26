@@ -118,6 +118,15 @@ final class NowPlayingStore {
         }
     }
 
+    #if DEBUG
+    /// Injects a state for previews and snapshot tests.
+    func setPreviewState(_ state: PlaybackState?, artwork: NSImage? = nil, palette: AlbumPalette = .fallback) {
+        status = state.map(Status.active) ?? .nothingPlaying
+        artworkImage = artwork
+        self.palette = palette
+    }
+    #endif
+
     // MARK: Controls
 
     private var activeSource: (any PlaybackSource)? {

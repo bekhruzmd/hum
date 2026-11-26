@@ -8,6 +8,8 @@ struct SettingsView: View {
         TabView {
             LyricsSettingsTab(settings: environment.settings, palette: environment.nowPlaying.palette)
                 .tabItem { Label("Lyrics", systemImage: "text.quote") }
+            IslandSettingsTab(settings: environment.settings)
+                .tabItem { Label("Island", systemImage: "capsule.tophalf.filled") }
             GeneralSettingsTab(settings: environment.settings)
                 .tabItem { Label("General", systemImage: "gearshape") }
         }

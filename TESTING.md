@@ -41,3 +41,18 @@ the ♪ in the menu bar.
 - [ ] Click a line with an offset set → playback lands where that line is sung.
 - [ ] Compact mode shows the current line with the karaoke fill.
 - [ ] Watch Activity Monitor while lyrics animate: Hum should stay under ~5% CPU.
+
+## Phase 4: Notch island
+- [ ] Play a song. On a notched MacBook a black island wraps the notch: small cover on the left,
+      dancing bars on the right. Pause → bars go flat and still.
+- [ ] On an external display / Mac without a notch: a pill appears centered just under the menu bar.
+- [ ] Hover the island → it springs open: cover, title, artist, prev/play/next, current lyric line
+      (in your chosen effect) and a scrubber. Move away → it collapses.
+- [ ] Prev / play-pause / next work. Drag or click the scrubber → playback jumps there.
+- [ ] Click the cover → the lyrics window opens.
+- [ ] With the island open, two-finger swipe left → next track; right → previous.
+- [ ] Switch Spaces → the island stays put on every Space.
+- [ ] Make an app full screen → the island hides. Settings › Island › "Show over full-screen apps" ON → it shows.
+- [ ] Stop playback / quit the player → the island disappears; the notch looks normal.
+- [ ] Plug in / unplug a display, or change resolution → the island moves to the right spot.
+- [ ] Menu bar › Show Island toggles it.

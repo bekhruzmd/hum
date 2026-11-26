@@ -10,10 +10,17 @@ final class AppEnvironment {
     let lyrics = LyricsStore()
     let offsets = OffsetStore()
     private(set) lazy var windows = WindowManager(environment: self)
+    private(set) lazy var island = IslandController(environment: self)
 
     private var started = false
 
-    private init() {}
+    /// Internal (not private) so tests can build an isolated environment.
+    init() {}
+
+    /// True when the process is hosting unit tests; surfaces and polling stay off.
+    static var isRunningTests: Bool {
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+    }
 
     /// Lyric time for a playback state at `date`: interpolated position plus the track's offset.
     func lyricTime(_ state: PlaybackState, at date: Date = Date()) -> TimeInterval {
@@ -40,5 +47,6 @@ final class AppEnvironment {
             env.nowPlaying.preferredPlayer = env.settings.preferredPlayer
         }
         nowPlaying.start()
+        island.start()
     }
 }
