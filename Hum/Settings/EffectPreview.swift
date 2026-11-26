@@ -13,7 +13,7 @@ struct EffectPreview: View {
     private static let loop: TimeInterval = 5.5
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / min(30, kind.framesPerSecond))) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: Self.loop) - 0.4
             LyricEffectView(
                 kind: kind,

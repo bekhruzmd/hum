@@ -98,6 +98,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
         window.styleMask = [.titled, .closable]
         window.setContentSize(SettingsView.size)
         window.isReleasedWhenClosed = false
+        window.delegate = self
         window.center()
         return window
     }
@@ -105,8 +106,14 @@ final class WindowManager: NSObject, NSWindowDelegate {
     // MARK: NSWindowDelegate
 
     func windowWillClose(_ notification: Notification) {
-        if (notification.object as? NSWindow) === lyricsWindow {
+        let window = notification.object as? NSWindow
+        if window === lyricsWindow {
             isLyricsVisible = false
+        } else if window === settingsWindow {
+            // Drop the SwiftUI content so the live effect preview stops drawing; it is rebuilt
+            // the next time Settings opens.
+            settingsWindow?.contentViewController = nil
+            settingsWindow = nil
         }
     }
 }

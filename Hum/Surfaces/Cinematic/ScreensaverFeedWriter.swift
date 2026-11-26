@@ -130,8 +130,27 @@ enum ScreensaverInstaller {
         try fileManager.copyItem(at: source, to: destination)
     }
 
+    private static let screenSaverPaneID = "com.apple.ScreenSaver-Settings.extension"
+    private static let wallpaperPaneID = "com.apple.Wallpaper-Settings.extension"
+
+    /// Recent macOS versions have no separate Screen Saver pane; screensavers live under
+    /// Wallpaper. Open whichever pane this system actually has.
+    static var hasScreenSaverPane: Bool {
+        let directory = URL(fileURLWithPath: "/System/Library/ExtensionKit/Extensions", isDirectory: true)
+        let bundles = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
+        return bundles.contains { Bundle(url: $0)?.bundleIdentifier == screenSaverPaneID }
+    }
+
+    /// Where to find Hum after installing, in this macOS version's words.
+    static var settingsLocation: String {
+        hasScreenSaverPane
+            ? "System Settings › Screen Saver"
+            : "System Settings › Wallpaper, in the Screen Saver section"
+    }
+
     static func openScreenSaverSettings() {
-        if let url = URL(string: "x-apple.systempreferences:com.apple.ScreenSaver-Settings.extension") {
+        let pane = hasScreenSaverPane ? screenSaverPaneID : wallpaperPaneID
+        if let url = URL(string: "x-apple.systempreferences:\(pane)") {
             NSWorkspace.shared.open(url)
         }
     }

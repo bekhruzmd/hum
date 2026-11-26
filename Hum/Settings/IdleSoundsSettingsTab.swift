@@ -55,6 +55,7 @@ struct IdleSoundsSettingsTab: View {
 private struct ScreensaverSection: View {
     @Bindable var settings: SettingsStore
     @State private var installed = ScreensaverInstaller.isInstalled
+    @State private var justInstalled = false
     @State private var error: String?
 
     var body: some View {
@@ -65,13 +66,19 @@ private struct ScreensaverSection: View {
                 Button(installed ? "Reinstall" : "Install Screen Saver") { install() }
             }
             Toggle("Send the current song to the screensaver", isOn: $settings.screensaverFeed)
+            if justInstalled {
+                Label("Installed. Now choose Hum in \(ScreensaverInstaller.settingsLocation) (it may be listed under Other).",
+                      systemImage: "checkmark.circle.fill")
+                    .font(.callout)
+                    .foregroundStyle(.green)
+            }
             if let error {
                 Text(error).font(.caption).foregroundStyle(.red)
             }
         } header: {
             Text("Screensaver")
         } footer: {
-            Text("After installing, pick Hum in System Settings › Screen Saver. It shows the cinematic scene with live lyrics, and your lock settings keep working. macOS may ask once to let Hum access data from other apps; allow it so the screensaver can see what's playing.")
+            Text("After installing, pick Hum in \(ScreensaverInstaller.settingsLocation). It shows the cinematic scene with live lyrics, and your lock settings keep working. macOS may ask once to let Hum access data from other apps; allow it so the screensaver can see what's playing.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
@@ -82,6 +89,7 @@ private struct ScreensaverSection: View {
         do {
             try ScreensaverInstaller.install()
             installed = true
+            justInstalled = true
             settings.screensaverFeed = true
             ScreensaverInstaller.openScreenSaverSettings()
         } catch {

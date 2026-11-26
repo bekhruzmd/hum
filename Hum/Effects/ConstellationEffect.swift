@@ -5,11 +5,27 @@ import SwiftUI
 /// sparkle reticle and appears large beside its star. The previous line's constellation stays
 /// faintly on the left while the new one grows on the right.
 ///
-/// Everything is drawn in one `Canvas` (no per-word views), so it stays cheap at 60 fps.
+/// Everything is drawn in one `Canvas` (no per-word views). Word labels are Canvas symbols,
+/// so SwiftUI lays each out once per line instead of resolving text on every frame.
 struct ConstellationEffect: LyricEffect {
     func render(_ context: LyricRenderContext) -> some View {
+        let words = context.line.words
+        let current = context.currentWordIndex.flatMap { words.indices.contains($0) ? $0 : nil }
         Canvas { canvas, size in
             ConstellationRenderer(context: context, size: size).draw(in: &canvas)
+        } symbols: {
+            ForEach(words.indices, id: \.self) { index in
+                Text(words[index].text)
+                    .font(.system(size: context.fontSize * 0.42, weight: .medium, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .tag(index)
+            }
+            if let current {
+                Text(words[current].text)
+                    .font(.system(size: context.fontSize * 1.5, weight: .heavy, design: .rounded))
+                    .foregroundStyle(.primary)
+                    .tag(ConstellationRenderer.bigWordTag)
+            }
         }
         .frame(height: context.fontSize * 9)
         .frame(maxWidth: .infinity)
@@ -53,7 +69,9 @@ struct ConstellationLayout {
     }
 }
 
-private struct ConstellationRenderer {
+struct ConstellationRenderer {
+    static let bigWordTag = -1
+
     let context: LyricRenderContext
     let size: CGSize
 
@@ -119,14 +137,14 @@ private struct ConstellationRenderer {
             let pop = 1 + 0.6 * max(0, 1 - appear * 2.5)
             dot(at: star.point, radius: font * 0.13 * pop, alpha: min(1, appear * 2), canvas: &canvas)
             if index != current {
-                label(line.words[index].text, at: star.point, alpha: min(0.75, appear * 1.5), canvas: &canvas)
+                label(index, at: star.point, alpha: min(0.75, appear * 1.5), canvas: &canvas)
             }
         }
         if let current, layout.stars.indices.contains(current) {
             let point = layout.stars[current].point
             let appear = appearance(of: current)
             reticle(at: point, appear: appear, canvas: &canvas)
-            bigWord(line.words[current].text, near: point, appear: appear, canvas: &canvas)
+            bigWord(near: point, appear: appear, canvas: &canvas)
         }
     }
 
@@ -160,11 +178,11 @@ private struct ConstellationRenderer {
         canvas.fill(Path(ellipseIn: rect), with: .color(ink.opacity(alpha)))
     }
 
-    private func label(_ text: String, at point: CGPoint, alpha: Double, canvas: inout GraphicsContext) {
-        let resolved = canvas.resolve(
-            Text(text).font(.system(size: font * 0.42, weight: .medium, design: .rounded)).foregroundColor(ink.opacity(alpha))
-        )
-        canvas.draw(resolved, at: CGPoint(x: point.x, y: point.y + font * 0.3), anchor: .top)
+    private func label(_ index: Int, at point: CGPoint, alpha: Double, canvas: inout GraphicsContext) {
+        guard let symbol = canvas.resolveSymbol(id: index) else { return }
+        var layer = canvas
+        layer.opacity = alpha
+        layer.draw(symbol, at: CGPoint(x: point.x, y: point.y + font * 0.3), anchor: .top)
     }
 
     /// Thin ring, crosshair and a slowly turning four-point sparkle.
@@ -201,18 +219,15 @@ private struct ConstellationRenderer {
         return path
     }
 
-    private func bigWord(_ text: String, near point: CGPoint, appear: Double, canvas: inout GraphicsContext) {
-        let resolved = canvas.resolve(
-            Text(text)
-                .font(.system(size: font * 1.5, weight: .heavy, design: .rounded))
-                .foregroundColor(ink.opacity(ease(appear)))
-        )
-        let measured = resolved.measure(in: size)
+    private func bigWord(near point: CGPoint, appear: Double, canvas: inout GraphicsContext) {
+        guard let symbol = canvas.resolveSymbol(id: Self.bigWordTag) else { return }
+        let measured = symbol.size
         var origin = CGPoint(x: point.x - font * 0.3, y: point.y + font * 0.55 + CGFloat(1 - ease(appear)) * font * 0.3)
         origin.x = min(max(font * 0.2, origin.x), size.width - measured.width - font * 0.2)
         origin.y = min(origin.y, size.height - measured.height)
         var glow = canvas
+        glow.opacity = ease(appear)
         glow.addFilter(.shadow(color: context.palette.highlight.opacity(0.6 * appear), radius: font * 0.4))
-        glow.draw(resolved, at: origin, anchor: .topLeading)
+        glow.draw(symbol, at: origin, anchor: .topLeading)
     }
 }

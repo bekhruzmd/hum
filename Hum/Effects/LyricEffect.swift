@@ -44,6 +44,15 @@ enum LyricEffectKind: String, CaseIterable, Identifiable, Sendable {
         case .constellation: return "Constellation"
         }
     }
+
+    /// Frames per second the effect needs. Constellation only animates star pop-ins and a
+    /// slow sparkle, so 30 fps looks identical and halves the cost.
+    var framesPerSecond: Double {
+        switch self {
+        case .constellation: return 30
+        default: return 60
+        }
+    }
 }
 
 /// Draws `context` with the chosen effect, or a plain fade when Reduce Motion is on.
@@ -85,7 +94,7 @@ struct LiveLyricEffect: View {
     let lyricTime: (Date) -> TimeInterval
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: !isPlaying)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / kind.framesPerSecond, paused: !isPlaying)) { timeline in
             LyricEffectView(
                 kind: kind,
                 context: LyricRenderContext(
