@@ -22,6 +22,7 @@
 		206F3959B16C9BA462862AFD /* SoundEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1965139DF838BCFF1F2CC8 /* SoundEngine.swift */; };
 		2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */; };
 		29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */; };
+		2DD8E95EE30160377DCFFC35 /* CinematicScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676432FDFFD2CDCE8E51B4E9 /* CinematicScene.swift */; };
 		34552D1BBE9A612356490721 /* EffectPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */; };
 		3A1A654F469F50B7D8FC76CD /* IslandShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B187FD5885E616971AE5C7C4 /* IslandShape.swift */; };
 		3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B609EA470037C5FB877BF0 /* SpotifySource.swift */; };
@@ -67,10 +68,12 @@
 		CB28F8B055C0420AAB298DD0 /* PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B9288A709985A92958A959 /* PlayerApp.swift */; };
 		D155F3B93F2A417AAC445418 /* ColorExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */; };
 		D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D23C54EC0F5C1455294F93 /* LRCParser.swift */; };
+		D5AA809E83457829B66D9049 /* ConstellationEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBEFD17355B4B430186DB3 /* ConstellationEffect.swift */; };
 		D918379592FEFA82655DC835 /* WaveEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8EC69BCE561E698BEA2DB9 /* WaveEffect.swift */; };
 		D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0468EE626DB18BA52081026C /* PlaybackParserTests.swift */; };
 		DE418A81078C068ABD99F202 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = F667835C6A859D03D36AAAFA /* Track.swift */; };
 		E1B7BFA8639ECA4BB9945E4D /* BigWordsEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA20483F4439840A9EC17C /* BigWordsEffect.swift */; };
+		E7BC666F7C898433CF62A738 /* MonochromeArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6332A1CD428C5BDAF5397E2 /* MonochromeArtwork.swift */; };
 		E98FF0BB9A98C6A2EF784CBC /* TurntableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E99AC379AB270C20B453EE7 /* TurntableView.swift */; };
 		EB8483DADB1F08F66E7F5BA6 /* SettingsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 125840F517B2119BC66C15E2 /* SettingsTypes.swift */; };
 		EF63E44E8A036D5716CCF523 /* BlurredArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FED22C9CFD881B9A20E78C5 /* BlurredArtwork.swift */; };
@@ -113,6 +116,7 @@
 		3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		3E99AC379AB270C20B453EE7 /* TurntableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurntableView.swift; sourceTree = "<group>"; };
 		4032809FF5B5403D775F888F /* LyricsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsWindowView.swift; sourceTree = "<group>"; };
+		45FBEFD17355B4B430186DB3 /* ConstellationEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConstellationEffect.swift; sourceTree = "<group>"; };
 		47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsListView.swift; sourceTree = "<group>"; };
 		48396037ECE92EF085910DE4 /* GlowEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowEffect.swift; sourceTree = "<group>"; };
 		4C4B8F07648DB88929BBB312 /* KaraokeFillEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokeFillEffect.swift; sourceTree = "<group>"; };
@@ -126,6 +130,7 @@
 		626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
 		62BB3F55E9CA16FF619FC44A /* LyricsTicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsTicker.swift; sourceTree = "<group>"; };
 		6700C5263256663716CE4892 /* PlaybackBars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackBars.swift; sourceTree = "<group>"; };
+		676432FDFFD2CDCE8E51B4E9 /* CinematicScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CinematicScene.swift; sourceTree = "<group>"; };
 		6E8EC69BCE561E698BEA2DB9 /* WaveEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveEffect.swift; sourceTree = "<group>"; };
 		6FBCFF9AD6EF5660A3B48A2E /* Hum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FC0DE0015E5914792D80732 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
@@ -156,6 +161,7 @@
 		C2D23C54EC0F5C1455294F93 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
 		C47D4E0620D74779652D07A2 /* TypewriterEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypewriterEffect.swift; sourceTree = "<group>"; };
 		C5DDEEA2358F382A958196EF /* IslandSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandSettingsTab.swift; sourceTree = "<group>"; };
+		C6332A1CD428C5BDAF5397E2 /* MonochromeArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonochromeArtwork.swift; sourceTree = "<group>"; };
 		C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractorTests.swift; sourceTree = "<group>"; };
 		CBBDBA185A81060893684A1E /* RenderGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderGate.swift; sourceTree = "<group>"; };
 		D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingStore.swift; sourceTree = "<group>"; };
@@ -234,6 +240,7 @@
 		6D9D3494552C4B11F1EA5664 /* Surfaces */ = {
 			isa = PBXGroup;
 			children = (
+				7E43D63DB38FD8DCB6758D9A /* Cinematic */,
 				736769EF6934A5EFDBAEE864 /* Desktop */,
 				5A91365A2DF31294B545BCCD /* IdleScreen */,
 				77D5C9109F54677D3C59D6A4 /* Island */,
@@ -294,10 +301,20 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		7E43D63DB38FD8DCB6758D9A /* Cinematic */ = {
+			isa = PBXGroup;
+			children = (
+				676432FDFFD2CDCE8E51B4E9 /* CinematicScene.swift */,
+				C6332A1CD428C5BDAF5397E2 /* MonochromeArtwork.swift */,
+			);
+			path = Cinematic;
+			sourceTree = "<group>";
+		};
 		A2390A03DBA39988B8D18DE7 /* Effects */ = {
 			isa = PBXGroup;
 			children = (
 				96BA20483F4439840A9EC17C /* BigWordsEffect.swift */,
+				45FBEFD17355B4B430186DB3 /* ConstellationEffect.swift */,
 				9571FF23B5180D774867C44C /* FadeEffect.swift */,
 				F8BFC86A13F2DB07944FA0F9 /* FlowLayout.swift */,
 				48396037ECE92EF085910DE4 /* GlowEffect.swift */,
@@ -489,7 +506,9 @@
 				6F1F5BC3F60793F0CCC82EBE /* ArtworkLoader.swift in Sources */,
 				E1B7BFA8639ECA4BB9945E4D /* BigWordsEffect.swift in Sources */,
 				EF63E44E8A036D5716CCF523 /* BlurredArtwork.swift in Sources */,
+				2DD8E95EE30160377DCFFC35 /* CinematicScene.swift in Sources */,
 				A97E174CDF9349F8B0109EDF /* ColorExtractor.swift in Sources */,
+				D5AA809E83457829B66D9049 /* ConstellationEffect.swift in Sources */,
 				1A56BCC5D522BEEE14DD8BAF /* DesktopController.swift in Sources */,
 				C6CE978CCB0B4D929096DB8C /* DesktopSettingsTab.swift in Sources */,
 				06B494CA393085AE5496BADB /* DesktopView.swift in Sources */,
@@ -524,6 +543,7 @@
 				788696B4910133FC688D1589 /* LyricsTicker.swift in Sources */,
 				1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */,
 				71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */,
+				E7BC666F7C898433CF62A738 /* MonochromeArtwork.swift in Sources */,
 				62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */,
 				F3CB78D4ED05BFAB9617D6CA /* NowPlayingStore.swift in Sources */,
 				F93D23ED5EF3F97C67B368F7 /* ObservationLoop.swift in Sources */,

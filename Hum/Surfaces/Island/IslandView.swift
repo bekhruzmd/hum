@@ -163,7 +163,7 @@ private struct IslandLyricLine: View {
             Group {
                 if let index {
                     LiveLyricEffect(
-                        kind: environment.settings.lyricEffect == .bigWords ? .karaokeFill : environment.settings.lyricEffect,
+                        kind: LiveLyricEffect.singleRow(environment.settings.lyricEffect),
                         line: lines[index],
                         palette: environment.nowPlaying.palette,
                         fontSize: 14,

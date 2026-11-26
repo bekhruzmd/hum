@@ -1,13 +1,13 @@
 import Foundation
 
-struct TimedWord: Equatable, Sendable {
+struct TimedWord: Equatable, Sendable, Codable {
     let text: String
     let start: TimeInterval
     let end: TimeInterval
 }
 
 /// A lyric line with a start, an end and per-word timings (real or estimated).
-struct TimedLine: Identifiable, Equatable, Sendable {
+struct TimedLine: Identifiable, Equatable, Sendable, Codable {
     let id: Int
     let text: String
     let start: TimeInterval

@@ -14,6 +14,13 @@ struct IdleSoundsSettingsTab: View {
                         Text(minutes == 0 ? "Never" : "\(minutes) minutes idle").tag(minutes)
                     }
                 }
+                Picker("Style", selection: $settings.idleStyle) {
+                    ForEach(IdleStyle.allCases) { Text($0.displayName).tag($0) }
+                }
+                .pickerStyle(.segmented)
+                Picker("Cinematic lyrics", selection: $settings.cinematicEffect) {
+                    ForEach(LyricEffectKind.allCases) { Text($0.displayName).tag($0) }
+                }
                 Button("Preview idle screen") { environment.idleScreen.show() }
             } header: {
                 Text("Idle screen")

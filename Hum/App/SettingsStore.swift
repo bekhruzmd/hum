@@ -34,6 +34,10 @@ final class SettingsStore {
         didSet { defaults.set(desktopLyricsBackground.rawValue, forKey: "desktopLyricsBackground") }
     }
 
+    // Cinematic scene (idle screen, desktop, screensaver)
+    var idleStyle: IdleStyle { didSet { defaults.set(idleStyle.rawValue, forKey: "idleStyle") } }
+    var cinematicEffect: LyricEffectKind { didSet { defaults.set(cinematicEffect.rawValue, forKey: "cinematicEffect") } }
+
     // Idle screen & sounds
     /// Minutes of inactivity before the idle screen appears; 0 = off.
     var idleMinutes: Int { didSet { defaults.set(idleMinutes, forKey: "idleMinutes") } }
@@ -61,6 +65,8 @@ final class SettingsStore {
         islandPeekOnTrackChange = defaults.object(forKey: "islandPeekOnTrackChange") as? Bool ?? true
         desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
+        idleStyle = IdleStyle(rawValue: defaults.string(forKey: "idleStyle") ?? "") ?? .cinematic
+        cinematicEffect = LyricEffectKind(rawValue: defaults.string(forKey: "cinematicEffect") ?? "") ?? .constellation
         idleMinutes = defaults.integer(forKey: "idleMinutes")
         needleDropSound = defaults.bool(forKey: "needleDropSound")
         crackleSound = defaults.bool(forKey: "crackleSound")

@@ -90,7 +90,7 @@ final class IdleScreenController {
         window.backgroundColor = .black
         window.acceptsMouseMovedEvents = true
         window.isReleasedWhenClosed = false
-        window.contentView = NSHostingView(rootView: IdleScreenView(environment: environment))
+        window.contentView = NSHostingView(rootView: IdleScreenRoot(environment: environment))
         window.setFrame(screen.frame, display: false)
         window.alphaValue = 0
         window.orderFrontRegardless()
@@ -135,4 +135,18 @@ final class IdleScreenController {
 private final class IdleWindow: NSWindow {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { true }
+}
+
+/// Picks the idle screen style.
+private struct IdleScreenRoot: View {
+    let environment: AppEnvironment
+
+    var body: some View {
+        switch environment.settings.idleStyle {
+        case .cinematic:
+            CinematicScene(data: environment.cinematicData(), animate: environment.renderGate.canAnimateHeavy)
+        case .classic:
+            IdleScreenView(environment: environment)
+        }
+    }
 }

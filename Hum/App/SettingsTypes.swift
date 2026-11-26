@@ -63,3 +63,17 @@ enum VisibleLinesMode: String, CaseIterable, Identifiable {
         }
     }
 }
+
+enum IdleStyle: String, CaseIterable, Identifiable {
+    case cinematic
+    case classic
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .cinematic: return "Cinematic"
+        case .classic: return "Classic"
+        }
+    }
+}

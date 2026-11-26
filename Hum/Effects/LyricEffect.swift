@@ -8,6 +8,8 @@ struct LyricRenderContext {
     let palette: AlbumPalette
     let fontSize: CGFloat
     let alignment: LyricAlignment
+    /// The line before, for effects that keep a trace of it (Constellation).
+    var previous: TimedLine? = nil
 
     var progress: Double { line.progress(at: time) }
     var currentWordIndex: Int? { line.currentWordIndex(at: time) }
@@ -28,6 +30,7 @@ enum LyricEffectKind: String, CaseIterable, Identifiable, Sendable {
     case glow
     case typewriter
     case wave
+    case constellation
 
     var id: String { rawValue }
 
@@ -38,6 +41,7 @@ enum LyricEffectKind: String, CaseIterable, Identifiable, Sendable {
         case .glow: return "Glow"
         case .typewriter: return "Typewriter"
         case .wave: return "Wave"
+        case .constellation: return "Constellation"
         }
     }
 }
@@ -60,6 +64,7 @@ struct LyricEffectView: View {
                 case .glow: GlowEffect().render(context)
                 case .typewriter: TypewriterEffect().render(context)
                 case .wave: WaveEffect().render(context)
+                case .constellation: ConstellationEffect().render(context)
                 }
             }
         }
@@ -76,6 +81,7 @@ struct LiveLyricEffect: View {
     let fontSize: CGFloat
     let alignment: LyricAlignment
     let isPlaying: Bool
+    var previous: TimedLine? = nil
     let lyricTime: (Date) -> TimeInterval
 
     var body: some View {
@@ -87,9 +93,18 @@ struct LiveLyricEffect: View {
                     time: lyricTime(timeline.date),
                     palette: palette,
                     fontSize: fontSize,
-                    alignment: alignment
+                    alignment: alignment,
+                    previous: previous
                 )
             )
+        }
+    }
+
+    /// Effects too tall for one-row surfaces (island, compact bar) fall back to Karaoke Fill.
+    static func singleRow(_ kind: LyricEffectKind) -> LyricEffectKind {
+        switch kind {
+        case .bigWords, .constellation: return .karaokeFill
+        default: return kind
         }
     }
 }

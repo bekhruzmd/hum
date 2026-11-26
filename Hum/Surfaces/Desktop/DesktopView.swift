@@ -4,6 +4,7 @@ enum DesktopMode: String, CaseIterable, Identifiable {
     case off
     case turntable
     case lyrics
+    case cinematic
 
     var id: String { rawValue }
 
@@ -12,6 +13,7 @@ enum DesktopMode: String, CaseIterable, Identifiable {
         case .off: return "Off"
         case .turntable: return "Turntable"
         case .lyrics: return "Lyrics"
+        case .cinematic: return "Cinematic"
         }
     }
 }
@@ -63,6 +65,8 @@ struct DesktopView: View {
                 .opacity(nowPlaying.playbackState == nil ? 0.6 : 1)
             case .lyrics:
                 DesktopLyricsView(environment: environment, animate: animate, size: proxy.size)
+            case .cinematic:
+                CinematicScene(data: environment.cinematicData(), animate: animate)
             }
         }
         .ignoresSafeArea()

@@ -43,6 +43,22 @@ final class AppEnvironment {
         nowPlaying.seek(to: time - offsets.offset(for: nowPlaying.currentTrack))
     }
 
+    /// Snapshot for the cinematic scene (idle screen, desktop). Reads observable state, so
+    /// views calling this re-render when the track, artwork or lyrics change.
+    func cinematicData() -> CinematicSceneData {
+        let state = nowPlaying.playbackState
+        let offset = offsets.offset(for: state?.track)
+        return CinematicSceneData(
+            track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album) },
+            artwork: nowPlaying.artworkImage,
+            palette: nowPlaying.palette,
+            lines: lyrics.timedLines,
+            effect: settings.cinematicEffect,
+            isPlaying: state?.isPlaying ?? false,
+            lyricTime: { date in (state?.interpolatedPosition(at: date) ?? 0) + offset }
+        )
+    }
+
     func nudgeOffset(by delta: TimeInterval) {
         offsets.adjust(nowPlaying.currentTrack, by: delta)
     }
