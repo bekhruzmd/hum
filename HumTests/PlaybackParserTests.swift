@@ -51,3 +51,29 @@ final class PlaybackParserTests: XCTestCase {
         XCTAssertEqual(a.albumKey, b.albumKey)
     }
 }
+
+final class ClockSmoothingTests: XCTestCase {
+    private let track = Track(title: "t", artist: "a", album: "b", duration: 200, artworkURL: nil, player: .spotify)
+
+    func testSmallDriftKeepsAnchor() {
+        let start = Date(timeIntervalSince1970: 0)
+        let old = NowPlayingStore.Status.active(PlaybackState(track: track, position: 10, isPlaying: true, fetchedAt: start))
+        let jitter = NowPlayingStore.Status.active(PlaybackState(track: track, position: 11.08, isPlaying: true, fetchedAt: start.addingTimeInterval(1)))
+        XCTAssertEqual(NowPlayingStore.smoothed(current: old, incoming: jitter), old)
+    }
+
+    func testSeekReanchors() {
+        let start = Date(timeIntervalSince1970: 0)
+        let old = NowPlayingStore.Status.active(PlaybackState(track: track, position: 10, isPlaying: true, fetchedAt: start))
+        let seek = NowPlayingStore.Status.active(PlaybackState(track: track, position: 90, isPlaying: true, fetchedAt: start.addingTimeInterval(1)))
+        XCTAssertEqual(NowPlayingStore.smoothed(current: old, incoming: seek), seek)
+    }
+
+    func testPauseAndTrackChangeAlwaysApply() {
+        let start = Date(timeIntervalSince1970: 0)
+        let old = NowPlayingStore.Status.active(PlaybackState(track: track, position: 10, isPlaying: true, fetchedAt: start))
+        let paused = NowPlayingStore.Status.active(PlaybackState(track: track, position: 11, isPlaying: false, fetchedAt: start.addingTimeInterval(1)))
+        XCTAssertEqual(NowPlayingStore.smoothed(current: old, incoming: paused), paused)
+        XCTAssertEqual(NowPlayingStore.smoothed(current: old, incoming: .nothingPlaying), .nothingPlaying)
+    }
+}

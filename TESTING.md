@@ -85,3 +85,15 @@ the ♪ in the menu bar.
 - [ ] Idle & Sounds › Needle drop ON → a soft thump when playback starts. Crackle ON → faint vinyl
       crackle only while playing; pause → silence. Volume slider works.
 - [ ] With sounds off, Activity Monitor shows no audio CPU use from Hum.
+
+## Polish pass: smoother, deeper, livelier
+- [ ] Karaoke fill and the island scrubber move steadily, with no tiny jumps every second.
+- [ ] Lyrics window: lines fade and shrink the further they are from the current line; already-sung
+      lines are a bit dimmer. Hover a line to bring it forward. Scrolling springs; edges fade softly.
+- [ ] During an intro or a long instrumental break, three dots fill one by one toward the next line,
+      then fade away as singing resumes.
+- [ ] While playing, soft album-colored light slowly drifts behind the lyrics. Pause → it rests.
+- [ ] Skip a track → cover, title and artist crossfade; the island peeks open for ~3 s showing the new
+      song, then tucks back in (Settings › Island › Peek open when the song changes).
+- [ ] On a Force Touch trackpad, hovering the island gives a light tap.
+- [ ] Activity Monitor while playing with the lyrics window open: Hum stays under ~5% CPU.

@@ -72,11 +72,27 @@ final class NowPlayingStore {
 
     private func apply(_ result: Status) {
         let previousTrack = currentTrack
-        if status != result { status = result }
+        let next = Self.smoothed(current: status, incoming: result)
+        if status != next { status = next }
         if case .active(let state) = result { activeSourceID = state.track.player }
         if previousTrack != currentTrack {
             trackDidChange(to: currentTrack)
         }
+    }
+
+    /// Keeps the existing clock anchor when a poll agrees with our interpolation.
+    ///
+    /// AppleScript positions jitter by tens of milliseconds; re-anchoring every second makes
+    /// word fills and the scrubber twitch, and re-renders every observer. Only a real jump
+    /// (seek, buffering, scrubbing in the player) beyond the tolerance re-anchors.
+    nonisolated static func smoothed(current: Status, incoming: Status) -> Status {
+        guard
+            case .active(let old) = current, case .active(let new) = incoming,
+            old.track == new.track, old.isPlaying == new.isPlaying
+        else { return incoming }
+        let drift = abs(old.interpolatedPosition(at: new.fetchedAt) - new.position)
+        let tolerance: TimeInterval = new.isPlaying ? 0.3 : 0.05
+        return drift < tolerance ? current : incoming
     }
 
     /// Picks the playing source first, then any paused source with a track.

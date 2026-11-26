@@ -38,15 +38,20 @@ struct HeaderView: View {
     var body: some View {
         HStack(spacing: 12) {
             ArtworkView(image: artwork, size: 48, cornerRadius: 8)
+                .id(track.albumKey)
+                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                .shadow(color: .black.opacity(0.25), radius: 6, y: 3)
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(track.title)
                     .font(.headline)
                     .lineLimit(1)
+                    .contentTransition(.opacity)
                 Text(track.artist)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
+                    .contentTransition(.opacity)
             }
             .accessibilityElement(children: .combine)
 
@@ -78,5 +83,7 @@ struct HeaderView: View {
             .help("Compact subtitle mode")
             .accessibilityLabel("Compact subtitle mode")
         }
+        .animation(.easeInOut(duration: 0.4), value: track)
+        .animation(.easeInOut(duration: 0.4), value: artwork)
     }
 }

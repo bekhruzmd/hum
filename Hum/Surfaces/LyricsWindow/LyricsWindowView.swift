@@ -17,7 +17,13 @@ struct LyricsWindowView: View {
                     .frame(minWidth: 320, minHeight: 400)
             }
         }
-        .background { AlbumBackground(palette: nowPlaying.palette, tinted: settings.tintWithAlbumColors) }
+        .background {
+            AlbumBackground(
+                palette: nowPlaying.palette,
+                tinted: settings.tintWithAlbumColors,
+                animated: nowPlaying.isPlaying && environment.renderGate.canAnimate
+            )
+        }
     }
 
     // MARK: Full
@@ -222,24 +228,66 @@ private struct OffsetShortcuts: View {
     }
 }
 
-/// Translucent material, optionally washed with the album's colors.
+/// Translucent material washed with the album's colors. While music plays, three soft pools
+/// of light drift slowly (15 fps, radial gradients only: no blur filters); paused, they rest.
 struct AlbumBackground: View {
     let palette: AlbumPalette
     let tinted: Bool
+    var animated: Bool = false
 
     var body: some View {
         ZStack {
             Rectangle().fill(.ultraThinMaterial)
             if tinted {
                 LinearGradient(
-                    colors: [palette.primary, palette.secondary, palette.accent],
+                    colors: [palette.primary, palette.secondary],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                .opacity(0.35)
-                .animation(.easeInOut(duration: 0.8), value: palette)
+                .opacity(0.22)
+                TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: !animated)) { timeline in
+                    DriftingLight(palette: palette, time: timeline.date.timeIntervalSinceReferenceDate)
+                }
+                .opacity(0.55)
+                .blendMode(.plusLighter)
             }
         }
+        .animation(.easeInOut(duration: 1.2), value: palette)
         .ignoresSafeArea()
+    }
+}
+
+private struct DriftingLight: View {
+    let palette: AlbumPalette
+    let time: TimeInterval
+
+    var body: some View {
+        Canvas { context, size in
+            let blobs: [(color: Color, speed: Double, phase: Double, radius: CGFloat)] = [
+                (palette.primary, 0.050, 0.0, 0.75),
+                (palette.accent, 0.037, 2.1, 0.6),
+                (palette.highlight, 0.043, 4.2, 0.5)
+            ]
+            let span = max(size.width, size.height)
+            for blob in blobs {
+                let t = time * blob.speed + blob.phase
+                let center = CGPoint(
+                    x: size.width * (0.5 + 0.38 * sin(t * 1.3)),
+                    y: size.height * (0.5 + 0.34 * cos(t))
+                )
+                let radius = span * blob.radius
+                let rect = CGRect(x: center.x - radius, y: center.y - radius, width: radius * 2, height: radius * 2)
+                context.fill(
+                    Path(ellipseIn: rect),
+                    with: .radialGradient(
+                        Gradient(colors: [blob.color.opacity(0.55), blob.color.opacity(0)]),
+                        center: center,
+                        startRadius: 0,
+                        endRadius: radius
+                    )
+                )
+            }
+        }
+        .allowsHitTesting(false)
     }
 }

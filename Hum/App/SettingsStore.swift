@@ -24,6 +24,7 @@ final class SettingsStore {
     var islandEnabled: Bool { didSet { defaults.set(islandEnabled, forKey: "islandEnabled") } }
     var islandShowsOverFullScreen: Bool { didSet { defaults.set(islandShowsOverFullScreen, forKey: "islandShowsOverFullScreen") } }
     var islandShowsLyrics: Bool { didSet { defaults.set(islandShowsLyrics, forKey: "islandShowsLyrics") } }
+    var islandPeekOnTrackChange: Bool { didSet { defaults.set(islandPeekOnTrackChange, forKey: "islandPeekOnTrackChange") } }
 
     // Desktop
     var desktopMode: DesktopMode { didSet { defaults.set(desktopMode.rawValue, forKey: "desktopMode") } }
@@ -54,6 +55,7 @@ final class SettingsStore {
         islandEnabled = defaults.object(forKey: "islandEnabled") as? Bool ?? true
         islandShowsOverFullScreen = defaults.bool(forKey: "islandShowsOverFullScreen")
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true
+        islandPeekOnTrackChange = defaults.object(forKey: "islandPeekOnTrackChange") as? Bool ?? true
         desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
         idleMinutes = defaults.integer(forKey: "idleMinutes")

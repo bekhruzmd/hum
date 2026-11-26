@@ -13,6 +13,12 @@ final class IslandController {
     private var screenObserver: NSObjectProtocol?
     private var swipeDistance: CGFloat = 0
     private var swipeHandled = false
+    private var isHovering = false
+    private var peekTask: Task<Void, Never>?
+    private var lastTrackKey: String?
+
+    /// How long the island stays open to announce a new track.
+    static let peekDuration: Duration = .seconds(3)
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -30,6 +36,33 @@ final class IslandController {
         }
         observeContinuously(self) { controller in
             controller.updateVisibility()
+        }
+        observeContinuously(self) { controller in
+            controller.trackMaybeChanged(controller.environment.nowPlaying.currentTrack)
+        }
+    }
+
+    // MARK: Peek
+
+    /// Briefly opens the island when a new song starts, then tucks it back in.
+    private func trackMaybeChanged(_ track: Track?) {
+        let key = track?.cacheKey
+        guard key != lastTrackKey else { return }
+        let isFirst = lastTrackKey == nil
+        lastTrackKey = key
+        guard
+            track != nil, !isFirst, environment.settings.islandPeekOnTrackChange,
+            !isHovering, environment.renderGate.canAnimate
+        else { return }
+        peekTask?.cancel()
+        peekTask = Task { [weak self] in
+            // Let the panel appear and the artwork start loading first.
+            try? await Task.sleep(for: .milliseconds(350))
+            guard let self, !Task.isCancelled else { return }
+            self.expand(haptic: false)
+            try? await Task.sleep(for: Self.peekDuration)
+            guard !Task.isCancelled, !self.isHovering else { return }
+            self.collapse()
         }
     }
 
@@ -87,22 +120,40 @@ final class IslandController {
     // MARK: Hover
 
     private func setHovering(_ hovering: Bool) {
-        guard let geometry = model.geometry, let panel else { return }
+        isHovering = hovering
         collapseTask?.cancel()
         if hovering {
-            guard !model.isExpanded else { return }
-            panel.setFrame(geometry.expandedFrame, display: true)
-            model.isExpanded = true
+            peekTask?.cancel()
+            expand(haptic: true)
         } else {
             collapseTask = Task { [weak self] in
                 try? await Task.sleep(for: .milliseconds(220))
                 guard let self, !Task.isCancelled else { return }
-                self.model.isExpanded = false
-                // Shrink the panel after the spring settles so the animation isn't clipped.
-                try? await Task.sleep(for: .milliseconds(420))
-                guard !Task.isCancelled, !self.model.isExpanded else { return }
-                self.panel?.setFrame(geometry.collapsedFrame, display: true)
+                self.collapse()
             }
+        }
+    }
+
+    private func expand(haptic: Bool) {
+        guard let geometry = model.geometry, let panel, !model.isExpanded else { return }
+        collapseTask?.cancel()
+        panel.setFrame(geometry.expandedFrame, display: true)
+        model.isExpanded = true
+        if haptic {
+            NSHapticFeedbackManager.defaultPerformer.perform(.alignment, performanceTime: .now)
+        }
+    }
+
+    private func collapse() {
+        guard let geometry = model.geometry, model.isExpanded else { return }
+        collapseTask?.cancel()
+        collapseTask = Task { [weak self] in
+            guard let self else { return }
+            self.model.isExpanded = false
+            // Shrink the panel after the spring settles so the animation isn't clipped.
+            try? await Task.sleep(for: .milliseconds(420))
+            guard !Task.isCancelled, !self.model.isExpanded else { return }
+            self.panel?.setFrame(geometry.collapsedFrame, display: true)
         }
     }
 

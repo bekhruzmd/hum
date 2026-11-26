@@ -9,6 +9,8 @@ struct IslandSettingsTab: View {
                 Toggle("Show the island", isOn: $settings.islandEnabled)
                 Toggle("Show the current lyric when expanded", isOn: $settings.islandShowsLyrics)
                     .disabled(!settings.islandEnabled)
+                Toggle("Peek open when the song changes", isOn: $settings.islandPeekOnTrackChange)
+                    .disabled(!settings.islandEnabled)
                 Toggle("Show over full-screen apps", isOn: $settings.islandShowsOverFullScreen)
                     .disabled(!settings.islandEnabled)
             } footer: {
