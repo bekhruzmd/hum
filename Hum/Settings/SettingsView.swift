@@ -2,6 +2,8 @@ import SwiftUI
 
 /// The Settings window: one tab per feature area.
 struct SettingsView: View {
+    static let size = CGSize(width: 560, height: 620)
+
     let environment: AppEnvironment
 
     var body: some View {
@@ -19,7 +21,6 @@ struct SettingsView: View {
             GeneralSettingsTab(settings: environment.settings)
                 .tabItem { Label("General", systemImage: "gearshape") }
         }
-        .frame(width: 520)
-        .fixedSize(horizontal: false, vertical: true)
+        .frame(width: Self.size.width, height: Self.size.height)
     }
 }

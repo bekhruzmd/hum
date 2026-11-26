@@ -53,6 +53,7 @@
 		718303203344432329E2B429 /* MonochromeArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6332A1CD428C5BDAF5397E2 /* MonochromeArtwork.swift */; };
 		71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */; };
 		72017F3BD6DA61DDD334A98F /* PlaybackBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6700C5263256663716CE4892 /* PlaybackBars.swift */; };
+		776707D70B10D112C7303D58 /* SettingsWindowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37D8C6AA6D06AA4485F28544 /* SettingsWindowTests.swift */; };
 		788696B4910133FC688D1589 /* LyricsTicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62BB3F55E9CA16FF619FC44A /* LyricsTicker.swift */; };
 		78AFDC76396903BEADCE04B1 /* IslandGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BEBAE3AA677A60AB342415 /* IslandGeometry.swift */; };
 		78F4E03517445F65655CCF5B /* TypewriterEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = C47D4E0620D74779652D07A2 /* TypewriterEffect.swift */; };
@@ -157,6 +158,7 @@
 		227E9755FC049F8FFA1AA45E /* IdleSoundsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleSoundsSettingsTab.swift; sourceTree = "<group>"; };
 		25F3F0BCD510BF4E347F126B /* MusicSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSource.swift; sourceTree = "<group>"; };
 		27E79033DAE07EBED33AA52C /* SoundSynth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSynth.swift; sourceTree = "<group>"; };
+		37D8C6AA6D06AA4485F28544 /* SettingsWindowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsWindowTests.swift; sourceTree = "<group>"; };
 		3919E595FDFA7BFFBB3FD4DC /* HotkeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyStore.swift; sourceTree = "<group>"; };
 		3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		3E99AC379AB270C20B453EE7 /* TurntableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurntableView.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 				98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */,
 				A07BCEE2AC6082968100643D /* Phase6Tests.swift */,
 				0468EE626DB18BA52081026C /* PlaybackParserTests.swift */,
+				37D8C6AA6D06AA4485F28544 /* SettingsWindowTests.swift */,
 				55A69ABDE98D49A939A15989 /* WordTimingEstimatorTests.swift */,
 			);
 			path = HumTests;
@@ -575,6 +578,7 @@
 				C08B3E824E52F920D14A4067 /* LyricsCacheTests.swift in Sources */,
 				9F9296F123C424F2CFC1AB26 /* Phase6Tests.swift in Sources */,
 				D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */,
+				776707D70B10D112C7303D58 /* SettingsWindowTests.swift in Sources */,
 				A0F7369AE7527E78850921B2 /* WordTimingEstimatorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

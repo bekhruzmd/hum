@@ -90,10 +90,13 @@ final class WindowManager: NSObject, NSWindowDelegate {
 
     private func makeSettingsWindow() -> NSWindow {
         let hosting = NSHostingController(rootView: SettingsView(environment: environment))
-        hosting.sizingOptions = [.preferredContentSize]
+        // Fixed size: letting animated content (the effect preview) drive the window size made
+        // AppKit re-layout every frame until it threw an exception and the app quit.
+        hosting.sizingOptions = []
         let window = NSWindow(contentViewController: hosting)
         window.title = "Hum Settings"
         window.styleMask = [.titled, .closable]
+        window.setContentSize(SettingsView.size)
         window.isReleasedWhenClosed = false
         window.center()
         return window

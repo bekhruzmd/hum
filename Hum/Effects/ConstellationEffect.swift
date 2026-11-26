@@ -64,7 +64,7 @@ private struct ConstellationRenderer {
         let starBand = CGRect(
             x: font * 0.8,
             y: font * 1.0,
-            width: size.width - font * 1.6,
+            width: max(0, size.width - font * 1.6),
             height: size.height * 0.48
         )
         if let previous = context.previous, !previous.words.isEmpty {

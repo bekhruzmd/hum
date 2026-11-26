@@ -27,7 +27,9 @@ struct EffectPreview: View {
             )
         }
         .padding(16)
-        .frame(maxWidth: .infinity, minHeight: 110)
+        // Fixed height: effects differ in size, and the preview must never resize its container.
+        .frame(maxWidth: .infinity, minHeight: 200, maxHeight: 200)
+        .clipped()
         .background {
             AlbumBackground(palette: palette, tinted: true)
                 .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))

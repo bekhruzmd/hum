@@ -22,7 +22,7 @@ struct FlowLayout: Layout {
         let rows = rows(maxWidth: proposal.width ?? .infinity, sizes: cache.sizes)
         let width = rows.map(\.width).max() ?? 0
         let height = rows.map(\.height).reduce(0, +) + lineSpacing * CGFloat(max(0, rows.count - 1))
-        return CGSize(width: proposal.width.map { min($0, width) } ?? width, height: height)
+        return CGSize(width: max(0, proposal.width.map { min($0, width) } ?? width), height: height)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) {
