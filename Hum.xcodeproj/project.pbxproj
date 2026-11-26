@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0595C65636F43F703A18F95A /* LyricsCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FCF4CA139AF256342DA45A /* LyricsCache.swift */; };
 		05E555099155A926869B08E6 /* LyricsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */; };
 		098E148D39D2C69A07D23CE4 /* LyricsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21606E340A0D4C9324CB58F4 /* LyricsModels.swift */; };
 		1A930B0A519FF1A0E7B5B017 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */; };
@@ -24,12 +25,13 @@
 		6BA0DB613DA91C43D38D2DA8 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */; };
 		6F1F5BC3F60793F0CCC82EBE /* ArtworkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DE4E6684089D574398509B /* ArtworkLoader.swift */; };
 		71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */; };
-		7E69EE42182E2D6F881DE28E /* LRCLibClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */; };
 		7EE53E56C45716D54C9C9CD0 /* ScriptedSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA4BDF9791E29BB1ECDD838 /* ScriptedSource.swift */; };
+		83DF9C920F9531075CB20666 /* LyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AD6D449149B285C1989F7B /* LyricsService.swift */; };
 		97D83D72D690425F690C7B73 /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1C6CA00F676C7759B9EECD /* PlaybackSource.swift */; };
 		A97E174CDF9349F8B0109EDF /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */; };
 		BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E8451C99E7C665060C2E22 /* HumApp.swift */; };
 		C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0599596A435B25EF251F0E95 /* LyricsStore.swift */; };
+		C08B3E824E52F920D14A4067 /* LyricsCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */; };
 		CB28F8B055C0420AAB298DD0 /* PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B9288A709985A92958A959 /* PlayerApp.swift */; };
 		D155F3B93F2A417AAC445418 /* ColorExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */; };
 		D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D23C54EC0F5C1455294F93 /* LRCParser.swift */; };
@@ -58,12 +60,12 @@
 		0468EE626DB18BA52081026C /* PlaybackParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackParserTests.swift; sourceTree = "<group>"; };
 		0599596A435B25EF251F0E95 /* LyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsStore.swift; sourceTree = "<group>"; };
 		0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
+		08FCF4CA139AF256342DA45A /* LyricsCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsCache.swift; sourceTree = "<group>"; };
 		125840F517B2119BC66C15E2 /* SettingsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTypes.swift; sourceTree = "<group>"; };
 		13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		16823897C5481A247283F5ED /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		21606E340A0D4C9324CB58F4 /* LyricsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsModels.swift; sourceTree = "<group>"; };
 		25F3F0BCD510BF4E347F126B /* MusicSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSource.swift; sourceTree = "<group>"; };
-		3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCLibClient.swift; sourceTree = "<group>"; };
 		3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		4032809FF5B5403D775F888F /* LyricsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsWindowView.swift; sourceTree = "<group>"; };
 		47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsListView.swift; sourceTree = "<group>"; };
@@ -78,9 +80,11 @@
 		84A2E080BCF034348DFC4510 /* ObservationLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLoop.swift; sourceTree = "<group>"; };
 		8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsSettingsTab.swift; sourceTree = "<group>"; };
 		9336D874FBED2A30A702EA17 /* AlbumPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPalette.swift; sourceTree = "<group>"; };
+		98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsCacheTests.swift; sourceTree = "<group>"; };
 		9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParserTests.swift; sourceTree = "<group>"; };
 		AA95051F5E22862690AC87D0 /* PlaybackState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackState.swift; sourceTree = "<group>"; };
 		AE28812388702A693285E830 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B3AD6D449149B285C1989F7B /* LyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsService.swift; sourceTree = "<group>"; };
 		C0E8451C99E7C665060C2E22 /* HumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumApp.swift; sourceTree = "<group>"; };
 		C2D23C54EC0F5C1455294F93 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
 		C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractorTests.swift; sourceTree = "<group>"; };
@@ -100,6 +104,7 @@
 			children = (
 				C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */,
 				9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */,
+				98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */,
 				0468EE626DB18BA52081026C /* PlaybackParserTests.swift */,
 			);
 			path = HumTests;
@@ -108,9 +113,10 @@
 		328CD300ED59CB99EE5B6E0F /* Lyrics */ = {
 			isa = PBXGroup;
 			children = (
-				3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */,
 				C2D23C54EC0F5C1455294F93 /* LRCParser.swift */,
+				08FCF4CA139AF256342DA45A /* LyricsCache.swift */,
 				21606E340A0D4C9324CB58F4 /* LyricsModels.swift */,
+				B3AD6D449149B285C1989F7B /* LyricsService.swift */,
 				0599596A435B25EF251F0E95 /* LyricsStore.swift */,
 			);
 			path = Lyrics;
@@ -294,6 +300,7 @@
 			files = (
 				D155F3B93F2A417AAC445418 /* ColorExtractorTests.swift in Sources */,
 				2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */,
+				C08B3E824E52F920D14A4067 /* LyricsCacheTests.swift in Sources */,
 				D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,10 +318,11 @@
 				29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */,
 				F1013D9FED0CEA455294C0C5 /* HeaderView.swift in Sources */,
 				BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */,
-				7E69EE42182E2D6F881DE28E /* LRCLibClient.swift in Sources */,
 				D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */,
+				0595C65636F43F703A18F95A /* LyricsCache.swift in Sources */,
 				05E555099155A926869B08E6 /* LyricsListView.swift in Sources */,
 				098E148D39D2C69A07D23CE4 /* LyricsModels.swift in Sources */,
+				83DF9C920F9531075CB20666 /* LyricsService.swift in Sources */,
 				41F3656092C85D4BA56A6620 /* LyricsSettingsTab.swift in Sources */,
 				C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */,
 				1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */,

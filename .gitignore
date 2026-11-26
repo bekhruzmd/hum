@@ -4,3 +4,4 @@ DerivedData/
 *.xcuserdata
 xcuserdata/
 Hum.xcodeproj/project.xcworkspace/xcuserdata/
+*.profraw

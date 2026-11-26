@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 
+/// Lyrics for the current track. Fetches only on track change and cancels stale fetches.
 @Observable
 @MainActor
 final class LyricsStore {
@@ -12,44 +13,68 @@ final class LyricsStore {
     }
 
     private(set) var state: State = .idle
+    private(set) var track: Track?
 
-    private var cache: [String: LyricsContent] = [:]
-    private var currentTrackKey: String?
-    private var fetchTask: Task<Void, Never>?
+    @ObservationIgnored private let service: LyricsService
+    @ObservationIgnored private let cache: LyricsCache
+    @ObservationIgnored private var fetchTask: Task<Void, Never>?
 
-    func update(for track: Track?) {
-        guard let track else {
-            fetchTask?.cancel()
-            fetchTask = nil
-            currentTrackKey = nil
+    init(service: LyricsService = LyricsService(), cache: LyricsCache = LyricsCache()) {
+        self.service = service
+        self.cache = cache
+    }
+
+    var syncedLines: [LyricLine]? {
+        if case .loaded(.synced(let lines)) = state { return lines }
+        return nil
+    }
+
+    func update(for newTrack: Track?) {
+        guard newTrack?.cacheKey != track?.cacheKey else { return }
+        track = newTrack
+        fetchTask?.cancel()
+        guard let newTrack else {
             state = .idle
             return
         }
-
-        let key = track.cacheKey
-        guard key != currentTrackKey else { return }
-
-        currentTrackKey = key
-        fetchTask?.cancel()
-
-        if let cached = cache[key] {
-            state = .loaded(cached)
-            return
-        }
-
         state = .loading
-        fetchTask = Task { [weak self] in
-            do {
-                let content = try await LRCLibClient.fetchLyrics(for: track)
+        fetchTask = Task { [weak self, service, cache] in
+            let key = newTrack.cacheKey
+            if let cached = await cache.content(for: key) {
                 guard !Task.isCancelled else { return }
-                self?.cache[key] = content
-                self?.state = .loaded(content)
-            } catch is CancellationError {
+                self?.state = .loaded(cached)
                 return
+            }
+            do {
+                let content = try await service.lyrics(for: newTrack)
+                guard !Task.isCancelled else { return }
+                await cache.store(content, for: key)
+                self?.state = .loaded(content)
             } catch {
                 guard !Task.isCancelled else { return }
-                self?.state = .error("Could not load lyrics.")
+                let offline = (error as? URLError)?.code == .notConnectedToInternet
+                self?.state = .error(offline ? "You're offline." : "LRCLIB didn't respond. Try again later.")
             }
+        }
+    }
+
+    /// Replaces the lyrics for the current track (manual pick or .lrc import) and caches them.
+    func override(with content: LyricsContent) {
+        guard let track else { return }
+        fetchTask?.cancel()
+        state = .loaded(content)
+        let key = track.cacheKey
+        Task { [cache] in await cache.store(content, for: key) }
+    }
+
+    /// Drops the cached entry and fetches again.
+    func reload() {
+        guard let current = track else { return }
+        let key = current.cacheKey
+        track = nil
+        Task { [cache] in
+            await cache.remove(key)
+            self.update(for: current)
         }
     }
 }
