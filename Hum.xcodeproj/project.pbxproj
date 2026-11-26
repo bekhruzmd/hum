@@ -7,20 +7,41 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05E555099155A926869B08E6 /* LyricsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */; };
 		098E148D39D2C69A07D23CE4 /* LyricsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21606E340A0D4C9324CB58F4 /* LyricsModels.swift */; };
-		1AB042E49CC532C4230DE769 /* LyricsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F67D8C16036969879B647DD /* LyricsListView.swift */; };
-		247E22CFAA66D6D83D55D037 /* PlaybackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C6CE678DE3FCD27BAFCD13 /* PlaybackModels.swift */; };
+		1A930B0A519FF1A0E7B5B017 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */; };
+		1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4032809FF5B5403D775F888F /* LyricsWindowView.swift */; };
+		1F1C35D54D5DD99AEA9EB8E4 /* AlbumPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9336D874FBED2A30A702EA17 /* AlbumPalette.swift */; };
 		2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */; };
-		5277D9D909AD010CF79D77B9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA96D0B13E569154AC31512 /* SettingsView.swift */; };
-		7B7573DC2FFDF6607D4FB2FC /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FAEDAE032B784FB4E09941 /* WindowAccessor.swift */; };
+		29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */; };
+		3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B609EA470037C5FB877BF0 /* SpotifySource.swift */; };
+		3C15014119FE1FD3519D2F0E /* SettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FC0DE0015E5914792D80732 /* SettingsStore.swift */; };
+		4009678A9B14AE2F72E4CFB1 /* AppleScriptRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF9E9001EE1EBF93999BC20 /* AppleScriptRunner.swift */; };
+		41F3656092C85D4BA56A6620 /* LyricsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */; };
+		459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DAC7457A1BCA5E296E6F8C /* StateView.swift */; };
+		57B5069B0E8F299740752B7F /* PlaybackParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EA23183895B95BDC4C6232 /* PlaybackParser.swift */; };
+		62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F3F0BCD510BF4E347F126B /* MusicSource.swift */; };
+		6BA0DB613DA91C43D38D2DA8 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */; };
+		6F1F5BC3F60793F0CCC82EBE /* ArtworkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3DE4E6684089D574398509B /* ArtworkLoader.swift */; };
+		71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */; };
 		7E69EE42182E2D6F881DE28E /* LRCLibClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */; };
-		7F479D963D8CFA3F867FBA08 /* AppleScriptReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F73A4C6896B230D41BE33F /* AppleScriptReader.swift */; };
-		A2A34ABD52594EB0C1BCB1BB /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F3B26321174DAA2F1A0263C /* HeaderView.swift */; };
+		7EE53E56C45716D54C9C9CD0 /* ScriptedSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA4BDF9791E29BB1ECDD838 /* ScriptedSource.swift */; };
+		97D83D72D690425F690C7B73 /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1C6CA00F676C7759B9EECD /* PlaybackSource.swift */; };
+		A97E174CDF9349F8B0109EDF /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */; };
 		BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E8451C99E7C665060C2E22 /* HumApp.swift */; };
 		C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0599596A435B25EF251F0E95 /* LyricsStore.swift */; };
+		CB28F8B055C0420AAB298DD0 /* PlayerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 57B9288A709985A92958A959 /* PlayerApp.swift */; };
+		D155F3B93F2A417AAC445418 /* ColorExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */; };
 		D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D23C54EC0F5C1455294F93 /* LRCParser.swift */; };
-		F3C9EFEC31B75C580B05B332 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97E9071EBB2C4261AC9890C8 /* ContentView.swift */; };
+		D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0468EE626DB18BA52081026C /* PlaybackParserTests.swift */; };
+		DE418A81078C068ABD99F202 /* Track.swift in Sources */ = {isa = PBXBuildFile; fileRef = F667835C6A859D03D36AAAFA /* Track.swift */; };
+		EB8483DADB1F08F66E7F5BA6 /* SettingsTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 125840F517B2119BC66C15E2 /* SettingsTypes.swift */; };
+		F1013D9FED0CEA455294C0C5 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16823897C5481A247283F5ED /* HeaderView.swift */; };
 		F3CB78D4ED05BFAB9617D6CA /* NowPlayingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */; };
+		F9126D22BB83C5A576C76873 /* PlaybackState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA95051F5E22862690AC87D0 /* PlaybackState.swift */; };
+		F93D23ED5EF3F97C67B368F7 /* ObservationLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2E080BCF034348DFC4510 /* ObservationLoop.swift */; };
+		FBC31F9A1E9C3AE82BA2B00F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */; };
+		FDDDF182CAE9E768859A99A7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28812388702A693285E830 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,29 +55,52 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0468EE626DB18BA52081026C /* PlaybackParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackParserTests.swift; sourceTree = "<group>"; };
 		0599596A435B25EF251F0E95 /* LyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsStore.swift; sourceTree = "<group>"; };
-		0BA96D0B13E569154AC31512 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
+		125840F517B2119BC66C15E2 /* SettingsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTypes.swift; sourceTree = "<group>"; };
+		13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		16823897C5481A247283F5ED /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		21606E340A0D4C9324CB58F4 /* LyricsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsModels.swift; sourceTree = "<group>"; };
+		25F3F0BCD510BF4E347F126B /* MusicSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSource.swift; sourceTree = "<group>"; };
 		3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCLibClient.swift; sourceTree = "<group>"; };
+		3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
+		4032809FF5B5403D775F888F /* LyricsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsWindowView.swift; sourceTree = "<group>"; };
+		47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsListView.swift; sourceTree = "<group>"; };
+		57B9288A709985A92958A959 /* PlayerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerApp.swift; sourceTree = "<group>"; };
 		585010E332D2C8FFD45F5DF1 /* HumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		59C6CE678DE3FCD27BAFCD13 /* PlaybackModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackModels.swift; sourceTree = "<group>"; };
-		6F3B26321174DAA2F1A0263C /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarContent.swift; sourceTree = "<group>"; };
 		6FBCFF9AD6EF5660A3B48A2E /* Hum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hum.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7F67D8C16036969879B647DD /* LyricsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsListView.swift; sourceTree = "<group>"; };
-		97E9071EBB2C4261AC9890C8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		6FC0DE0015E5914792D80732 /* SettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsStore.swift; sourceTree = "<group>"; };
+		7CA4BDF9791E29BB1ECDD838 /* ScriptedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptedSource.swift; sourceTree = "<group>"; };
+		7EF9E9001EE1EBF93999BC20 /* AppleScriptRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleScriptRunner.swift; sourceTree = "<group>"; };
+		7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		84A2E080BCF034348DFC4510 /* ObservationLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLoop.swift; sourceTree = "<group>"; };
+		8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsSettingsTab.swift; sourceTree = "<group>"; };
+		9336D874FBED2A30A702EA17 /* AlbumPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPalette.swift; sourceTree = "<group>"; };
 		9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParserTests.swift; sourceTree = "<group>"; };
+		AA95051F5E22862690AC87D0 /* PlaybackState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackState.swift; sourceTree = "<group>"; };
+		AE28812388702A693285E830 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C0E8451C99E7C665060C2E22 /* HumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumApp.swift; sourceTree = "<group>"; };
-		C0FAEDAE032B784FB4E09941 /* WindowAccessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowAccessor.swift; sourceTree = "<group>"; };
 		C2D23C54EC0F5C1455294F93 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
+		C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractorTests.swift; sourceTree = "<group>"; };
 		D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingStore.swift; sourceTree = "<group>"; };
-		F0F73A4C6896B230D41BE33F /* AppleScriptReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleScriptReader.swift; sourceTree = "<group>"; };
+		D2B609EA470037C5FB877BF0 /* SpotifySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySource.swift; sourceTree = "<group>"; };
+		D3DE4E6684089D574398509B /* ArtworkLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtworkLoader.swift; sourceTree = "<group>"; };
+		EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsTab.swift; sourceTree = "<group>"; };
+		EF1C6CA00F676C7759B9EECD /* PlaybackSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackSource.swift; sourceTree = "<group>"; };
+		F0DAC7457A1BCA5E296E6F8C /* StateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateView.swift; sourceTree = "<group>"; };
+		F667835C6A859D03D36AAAFA /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
+		F7EA23183895B95BDC4C6232 /* PlaybackParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		07A6A6AD08CFB98CC994D668 /* HumTests */ = {
 			isa = PBXGroup;
 			children = (
+				C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */,
 				9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */,
+				0468EE626DB18BA52081026C /* PlaybackParserTests.swift */,
 			);
 			path = HumTests;
 			sourceTree = "<group>";
@@ -81,25 +125,62 @@
 			);
 			sourceTree = "<group>";
 		};
-		7C29EDF643F1E3E2374DFD2D /* Views */ = {
+		6D9D3494552C4B11F1EA5664 /* Surfaces */ = {
 			isa = PBXGroup;
 			children = (
-				97E9071EBB2C4261AC9890C8 /* ContentView.swift */,
-				6F3B26321174DAA2F1A0263C /* HeaderView.swift */,
-				7F67D8C16036969879B647DD /* LyricsListView.swift */,
-				0BA96D0B13E569154AC31512 /* SettingsView.swift */,
+				7776F6389278CBE8434B50CB /* LyricsWindow */,
+				D239CE95B94B46343254402D /* MenuBar */,
 			);
-			path = Views;
+			path = Surfaces;
+			sourceTree = "<group>";
+		};
+		7776F6389278CBE8434B50CB /* LyricsWindow */ = {
+			isa = PBXGroup;
+			children = (
+				16823897C5481A247283F5ED /* HeaderView.swift */,
+				47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */,
+				4032809FF5B5403D775F888F /* LyricsWindowView.swift */,
+				F0DAC7457A1BCA5E296E6F8C /* StateView.swift */,
+			);
+			path = LyricsWindow;
+			sourceTree = "<group>";
+		};
+		78B8D59A77DE2517F6840B5E /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */,
+				8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */,
+				AE28812388702A693285E830 /* SettingsView.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		D084493172B600B85E0EB48C /* Playback */ = {
 			isa = PBXGroup;
 			children = (
-				F0F73A4C6896B230D41BE33F /* AppleScriptReader.swift */,
+				9336D874FBED2A30A702EA17 /* AlbumPalette.swift */,
+				7EF9E9001EE1EBF93999BC20 /* AppleScriptRunner.swift */,
+				D3DE4E6684089D574398509B /* ArtworkLoader.swift */,
+				0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */,
+				25F3F0BCD510BF4E347F126B /* MusicSource.swift */,
 				D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */,
-				59C6CE678DE3FCD27BAFCD13 /* PlaybackModels.swift */,
+				F7EA23183895B95BDC4C6232 /* PlaybackParser.swift */,
+				EF1C6CA00F676C7759B9EECD /* PlaybackSource.swift */,
+				AA95051F5E22862690AC87D0 /* PlaybackState.swift */,
+				57B9288A709985A92958A959 /* PlayerApp.swift */,
+				7CA4BDF9791E29BB1ECDD838 /* ScriptedSource.swift */,
+				D2B609EA470037C5FB877BF0 /* SpotifySource.swift */,
+				F667835C6A859D03D36AAAFA /* Track.swift */,
 			);
 			path = Playback;
+			sourceTree = "<group>";
+		};
+		D239CE95B94B46343254402D /* MenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				626D30B0BCC98BE8E15294CA /* MenuBarContent.swift */,
+			);
+			path = MenuBar;
 			sourceTree = "<group>";
 		};
 		E3D639DD770D947D5D601C43 /* Hum */ = {
@@ -108,7 +189,8 @@
 				F9A0E8C5EAA3A5FF62471E5A /* App */,
 				328CD300ED59CB99EE5B6E0F /* Lyrics */,
 				D084493172B600B85E0EB48C /* Playback */,
-				7C29EDF643F1E3E2374DFD2D /* Views */,
+				78B8D59A77DE2517F6840B5E /* Settings */,
+				6D9D3494552C4B11F1EA5664 /* Surfaces */,
 			);
 			path = Hum;
 			sourceTree = "<group>";
@@ -125,8 +207,13 @@
 		F9A0E8C5EAA3A5FF62471E5A /* App */ = {
 			isa = PBXGroup;
 			children = (
+				13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */,
+				3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */,
 				C0E8451C99E7C665060C2E22 /* HumApp.swift */,
-				C0FAEDAE032B784FB4E09941 /* WindowAccessor.swift */,
+				84A2E080BCF034348DFC4510 /* ObservationLoop.swift */,
+				6FC0DE0015E5914792D80732 /* SettingsStore.swift */,
+				125840F517B2119BC66C15E2 /* SettingsTypes.swift */,
+				7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -205,7 +292,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D155F3B93F2A417AAC445418 /* ColorExtractorTests.swift in Sources */,
 				2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */,
+				D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,19 +302,38 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7F479D963D8CFA3F867FBA08 /* AppleScriptReader.swift in Sources */,
-				F3C9EFEC31B75C580B05B332 /* ContentView.swift in Sources */,
-				A2A34ABD52594EB0C1BCB1BB /* HeaderView.swift in Sources */,
+				1F1C35D54D5DD99AEA9EB8E4 /* AlbumPalette.swift in Sources */,
+				FBC31F9A1E9C3AE82BA2B00F /* AppDelegate.swift in Sources */,
+				1A930B0A519FF1A0E7B5B017 /* AppEnvironment.swift in Sources */,
+				4009678A9B14AE2F72E4CFB1 /* AppleScriptRunner.swift in Sources */,
+				6F1F5BC3F60793F0CCC82EBE /* ArtworkLoader.swift in Sources */,
+				A97E174CDF9349F8B0109EDF /* ColorExtractor.swift in Sources */,
+				29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */,
+				F1013D9FED0CEA455294C0C5 /* HeaderView.swift in Sources */,
 				BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */,
 				7E69EE42182E2D6F881DE28E /* LRCLibClient.swift in Sources */,
 				D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */,
-				1AB042E49CC532C4230DE769 /* LyricsListView.swift in Sources */,
+				05E555099155A926869B08E6 /* LyricsListView.swift in Sources */,
 				098E148D39D2C69A07D23CE4 /* LyricsModels.swift in Sources */,
+				41F3656092C85D4BA56A6620 /* LyricsSettingsTab.swift in Sources */,
 				C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */,
+				1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */,
+				71C3F40837E60B6AC1F626DA /* MenuBarContent.swift in Sources */,
+				62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */,
 				F3CB78D4ED05BFAB9617D6CA /* NowPlayingStore.swift in Sources */,
-				247E22CFAA66D6D83D55D037 /* PlaybackModels.swift in Sources */,
-				5277D9D909AD010CF79D77B9 /* SettingsView.swift in Sources */,
-				7B7573DC2FFDF6607D4FB2FC /* WindowAccessor.swift in Sources */,
+				F93D23ED5EF3F97C67B368F7 /* ObservationLoop.swift in Sources */,
+				57B5069B0E8F299740752B7F /* PlaybackParser.swift in Sources */,
+				97D83D72D690425F690C7B73 /* PlaybackSource.swift in Sources */,
+				F9126D22BB83C5A576C76873 /* PlaybackState.swift in Sources */,
+				CB28F8B055C0420AAB298DD0 /* PlayerApp.swift in Sources */,
+				7EE53E56C45716D54C9C9CD0 /* ScriptedSource.swift in Sources */,
+				3C15014119FE1FD3519D2F0E /* SettingsStore.swift in Sources */,
+				EB8483DADB1F08F66E7F5BA6 /* SettingsTypes.swift in Sources */,
+				FDDDF182CAE9E768859A99A7 /* SettingsView.swift in Sources */,
+				3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */,
+				459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */,
+				DE418A81078C068ABD99F202 /* Track.swift in Sources */,
+				6BA0DB613DA91C43D38D2DA8 /* WindowManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

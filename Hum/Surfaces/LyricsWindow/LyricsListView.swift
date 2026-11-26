@@ -71,7 +71,7 @@ struct LyricsListView: View {
 
     private func lyricRow(line: LyricLine, isActive: Bool) -> some View {
         LyricRowButton(
-            text: line.text.isEmpty ? "♪" : line.text,
+            text: line.displayText,
             fontSize: fontSize,
             alignment: alignment,
             isActive: isActive,
