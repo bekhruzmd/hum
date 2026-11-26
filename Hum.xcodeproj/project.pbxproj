@@ -11,6 +11,7 @@
 		05E555099155A926869B08E6 /* LyricsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */; };
 		06B494CA393085AE5496BADB /* DesktopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC19EDCE97B1394DC591683 /* DesktopView.swift */; };
 		098E148D39D2C69A07D23CE4 /* LyricsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21606E340A0D4C9324CB58F4 /* LyricsModels.swift */; };
+		102F3A98ABF9582A50733C15 /* SoundSynth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E79033DAE07EBED33AA52C /* SoundSynth.swift */; };
 		1500EEAD1ABAF70828CA5C24 /* IslandPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A03ADE29708F3582A15B5921 /* IslandPanel.swift */; };
 		156CFD1D77B748C138A85033 /* IslandController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA956563E4D911FA10434339 /* IslandController.swift */; };
 		16C16A9D0F82826432B17763 /* IslandSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5DDEEA2358F382A958196EF /* IslandSettingsTab.swift */; };
@@ -18,6 +19,7 @@
 		1A930B0A519FF1A0E7B5B017 /* AppEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */; };
 		1B756C8A468112E0F418407F /* LyricsWindowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4032809FF5B5403D775F888F /* LyricsWindowView.swift */; };
 		1F1C35D54D5DD99AEA9EB8E4 /* AlbumPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9336D874FBED2A30A702EA17 /* AlbumPalette.swift */; };
+		206F3959B16C9BA462862AFD /* SoundEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D1965139DF838BCFF1F2CC8 /* SoundEngine.swift */; };
 		2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */; };
 		29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */; };
 		34552D1BBE9A612356490721 /* EffectPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */; };
@@ -29,9 +31,11 @@
 		4009678A9B14AE2F72E4CFB1 /* AppleScriptRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EF9E9001EE1EBF93999BC20 /* AppleScriptRunner.swift */; };
 		41F3656092C85D4BA56A6620 /* LyricsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */; };
 		459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0DAC7457A1BCA5E296E6F8C /* StateView.swift */; };
+		5412C1FD61BF9A463CEC0B6A /* IdleScreenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03179601AF3082C9B5FE067C /* IdleScreenController.swift */; };
 		551574C83CD564E72B1A1E6A /* KaraokeFillEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4B8F07648DB88929BBB312 /* KaraokeFillEffect.swift */; };
 		57B5069B0E8F299740752B7F /* PlaybackParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7EA23183895B95BDC4C6232 /* PlaybackParser.swift */; };
 		598F64ADBD952408D84A4F67 /* FadeEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9571FF23B5180D774867C44C /* FadeEffect.swift */; };
+		5F6F10A239363191BE9115C4 /* HotkeyStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3919E595FDFA7BFFBB3FD4DC /* HotkeyStore.swift */; };
 		62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F3F0BCD510BF4E347F126B /* MusicSource.swift */; };
 		65922239CB743CE534DBB4EE /* GlowEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48396037ECE92EF085910DE4 /* GlowEffect.swift */; };
 		6BA0DB613DA91C43D38D2DA8 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */; };
@@ -45,10 +49,15 @@
 		7EE53E56C45716D54C9C9CD0 /* ScriptedSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA4BDF9791E29BB1ECDD838 /* ScriptedSource.swift */; };
 		83DF9C920F9531075CB20666 /* LyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AD6D449149B285C1989F7B /* LyricsService.swift */; };
 		88CB770BDB8A1A694A4879F9 /* IslandGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C2459F18FDA90885BC10A4 /* IslandGeometryTests.swift */; };
+		8CCF4318693BA852DF543925 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B30E72C8B66DFB711666 /* KeyCombo.swift */; };
 		92CF049D89D058B8566F5ACC /* Scrubber.swift in Sources */ = {isa = PBXBuildFile; fileRef = D453377494C2409DA65082B7 /* Scrubber.swift */; };
 		97D83D72D690425F690C7B73 /* PlaybackSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF1C6CA00F676C7759B9EECD /* PlaybackSource.swift */; };
+		9F228CB95D3545E790CEC0A5 /* IdleScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51603875E4EE2367AC9F1BC3 /* IdleScreenView.swift */; };
+		9F9296F123C424F2CFC1AB26 /* Phase6Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07BCEE2AC6082968100643D /* Phase6Tests.swift */; };
 		A0F7369AE7527E78850921B2 /* WordTimingEstimatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A69ABDE98D49A939A15989 /* WordTimingEstimatorTests.swift */; };
+		A69AE024C2CB608675CB30D3 /* ShortcutsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB3B7E6BCCA9F224607DF29D /* ShortcutsSettingsTab.swift */; };
 		A97E174CDF9349F8B0109EDF /* ColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */; };
+		AE776C9439B2CD6778C4CC99 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 506B3BAF4289D5F0D4BA24B3 /* HotkeyManager.swift */; };
 		BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0E8451C99E7C665060C2E22 /* HumApp.swift */; };
 		C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0599596A435B25EF251F0E95 /* LyricsStore.swift */; };
 		C08B3E824E52F920D14A4067 /* LyricsCacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */; };
@@ -69,6 +78,7 @@
 		F3CB78D4ED05BFAB9617D6CA /* NowPlayingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */; };
 		F9126D22BB83C5A576C76873 /* PlaybackState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA95051F5E22862690AC87D0 /* PlaybackState.swift */; };
 		F93D23ED5EF3F97C67B368F7 /* ObservationLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84A2E080BCF034348DFC4510 /* ObservationLoop.swift */; };
+		FAA559488D9C155889955C99 /* IdleSoundsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227E9755FC049F8FFA1AA45E /* IdleSoundsSettingsTab.swift */; };
 		FBC31F9A1E9C3AE82BA2B00F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */; };
 		FDDDF182CAE9E768859A99A7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28812388702A693285E830 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -84,6 +94,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		03179601AF3082C9B5FE067C /* IdleScreenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleScreenController.swift; sourceTree = "<group>"; };
 		0468EE626DB18BA52081026C /* PlaybackParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackParserTests.swift; sourceTree = "<group>"; };
 		0599596A435B25EF251F0E95 /* LyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsStore.swift; sourceTree = "<group>"; };
 		0870C801D9E4AEDD05D3AF63 /* ColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractor.swift; sourceTree = "<group>"; };
@@ -94,13 +105,18 @@
 		16823897C5481A247283F5ED /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		1801AF342FE81E51F83A2918 /* OffsetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetStore.swift; sourceTree = "<group>"; };
 		21606E340A0D4C9324CB58F4 /* LyricsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsModels.swift; sourceTree = "<group>"; };
+		227E9755FC049F8FFA1AA45E /* IdleSoundsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleSoundsSettingsTab.swift; sourceTree = "<group>"; };
 		25F3F0BCD510BF4E347F126B /* MusicSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicSource.swift; sourceTree = "<group>"; };
+		27E79033DAE07EBED33AA52C /* SoundSynth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundSynth.swift; sourceTree = "<group>"; };
+		3919E595FDFA7BFFBB3FD4DC /* HotkeyStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyStore.swift; sourceTree = "<group>"; };
 		3BBFF3EBC7AEBC624ED92BB2 /* AppEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEnvironment.swift; sourceTree = "<group>"; };
 		3E99AC379AB270C20B453EE7 /* TurntableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurntableView.swift; sourceTree = "<group>"; };
 		4032809FF5B5403D775F888F /* LyricsWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsWindowView.swift; sourceTree = "<group>"; };
 		47B97F7B45F9F3F64C5F7354 /* LyricsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsListView.swift; sourceTree = "<group>"; };
 		48396037ECE92EF085910DE4 /* GlowEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlowEffect.swift; sourceTree = "<group>"; };
 		4C4B8F07648DB88929BBB312 /* KaraokeFillEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaraokeFillEffect.swift; sourceTree = "<group>"; };
+		506B3BAF4289D5F0D4BA24B3 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		51603875E4EE2367AC9F1BC3 /* IdleScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdleScreenView.swift; sourceTree = "<group>"; };
 		52A8E9D6131A898CA1083E27 /* DesktopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopController.swift; sourceTree = "<group>"; };
 		55A69ABDE98D49A939A15989 /* WordTimingEstimatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordTimingEstimatorTests.swift; sourceTree = "<group>"; };
 		56BEBAE3AA677A60AB342415 /* IslandGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandGeometry.swift; sourceTree = "<group>"; };
@@ -117,6 +133,7 @@
 		7F6095E6D1F2DC9BD329B94D /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		84A2E080BCF034348DFC4510 /* ObservationLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservationLoop.swift; sourceTree = "<group>"; };
 		89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EffectPreview.swift; sourceTree = "<group>"; };
+		8D1965139DF838BCFF1F2CC8 /* SoundEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundEngine.swift; sourceTree = "<group>"; };
 		8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsSettingsTab.swift; sourceTree = "<group>"; };
 		9336D874FBED2A30A702EA17 /* AlbumPalette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumPalette.swift; sourceTree = "<group>"; };
 		9571FF23B5180D774867C44C /* FadeEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeEffect.swift; sourceTree = "<group>"; };
@@ -124,6 +141,7 @@
 		98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsCacheTests.swift; sourceTree = "<group>"; };
 		9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParserTests.swift; sourceTree = "<group>"; };
 		A03ADE29708F3582A15B5921 /* IslandPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandPanel.swift; sourceTree = "<group>"; };
+		A07BCEE2AC6082968100643D /* Phase6Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Phase6Tests.swift; sourceTree = "<group>"; };
 		A2C2459F18FDA90885BC10A4 /* IslandGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandGeometryTests.swift; sourceTree = "<group>"; };
 		A363279EE03258CBD95437BA /* DesktopSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopSettingsTab.swift; sourceTree = "<group>"; };
 		AA95051F5E22862690AC87D0 /* PlaybackState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackState.swift; sourceTree = "<group>"; };
@@ -150,9 +168,21 @@
 		F667835C6A859D03D36AAAFA /* Track.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Track.swift; sourceTree = "<group>"; };
 		F7EA23183895B95BDC4C6232 /* PlaybackParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaybackParser.swift; sourceTree = "<group>"; };
 		F8BFC86A13F2DB07944FA0F9 /* FlowLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayout.swift; sourceTree = "<group>"; };
+		FB3B7E6BCCA9F224607DF29D /* ShortcutsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsSettingsTab.swift; sourceTree = "<group>"; };
+		FDD5B30E72C8B66DFB711666 /* KeyCombo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		00343A121972B9C5AA9D9929 /* Hotkeys */ = {
+			isa = PBXGroup;
+			children = (
+				506B3BAF4289D5F0D4BA24B3 /* HotkeyManager.swift */,
+				3919E595FDFA7BFFBB3FD4DC /* HotkeyStore.swift */,
+				FDD5B30E72C8B66DFB711666 /* KeyCombo.swift */,
+			);
+			path = Hotkeys;
+			sourceTree = "<group>";
+		};
 		07A6A6AD08CFB98CC994D668 /* HumTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +190,7 @@
 				A2C2459F18FDA90885BC10A4 /* IslandGeometryTests.swift */,
 				9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */,
 				98DF08ED22EE2DF04D72B7A9 /* LyricsCacheTests.swift */,
+				A07BCEE2AC6082968100643D /* Phase6Tests.swift */,
 				0468EE626DB18BA52081026C /* PlaybackParserTests.swift */,
 				55A69ABDE98D49A939A15989 /* WordTimingEstimatorTests.swift */,
 			);
@@ -189,10 +220,20 @@
 			);
 			sourceTree = "<group>";
 		};
+		5A91365A2DF31294B545BCCD /* IdleScreen */ = {
+			isa = PBXGroup;
+			children = (
+				03179601AF3082C9B5FE067C /* IdleScreenController.swift */,
+				51603875E4EE2367AC9F1BC3 /* IdleScreenView.swift */,
+			);
+			path = IdleScreen;
+			sourceTree = "<group>";
+		};
 		6D9D3494552C4B11F1EA5664 /* Surfaces */ = {
 			isa = PBXGroup;
 			children = (
 				736769EF6934A5EFDBAEE864 /* Desktop */,
+				5A91365A2DF31294B545BCCD /* IdleScreen */,
 				77D5C9109F54677D3C59D6A4 /* Island */,
 				7776F6389278CBE8434B50CB /* LyricsWindow */,
 				D239CE95B94B46343254402D /* MenuBar */,
@@ -242,9 +283,11 @@
 				A363279EE03258CBD95437BA /* DesktopSettingsTab.swift */,
 				89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */,
 				EEC55E560306610E61160E13 /* GeneralSettingsTab.swift */,
+				227E9755FC049F8FFA1AA45E /* IdleSoundsSettingsTab.swift */,
 				C5DDEEA2358F382A958196EF /* IslandSettingsTab.swift */,
 				8FDD8F404BDE32215BCFFC0D /* LyricsSettingsTab.swift */,
 				AE28812388702A693285E830 /* SettingsView.swift */,
+				FB3B7E6BCCA9F224607DF29D /* ShortcutsSettingsTab.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -262,6 +305,24 @@
 				6E8EC69BCE561E698BEA2DB9 /* WaveEffect.swift */,
 			);
 			path = Effects;
+			sourceTree = "<group>";
+		};
+		AC65B4FB24C453C18BFB57AC /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+				00343A121972B9C5AA9D9929 /* Hotkeys */,
+				B67C59AC80105C04088E20AC /* Sounds */,
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
+		B67C59AC80105C04088E20AC /* Sounds */ = {
+			isa = PBXGroup;
+			children = (
+				8D1965139DF838BCFF1F2CC8 /* SoundEngine.swift */,
+				27E79033DAE07EBED33AA52C /* SoundSynth.swift */,
+			);
+			path = Sounds;
 			sourceTree = "<group>";
 		};
 		D084493172B600B85E0EB48C /* Playback */ = {
@@ -296,6 +357,7 @@
 			isa = PBXGroup;
 			children = (
 				F9A0E8C5EAA3A5FF62471E5A /* App */,
+				AC65B4FB24C453C18BFB57AC /* Controls */,
 				A2390A03DBA39988B8D18DE7 /* Effects */,
 				328CD300ED59CB99EE5B6E0F /* Lyrics */,
 				D084493172B600B85E0EB48C /* Playback */,
@@ -407,6 +469,7 @@
 				88CB770BDB8A1A694A4879F9 /* IslandGeometryTests.swift in Sources */,
 				2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */,
 				C08B3E824E52F920D14A4067 /* LyricsCacheTests.swift in Sources */,
+				9F9296F123C424F2CFC1AB26 /* Phase6Tests.swift in Sources */,
 				D91C87B0C688F277A5BD0A64 /* PlaybackParserTests.swift in Sources */,
 				A0F7369AE7527E78850921B2 /* WordTimingEstimatorTests.swift in Sources */,
 			);
@@ -433,7 +496,12 @@
 				29B96AECC4B5FCFEF1DA5C3E /* GeneralSettingsTab.swift in Sources */,
 				65922239CB743CE534DBB4EE /* GlowEffect.swift in Sources */,
 				F1013D9FED0CEA455294C0C5 /* HeaderView.swift in Sources */,
+				AE776C9439B2CD6778C4CC99 /* HotkeyManager.swift in Sources */,
+				5F6F10A239363191BE9115C4 /* HotkeyStore.swift in Sources */,
 				BB9B06360E9C7897A825B96E /* HumApp.swift in Sources */,
+				5412C1FD61BF9A463CEC0B6A /* IdleScreenController.swift in Sources */,
+				9F228CB95D3545E790CEC0A5 /* IdleScreenView.swift in Sources */,
+				FAA559488D9C155889955C99 /* IdleSoundsSettingsTab.swift in Sources */,
 				156CFD1D77B748C138A85033 /* IslandController.swift in Sources */,
 				78AFDC76396903BEADCE04B1 /* IslandGeometry.swift in Sources */,
 				1500EEAD1ABAF70828CA5C24 /* IslandPanel.swift in Sources */,
@@ -441,6 +509,7 @@
 				3A1A654F469F50B7D8FC76CD /* IslandShape.swift in Sources */,
 				3E9AFA8E242B7E1747DB4292 /* IslandView.swift in Sources */,
 				551574C83CD564E72B1A1E6A /* KaraokeFillEffect.swift in Sources */,
+				8CCF4318693BA852DF543925 /* KeyCombo.swift in Sources */,
 				D22F113F887D4FC0C1277C98 /* LRCParser.swift in Sources */,
 				6E6456413D7D9717A565AA81 /* LyricEffect.swift in Sources */,
 				0595C65636F43F703A18F95A /* LyricsCache.swift in Sources */,
@@ -466,6 +535,9 @@
 				3C15014119FE1FD3519D2F0E /* SettingsStore.swift in Sources */,
 				EB8483DADB1F08F66E7F5BA6 /* SettingsTypes.swift in Sources */,
 				FDDDF182CAE9E768859A99A7 /* SettingsView.swift in Sources */,
+				A69AE024C2CB608675CB30D3 /* ShortcutsSettingsTab.swift in Sources */,
+				206F3959B16C9BA462862AFD /* SoundEngine.swift in Sources */,
+				102F3A98ABF9582A50733C15 /* SoundSynth.swift in Sources */,
 				3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */,
 				459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */,
 				DE418A81078C068ABD99F202 /* Track.swift in Sources */,

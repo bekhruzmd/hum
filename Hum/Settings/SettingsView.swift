@@ -12,10 +12,14 @@ struct SettingsView: View {
                 .tabItem { Label("Island", systemImage: "capsule.tophalf.filled") }
             DesktopSettingsTab(settings: environment.settings)
                 .tabItem { Label("Desktop", systemImage: "menubar.dock.rectangle") }
+            IdleSoundsSettingsTab(environment: environment)
+                .tabItem { Label("Idle & Sounds", systemImage: "moon.zzz") }
+            ShortcutsSettingsTab(store: environment.hotkeyStore)
+                .tabItem { Label("Shortcuts", systemImage: "command") }
             GeneralSettingsTab(settings: environment.settings)
                 .tabItem { Label("General", systemImage: "gearshape") }
         }
-        .frame(width: 460)
+        .frame(width: 520)
         .fixedSize(horizontal: false, vertical: true)
     }
 }

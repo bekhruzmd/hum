@@ -31,6 +31,13 @@ final class SettingsStore {
         didSet { defaults.set(desktopLyricsBackground.rawValue, forKey: "desktopLyricsBackground") }
     }
 
+    // Idle screen & sounds
+    /// Minutes of inactivity before the idle screen appears; 0 = off.
+    var idleMinutes: Int { didSet { defaults.set(idleMinutes, forKey: "idleMinutes") } }
+    var needleDropSound: Bool { didSet { defaults.set(needleDropSound, forKey: "needleDropSound") } }
+    var crackleSound: Bool { didSet { defaults.set(crackleSound, forKey: "crackleSound") } }
+    var soundVolume: Double { didSet { defaults.set(soundVolume, forKey: "soundVolume") } }
+
     // Playback
     var preferredPlayer: PreferredPlayer { didSet { defaults.set(preferredPlayer.rawValue, forKey: "preferredPlayer") } }
 
@@ -49,6 +56,10 @@ final class SettingsStore {
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true
         desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
+        idleMinutes = defaults.integer(forKey: "idleMinutes")
+        needleDropSound = defaults.bool(forKey: "needleDropSound")
+        crackleSound = defaults.bool(forKey: "crackleSound")
+        soundVolume = defaults.object(forKey: "soundVolume") as? Double ?? 0.5
         preferredPlayer = PreferredPlayer(rawValue: defaults.string(forKey: "preferredPlayer") ?? "") ?? .auto
     }
 }

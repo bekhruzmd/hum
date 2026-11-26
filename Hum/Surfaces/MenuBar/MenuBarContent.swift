@@ -29,6 +29,8 @@ struct MenuBarContent: View {
         }
         .disabled(environment.nowPlaying.currentTrack == nil)
 
+        Button("Start Idle Screen") { environment.idleScreen.show() }
+
         Divider()
 
         Button("Settings…") {

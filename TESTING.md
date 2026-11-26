@@ -70,3 +70,18 @@ the ♪ in the menu bar.
       Activity Monitor shows Hum's CPU drop (rendering pauses).
 - [ ] Connect/disconnect a display → each display gets its own window at the right size.
 - [ ] Desktop › Off removes everything.
+
+## Phase 6: Idle screen + sounds + hotkeys
+- [ ] Global shortcuts work from any app: ⌃⌥Space play/pause, ⌃⌥→ next, ⌃⌥← previous, ⌃⌥L lyrics
+      window, ⌃⌥D live desktop on/off, ⌃⌥I idle screen, ⌃⌥] / ⌃⌥[ lyrics offset.
+- [ ] Settings › Shortcuts: click one, press a new combo → it works immediately. A combo without
+      ⌘/⌃/⌥ beeps. ⎋ cancels, ⌫ clears. Assigning a combo used elsewhere moves it. Restore Defaults works.
+- [ ] Menu bar › Start Idle Screen (or ⌃⌥I): fades in on every display with blurred cover, the cover,
+      title, lyric in your effect, and a clock bottom-left. Move the mouse / press a key / click → it goes away.
+- [ ] Settings › Idle & Sounds › Show after 2 minutes. Play music, don't touch the Mac for 2+ minutes →
+      the idle screen appears. With music paused it does not.
+- [ ] Set your macOS screensaver to start soon after → the screensaver covers Hum's idle screen.
+      Lock the screen (⌃⌘Q) → the real lock screen is on top. Hum never asks for a password.
+- [ ] Idle & Sounds › Needle drop ON → a soft thump when playback starts. Crackle ON → faint vinyl
+      crackle only while playing; pause → silence. Volume slider works.
+- [ ] With sounds off, Activity Monitor shows no audio CPU use from Hum.
