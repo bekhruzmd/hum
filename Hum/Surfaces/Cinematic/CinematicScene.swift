@@ -5,6 +5,7 @@ struct SceneTrackInfo: Equatable, Codable, Sendable {
     var title: String
     var artist: String
     var album: String
+    var duration: TimeInterval? = nil
 }
 
 /// Everything the cinematic scene draws. Deliberately independent of the app's stores so the
@@ -15,217 +16,214 @@ struct CinematicSceneData {
     var palette: AlbumPalette = .fallback
     var lines: [TimedLine] = []
     var effect: LyricEffectKind = .constellation
+    var look: CinematicLook = .album
+    var edgeGlow: Double = 1
+    var displayEdgeProfiles: [String: DisplayEdgeProfile] = [:]
     var isPlaying = false
+    var isShuffling: Bool? = nil
+    var statusMessage: String?
+    var playbackPosition: (Date) -> TimeInterval = { _ in 0 }
     /// Lyric time (position + offset) at a date.
     var lyricTime: (Date) -> TimeInterval = { _ in 0 }
 }
 
-/// A dark, monochrome full-screen music scene: the cover in black and white drifting slowly,
-/// soft smoke, a thin poster frame with the album title, a serif clock, and the lyrics in the
-/// chosen effect (Constellation by default).
+/// Immersive music artwork with live constellation lyrics and adjustable drifting edge light.
 struct CinematicScene: View {
     let data: CinematicSceneData
-    /// False stops every animation (covered, locked, Low Power, paused screensaver).
     let animate: Bool
+    var playerActions: MusicBarActions? = nil
+    var displayOverride: DisplayEdgeGeometry? = nil
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var displayGeometry = DisplayEdgeGeometry()
+    @State private var animationStart = Date()
+    @State private var isArtworkExpanded = false
+
+    private var trackIdentity: String {
+        [data.track?.title, data.track?.artist, data.track?.album].compactMap { $0 }.joined(separator: "\u{1F}")
+    }
 
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
+            let unit = min(size.height, size.width * 0.8)
+            let display = displayOverride ?? displayGeometry
+            let contour = display.resolved(data.displayEdgeProfiles[display.id] ?? .init(), in: size)
             ZStack {
                 Color.black
-                TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: !animate)) { timeline in
-                    let t = timeline.date.timeIntervalSinceReferenceDate
+                TimelineView(.animation(minimumInterval: 1.0 / 30, paused: !animate || reduceMotion)) { timeline in
+                    let time = Float(timeline.date.timeIntervalSince(animationStart))
                     ZStack {
-                        artwork(size: size, time: t)
-                        SmokeLayer(time: t)
-                            .blendMode(.screen)
-                            .opacity(0.9)
+                        artwork(size: size, unit: unit)
+                        .layerEffect(
+                            ShaderLibrary.bundle(Bundle(for: CinematicShaderBundle.self)).humRefraction(
+                                .float2(Float(size.width), Float(size.height)), .float(time)),
+                            maxSampleOffset: CGSize(width: unit * 0.045, height: unit * 0.045),
+                            isEnabled: !reduceMotion && animate)
+                        CinematicLight(time: reduceMotion ? 0 : Double(time),
+                                       hasArtwork: data.look == .monochrome && data.artwork != nil)
+                        LinearGradient(colors: [.black.opacity(0.30), .clear, .black.opacity(0.20)], startPoint: .top, endPoint: .bottom)
+                        let glowRGB = data.palette.dominantGlowColor
+                        DisplayEdgeGlow(contour: contour, time: reduceMotion ? 0 : Double(time),
+                                        intensity: data.edgeGlow, color: glowRGB)
                     }
+                    .frame(width: size.width, height: size.height)
                 }
-                vignette
-                PosterFrame(album: data.track?.album ?? "", size: size)
-                clock(size: size)
-                lyrics(size: size)
-                trackCaption(size: size)
+                .allowsHitTesting(false)
+                if data.look == .monochrome {
+                    title(unit: unit)
+                        .position(x: size.width * 0.5, y: size.height * 0.065)
+                }
+                lyrics(size: size, unit: unit)
+                    .opacity(isArtworkExpanded ? 0 : 1)
+                    .animation(.easeOut(duration: 0.2), value: isArtworkExpanded)
+                if data.track != nil && playerActions != nil {
+                    let scale = min(1, max(0.25, unit / 720))
+                    MusicBar(data: data, animate: animate, isArtworkExpanded: $isArtworkExpanded,
+                             actions: playerActions)
+                        .scaleEffect(scale, anchor: .bottom)
+                        .frame(width: MusicBar.width * scale)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+                        .padding(.bottom, unit * 0.045)
+                }
             }
             .frame(width: size.width, height: size.height)
             .clipped()
         }
+        .background(DisplayEdgeReader { displayGeometry = $0 })
         .ignoresSafeArea()
         .environment(\.colorScheme, .dark)
-        .foregroundStyle(.white)
-    }
-
-    // MARK: Layers
-
-    @ViewBuilder
-    private func artwork(size: CGSize, time t: TimeInterval) -> some View {
-        if let mono = MonochromeArtwork.image(for: data.artwork) {
-            // Slow drift and breathe, like a camera move.
-            let scale = 1.14 + 0.04 * sin(t * 0.045)
-            Image(nsImage: mono)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: size.width, height: size.height)
-                .scaleEffect(scale)
-                .offset(x: CGFloat(sin(t * 0.031)) * size.width * 0.025, y: CGFloat(cos(t * 0.027)) * size.height * 0.02)
-                .opacity(0.82)
-        } else {
-            RadialGradient(colors: [Color(white: 0.22), .black], center: .center, startRadius: 0, endRadius: size.width * 0.6)
+        .foregroundStyle(Color(white: 0.94))
+        .onChange(of: data.track == nil) { _, empty in
+            if empty { isArtworkExpanded = false }
         }
-    }
-
-    private var vignette: some View {
-        RadialGradient(
-            colors: [.clear, .black.opacity(0.35), .black.opacity(0.85)],
-            center: .center,
-            startRadius: 0,
-            endRadius: 900
-        )
-        .scaleEffect(1.4)
-        .allowsHitTesting(false)
-    }
-
-    private func clock(size: CGSize) -> some View {
-        let h = size.height
-        return TimelineView(.everyMinute) { timeline in
-            VStack(spacing: h * 0.004) {
-                Text(timeline.date, format: .dateTime.weekday(.abbreviated).day().month(.abbreviated))
-                    .font(.system(size: h * 0.02, weight: .regular, design: .serif))
-                    .opacity(0.85)
-                Text(timeline.date, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
-                    .font(.system(size: h * 0.085, weight: .regular, design: .serif))
-                    .monospacedDigit()
-            }
-            .shadow(color: .black.opacity(0.5), radius: 12)
-        }
-        .position(x: size.width / 2, y: size.height * 0.23)
-        .accessibilityElement(children: .combine)
     }
 
     @ViewBuilder
-    private func lyrics(size: CGSize) -> some View {
-        let lines = data.lines
-        if !lines.isEmpty {
-            let fontSize = max(16, size.height * 0.03)
-            TimelineView(.animation(minimumInterval: 0.1, paused: !(animate && data.isPlaying))) { timeline in
-                let index = lines.activeIndex(at: data.lyricTime(timeline.date))
-                Group {
-                    if let index {
-                        LiveLyricEffect(
-                            kind: data.effect,
-                            line: lines[index],
-                            palette: data.palette,
-                            fontSize: fontSize,
-                            alignment: .leading,
-                            isPlaying: animate && data.isPlaying,
-                            previous: index > 0 ? lines[index - 1] : nil,
-                            lyricTime: data.lyricTime
-                        )
-                    }
-                }
-                .id(index ?? -1)
-                .transition(.opacity)
-                .animation(.easeInOut(duration: 0.6), value: index)
+    private func artwork(size: CGSize, unit: CGFloat) -> some View {
+        let image = data.look == .monochrome ? MonochromeArtwork.image(for: data.artwork) : data.artwork
+        ZStack {
+            if let image {
+                Image(nsImage: image)
+                    .resizable()
+                    .interpolation(.high)
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: size.width, height: size.height)
+                    .clipped()
+                    .overlay(Color.black.opacity(0.23))
+                    .id(trackIdentity + data.look.rawValue)
+                    .transition(.opacity)
+            } else {
+                RadialGradient(colors: [data.look == .album ? data.palette.primary.opacity(0.5) : Color(white: 0.12), .black],
+                               center: .center, startRadius: 0, endRadius: unit * 0.9)
             }
-            .frame(width: size.width * 0.56)
-            .shadow(color: .black.opacity(0.6), radius: 10)
-            .position(x: size.width * 0.44, y: size.height * 0.66)
-        }
-    }
-
-    private func trackCaption(size: CGSize) -> some View {
-        Group {
-            if let track = data.track {
-                VStack(alignment: .trailing, spacing: 2) {
-                    Text(track.title)
-                        .font(.system(size: size.height * 0.016, weight: .semibold, design: .serif))
-                    Text(track.artist)
-                        .font(.system(size: size.height * 0.014, weight: .regular, design: .serif))
-                        .opacity(0.7)
-                }
-                .opacity(0.75)
-                .lineLimit(1)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomTrailing)
-        .padding(size.height * 0.045)
-    }
-}
-
-/// A thin frame around the middle of the screen, broken at the top for the album title.
-private struct PosterFrame: View {
-    let album: String
-    let size: CGSize
-
-    var body: some View {
-        Canvas { canvas, canvasSize in
-            let w = canvasSize.width, h = canvasSize.height
-            let rect = CGRect(x: w * 0.31, y: h * 0.1, width: w * 0.38, height: h * 0.8)
-            let lineWidth = max(1.5, h * 0.0022)
-            let title = canvas.resolve(
-                Text(album.uppercased())
-                    .font(.system(size: h * 0.042, weight: .bold, design: .serif))
-                    .tracking(h * 0.002)
-                    .foregroundColor(.white)
-            )
-            let titleSize = album.isEmpty ? .zero : title.measure(in: CGSize(width: rect.width * 0.9, height: h))
-            let gap = titleSize.width > 0 ? titleSize.width + h * 0.03 : 0
-
-            var path = Path()
-            path.move(to: CGPoint(x: rect.midX - gap / 2, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-            path.addLine(to: CGPoint(x: rect.maxX, y: rect.minY))
-            path.addLine(to: CGPoint(x: rect.midX + gap / 2, y: rect.minY))
-            canvas.stroke(path, with: .color(.white.opacity(0.8)), lineWidth: lineWidth)
-            if !album.isEmpty {
-                canvas.draw(title, at: CGPoint(x: rect.midX, y: rect.minY), anchor: .center)
-            }
+            RadialGradient(colors: [.clear, .black.opacity(0.48)], center: .center,
+                           startRadius: unit * 0.15, endRadius: max(size.width, size.height) * 0.65)
         }
         .frame(width: size.width, height: size.height)
-        .shadow(color: .black.opacity(0.4), radius: 8)
-        .allowsHitTesting(false)
+        .animation(.easeInOut(duration: 0.8), value: trackIdentity)
     }
+
+    private func title(unit: CGFloat) -> some View {
+        Text((data.track?.album.isEmpty == false ? data.track?.album : data.track?.title) ?? "HUM")
+            .font(.system(size: unit * 0.036, weight: .bold, design: .serif))
+            .tracking(unit * 0.002)
+            .textCase(.uppercase)
+            .lineLimit(1)
+            .minimumScaleFactor(0.45)
+            .frame(maxWidth: unit * 0.80)
+            .shadow(color: .black.opacity(0.8), radius: 8)
+    }
+
+    @ViewBuilder
+    private func lyrics(size: CGSize, unit: CGFloat) -> some View {
+        if !data.lines.isEmpty {
+            TimelineView(.animation(minimumInterval: 1.0 / 30, paused: !(animate && data.isPlaying))) { timeline in
+                let index = data.lines.activeIndex(at: data.lyricTime(timeline.date))
+                ZStack {
+                    if let index {
+                        LiveLyricEffect(kind: data.effect, line: data.lines[index], palette: .fallback,
+                                        fontSize: unit * 0.035, alignment: .center,
+                                        isPlaying: animate && data.isPlaying,
+                                        previous: index > 0 ? data.lines[index - 1] : nil,
+                                        lyricTime: data.lyricTime)
+                            .id("\(trackIdentity)-\(index)")
+                            .transition(.opacity)
+                    } else {
+                        Text("Lyrics begin shortly")
+                            .font(.system(size: unit * 0.022, design: .serif))
+                            .foregroundStyle(.white.opacity(0.6))
+                    }
+                }
+                .animation(.easeOut(duration: reduceMotion ? 0.15 : 0.28), value: index)
+                .animation(.easeOut(duration: 0.28), value: trackIdentity)
+            }
+            .frame(width: size.width * 0.88)
+            .shadow(color: .black.opacity(0.65), radius: 6)
+            .position(x: size.width * 0.5, y: size.height * 0.55)
+        } else {
+            VStack(spacing: unit * 0.015) {
+                Text(data.track?.title ?? "A little space to listen.")
+                    .font(.system(size: unit * 0.037, weight: .regular, design: .serif))
+                    .lineLimit(2)
+                Text(data.statusMessage ?? (data.track == nil ? "Play something in Spotify or Apple Music" :
+                                            data.isPlaying ? "Synced lyrics unavailable for this track" : "Playback paused"))
+                    .font(.system(size: unit * 0.018))
+                    .foregroundStyle(.white.opacity(0.6))
+            }
+            .multilineTextAlignment(.center)
+            .frame(width: size.width * 0.7)
+            .shadow(color: .black, radius: 10)
+            .position(x: size.width * 0.5, y: size.height * 0.55)
+        }
+    }
+
 }
 
-/// Soft drifting wisps of smoke: stretched radial gradients only (no blur filters).
-struct SmokeLayer: View {
+/// Vector light refractions: a bowed poster frame and soft crossing beams.
+/// No full-screen blur or per-frame image processing.
+private struct CinematicLight: View {
     let time: TimeInterval
-
-    private static let wisps: [(x: Double, y: Double, w: Double, h: Double, speed: Double, phase: Double, alpha: Double)] = [
-        (0.20, 0.30, 0.75, 0.20, 0.021, 0.0, 0.10),
-        (0.75, 0.55, 0.85, 0.18, 0.017, 1.7, 0.09),
-        (0.45, 0.80, 0.90, 0.22, 0.025, 3.1, 0.08),
-        (0.60, 0.15, 0.60, 0.14, 0.019, 4.4, 0.07),
-        (0.10, 0.70, 0.55, 0.16, 0.023, 5.6, 0.08),
-        (0.88, 0.25, 0.50, 0.15, 0.015, 2.4, 0.06)
-    ]
+    let hasArtwork: Bool
 
     var body: some View {
-        Canvas { canvas, size in
-            for wisp in Self.wisps {
-                let t = time * wisp.speed + wisp.phase
-                let center = CGPoint(
-                    x: size.width * (wisp.x + 0.12 * sin(t * 1.4)),
-                    y: size.height * (wisp.y + 0.06 * cos(t))
-                )
-                let w = size.width * wisp.w, h = size.height * wisp.h
-                var layer = canvas
-                layer.translateBy(x: center.x, y: center.y)
-                layer.rotate(by: .radians(0.35 * sin(t * 0.7) + wisp.phase))
-                layer.scaleBy(x: 1, y: h / w)
-                let rect = CGRect(x: -w / 2, y: -w / 2, width: w, height: w)
-                layer.fill(
-                    Path(ellipseIn: rect),
-                    with: .radialGradient(
-                        Gradient(colors: [.white.opacity(wisp.alpha), .white.opacity(wisp.alpha * 0.4), .clear]),
-                        center: .zero, startRadius: 0, endRadius: w / 2
-                    )
-                )
+        Canvas(rendersAsynchronously: true) { context, size in
+            let w = size.width, h = size.height
+            let t = time * 0.42
+            let frameWidth = min(w * 0.56, h * 0.76)
+            let x = (w - frameWidth) / 2
+            let top = h * 0.135, bottom = h * 0.94
+            let bend = h * 0.018 * sin(t * 0.8)
+            var frame = Path()
+            frame.move(to: CGPoint(x: x + frameWidth * 0.5, y: top))
+            frame.addLine(to: CGPoint(x: x, y: top))
+            frame.addCurve(to: CGPoint(x: x, y: bottom),
+                           control1: CGPoint(x: x + bend, y: h * 0.38),
+                           control2: CGPoint(x: x - bend, y: h * 0.73))
+            frame.addLine(to: CGPoint(x: x + frameWidth, y: bottom))
+            frame.addCurve(to: CGPoint(x: x + frameWidth, y: top),
+                           control1: CGPoint(x: x + frameWidth + bend, y: h * 0.73),
+                           control2: CGPoint(x: x + frameWidth - bend, y: h * 0.38))
+            frame.addLine(to: CGPoint(x: x + frameWidth * 0.5, y: top))
+            if hasArtwork {
+                context.stroke(frame, with: .color(.white.opacity(0.42)), lineWidth: max(0.6, h * 0.0018))
             }
+
+            // The broad moving light stays translucent so text remains readable throughout a pass.
+            for index in 0..<2 {
+                let phase = t + Double(index) * .pi
+                let center = CGPoint(x: w * (0.5 + 0.39 * sin(phase * 0.65)), y: h * 0.52)
+                var beam = context
+                beam.translateBy(x: center.x, y: center.y)
+                beam.rotate(by: .radians(0.25 * sin(phase)))
+                beam.scaleBy(x: 0.19, y: 1)
+                let radius = h * 0.78
+                beam.fill(Path(ellipseIn: CGRect(x: -radius, y: -radius, width: radius * 2, height: radius * 2)),
+                          with: .radialGradient(Gradient(colors: [.white.opacity(0.13), .white.opacity(0.035), .clear]),
+                                                center: .zero, startRadius: 0, endRadius: radius))
+            }
+
         }
-        .allowsHitTesting(false)
     }
 }
+
+private final class CinematicShaderBundle: NSObject {}

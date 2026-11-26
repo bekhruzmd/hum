@@ -102,9 +102,15 @@ final class IslandController {
     private func updateVisibility() {
         let settings = environment.settings
         let shouldShow = settings.islandEnabled && environment.nowPlaying.playbackState != nil
+            && environment.renderGate.canAnimate
         let showsOverFullScreen = settings.islandShowsOverFullScreen
 
         guard shouldShow else {
+            collapseTask?.cancel()
+            peekTask?.cancel()
+            isHovering = false
+            model.isExpanded = false
+            if let geometry = model.geometry { panel?.setFrame(geometry.collapsedFrame, display: false) }
             panel?.orderOut(nil)
             return
         }

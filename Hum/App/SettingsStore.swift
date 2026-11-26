@@ -36,6 +36,13 @@ final class SettingsStore {
 
     // Cinematic scene (idle screen, desktop, screensaver)
     var idleStyle: IdleStyle { didSet { defaults.set(idleStyle.rawValue, forKey: "idleStyle") } }
+    var cinematicEdgeGlow: Double { didSet { defaults.set(cinematicEdgeGlow, forKey: "cinematicEdgeGlow") } }
+    var displayEdgeProfiles: [String: DisplayEdgeProfile] {
+        didSet {
+            if let data = try? JSONEncoder().encode(displayEdgeProfiles) { defaults.set(data, forKey: "displayEdgeProfiles") }
+        }
+    }
+    var cinematicLook: CinematicLook { didSet { defaults.set(cinematicLook.rawValue, forKey: "cinematicLook") } }
     var cinematicEffect: LyricEffectKind { didSet { defaults.set(cinematicEffect.rawValue, forKey: "cinematicEffect") } }
     /// Write the screensaver feed. Turned on when the user installs the Hum screensaver.
     var screensaverFeed: Bool { didSet { defaults.set(screensaverFeed, forKey: "screensaverFeed") } }
@@ -68,6 +75,10 @@ final class SettingsStore {
         desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
         idleStyle = IdleStyle(rawValue: defaults.string(forKey: "idleStyle") ?? "") ?? .cinematic
+        cinematicEdgeGlow = CinematicGlow.clamped(defaults.object(forKey: "cinematicEdgeGlow") as? Double ?? 1)
+        displayEdgeProfiles = defaults.data(forKey: "displayEdgeProfiles")
+            .flatMap { try? JSONDecoder().decode([String: DisplayEdgeProfile].self, from: $0) } ?? [:]
+        cinematicLook = CinematicLook(rawValue: defaults.string(forKey: "cinematicLook") ?? "") ?? .album
         cinematicEffect = LyricEffectKind(rawValue: defaults.string(forKey: "cinematicEffect") ?? "") ?? .constellation
         screensaverFeed = defaults.bool(forKey: "screensaverFeed")
         idleMinutes = defaults.integer(forKey: "idleMinutes")

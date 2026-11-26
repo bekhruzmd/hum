@@ -1,8 +1,6 @@
 import SwiftUI
 
-/// Full-screen music idle view: blurred cover background, the cover, the lyric in the user's
-/// effect, and a clock in the corner. Deliberately unlike the macOS login screen: no avatar,
-/// no name, no password field, and the clock lives bottom-left.
+/// Full-screen music idle view with blurred artwork and live lyrics.
 struct IdleScreenView: View {
     let environment: AppEnvironment
 
@@ -36,9 +34,6 @@ struct IdleScreenView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .offset(y: -h * 0.04)
 
-                clock(height: h)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
-                    .padding(h * 0.05)
             }
         }
         .ignoresSafeArea()
@@ -93,19 +88,4 @@ struct IdleScreenView: View {
         }
     }
 
-    private func clock(height h: CGFloat) -> some View {
-        TimelineView(.everyMinute) { timeline in
-            VStack(alignment: .leading, spacing: 0) {
-                Text(timeline.date, format: .dateTime.hour().minute())
-                    .font(.system(size: h * 0.09, weight: .thin, design: .rounded))
-                    .monospacedDigit()
-                Text(timeline.date, format: .dateTime.weekday(.wide).month(.wide).day())
-                    .font(.system(size: h * 0.022, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.7))
-            }
-            .foregroundStyle(.white)
-            .shadow(color: .black.opacity(0.35), radius: 8)
-        }
-        .accessibilityElement(children: .combine)
-    }
 }

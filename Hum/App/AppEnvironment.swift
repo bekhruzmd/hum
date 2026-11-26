@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 
 /// Owns the app-wide stores and wires them together. Created once at launch.
@@ -24,7 +25,7 @@ final class AppEnvironment {
 
     private var started = false
     private var wasPlaying = false
-    private var lastDesktopMode: DesktopMode = .turntable
+    private var lastDesktopMode: DesktopMode = .lyrics
 
     /// Internal (not private) so tests can build an isolated environment.
     init() {}
@@ -34,9 +35,13 @@ final class AppEnvironment {
         ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 
-    /// Lyric time for a playback state at `date`: interpolated position plus the track's offset.
+    /// Latency compensation (lead offset): compensates for AppleScript polling and audio buffer latency
+    /// so lyrics synchronise tightly with vocal onset.
+    static let defaultLeadOffset: TimeInterval = 0.35
+
+    /// Lyric time for a playback state at `date`: interpolated position plus the track's offset and lead compensation.
     func lyricTime(_ state: PlaybackState, at date: Date = Date()) -> TimeInterval {
-        state.interpolatedPosition(at: date) + offsets.offset(for: state.track)
+        state.interpolatedPosition(at: date) + offsets.offset(for: state.track) + (Self.isRunningTests ? 0 : Self.defaultLeadOffset)
     }
 
     /// Seeks so that lyric time `time` is what plays.
@@ -50,14 +55,35 @@ final class AppEnvironment {
         let state = nowPlaying.playbackState
         let offset = offsets.offset(for: state?.track)
         return CinematicSceneData(
-            track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album) },
+            track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album, duration: $0.track.duration) },
             artwork: nowPlaying.artworkImage,
             palette: nowPlaying.palette,
             lines: lyrics.timedLines,
             effect: settings.cinematicEffect,
+            look: settings.cinematicLook,
+            edgeGlow: settings.cinematicEdgeGlow,
+            displayEdgeProfiles: settings.displayEdgeProfiles,
             isPlaying: state?.isPlaying ?? false,
-            lyricTime: { date in (state?.interpolatedPosition(at: date) ?? 0) + offset }
+            isShuffling: state?.isShuffling,
+            playbackPosition: { state?.interpolatedPosition(at: $0) ?? 0 },
+            lyricTime: { [weak self] date in
+                guard let self, let state else { return 0 }
+                return self.lyricTime(state, at: date)
+            }
         )
+    }
+
+    func musicBarActions() -> MusicBarActions {
+        MusicBarActions(playPause: { [nowPlaying] in nowPlaying.playPause() },
+                        previous: { [nowPlaying] in nowPlaying.previousTrack() },
+                        next: { [nowPlaying] in nowPlaying.nextTrack() },
+                        seek: { [nowPlaying] in nowPlaying.seek(to: $0) },
+                        shuffle: { [nowPlaying] in nowPlaying.toggleShuffle() },
+                        openPlayer: { [nowPlaying] in
+                            guard let player = nowPlaying.currentTrack?.player else { return }
+                            NSWorkspace.shared.runningApplications.first { $0.bundleIdentifier == player.bundleIdentifier }?
+                                .activate(options: [])
+                        }, playerName: nowPlaying.currentTrack?.player.displayName ?? "music player")
     }
 
     func nudgeOffset(by delta: TimeInterval) {
@@ -76,7 +102,7 @@ final class AppEnvironment {
         }
         renderGate.start()
         nowPlaying.start()
-        island.start()
+        // island.start() // Disabled for now per user request
         desktop.start()
         idleScreen.start()
         hotkeys.start()

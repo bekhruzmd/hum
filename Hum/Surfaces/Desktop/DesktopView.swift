@@ -2,7 +2,6 @@ import SwiftUI
 
 enum DesktopMode: String, CaseIterable, Identifiable {
     case off
-    case turntable
     case lyrics
     case cinematic
 
@@ -11,7 +10,6 @@ enum DesktopMode: String, CaseIterable, Identifiable {
     var displayName: String {
         switch self {
         case .off: return "Off"
-        case .turntable: return "Turntable"
         case .lyrics: return "Lyrics"
         case .cinematic: return "Cinematic"
         }
@@ -53,16 +51,6 @@ struct DesktopView: View {
             switch settings.desktopMode {
             case .off:
                 Color.clear
-            case .turntable:
-                TurntableView(
-                    state: nowPlaying.playbackState,
-                    artwork: nowPlaying.artworkImage,
-                    palette: nowPlaying.palette,
-                    animate: animate
-                )
-                .frame(width: min(proxy.size.width * 0.42, proxy.size.height * 0.5 * TurntableView.aspect))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .opacity(nowPlaying.playbackState == nil ? 0.6 : 1)
             case .lyrics:
                 DesktopLyricsView(environment: environment, animate: animate, size: proxy.size)
             case .cinematic:

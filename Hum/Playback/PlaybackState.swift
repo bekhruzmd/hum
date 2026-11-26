@@ -6,6 +6,7 @@ struct PlaybackState: Sendable, Equatable {
     let position: TimeInterval
     let isPlaying: Bool
     let fetchedAt: Date
+    var isShuffling: Bool? = nil
 
     /// Estimates the current position between polls: `position + elapsed` while playing.
     func interpolatedPosition(at date: Date = Date()) -> TimeInterval {
@@ -14,12 +15,13 @@ struct PlaybackState: Sendable, Equatable {
         return track.duration > 0 ? min(estimated, track.duration) : estimated
     }
 
-    func with(position: TimeInterval? = nil, isPlaying: Bool? = nil, fetchedAt: Date = Date()) -> PlaybackState {
+    func with(position: TimeInterval? = nil, isPlaying: Bool? = nil, isShuffling: Bool? = nil, fetchedAt: Date = Date()) -> PlaybackState {
         PlaybackState(
             track: track,
             position: position ?? self.position,
             isPlaying: isPlaying ?? self.isPlaying,
-            fetchedAt: fetchedAt
+            fetchedAt: fetchedAt,
+            isShuffling: isShuffling ?? self.isShuffling
         )
     }
 }

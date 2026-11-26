@@ -13,6 +13,7 @@ struct IslandView: View {
     let environment: AppEnvironment
     let model: IslandModel
     let onHover: (Bool) -> Void
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var nowPlaying: NowPlayingStore { environment.nowPlaying }
 
@@ -38,7 +39,7 @@ struct IslandView: View {
             .contentShape(Rectangle())
             .onHover(perform: onHover)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .animation(.spring(response: 0.36, dampingFraction: 0.8), value: expanded)
+            .animation(reduceMotion ? nil : .spring(response: 0.36, dampingFraction: 0.9), value: expanded)
             .environment(\.colorScheme, .dark)
         }
     }
@@ -69,7 +70,7 @@ struct IslandView: View {
                     .lineLimit(1)
                 Spacer(minLength: 4)
             }
-            PlaybackBars(isPlaying: state.isPlaying, color: nowPlaying.palette.highlight, barWidth: 2.5, height: 12)
+            PlaybackBars(isPlaying: state.isPlaying && environment.renderGate.canAnimate, color: nowPlaying.palette.highlight, barWidth: 2.5, height: 12)
         }
         .padding(.horizontal, geometry.hasNotch ? 16 : 10)
         .frame(maxHeight: .infinity)
@@ -115,7 +116,7 @@ struct IslandView: View {
                     .frame(height: 34)
             }
 
-            Scrubber(state: state, tint: nowPlaying.palette.highlight) { nowPlaying.seek(to: $0) }
+            Scrubber(state: state, tint: nowPlaying.palette.highlight, animate: environment.renderGate.canAnimate) { nowPlaying.seek(to: $0) }
         }
         .padding(.horizontal, geometry.hasNotch ? 34 : 20)
         .padding(.top, geometry.hasNotch ? 0 : 14)
@@ -158,7 +159,7 @@ private struct IslandLyricLine: View {
 
     var body: some View {
         let lines = environment.lyrics.timedLines
-        TimelineView(.animation(minimumInterval: 0.1, paused: !state.isPlaying)) { timeline in
+        TimelineView(.animation(minimumInterval: 0.1, paused: !(state.isPlaying && environment.renderGate.canAnimate))) { timeline in
             let index = lines.activeIndex(at: environment.lyricTime(state, at: timeline.date))
             Group {
                 if let index {
@@ -168,7 +169,7 @@ private struct IslandLyricLine: View {
                         palette: environment.nowPlaying.palette,
                         fontSize: 14,
                         alignment: .center,
-                        isPlaying: state.isPlaying,
+                        isPlaying: state.isPlaying && environment.renderGate.canAnimate,
                         lyricTime: { environment.lyricTime(state, at: $0) }
                     )
                 } else {

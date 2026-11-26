@@ -2,7 +2,7 @@ import Foundation
 
 /// Parses the field-joined string returned by the player scripts.
 ///
-/// Fields: state, title, artist, album, duration, position, [artwork url].
+/// Fields: state, title, artist, album, duration, position, [artwork url], [shuffle].
 /// Joined by ASCII 31 (unit separator) so titles containing commas, tabs or pipes survive.
 enum PlaybackParser {
     static let fieldSeparator = "\u{001F}"
@@ -33,7 +33,8 @@ enum PlaybackParser {
             track: track,
             position: max(0, parseDouble(fields[5]) ?? 0),
             isPlaying: trimmed(fields[0]).lowercased() == "playing",
-            fetchedAt: now
+            fetchedAt: now,
+            isShuffling: fields.count > 7 ? Bool(trimmed(fields[7]).lowercased()) : nil
         )
     }
 

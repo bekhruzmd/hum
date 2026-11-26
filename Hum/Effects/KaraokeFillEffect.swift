@@ -34,7 +34,7 @@ private struct FillWord: View {
                     .mask(alignment: .leading) {
                         Rectangle().scaleEffect(x: fill, y: 1, anchor: .leading)
                     }
-                    .shadow(color: tint.opacity(fill > 0 && fill < 1 ? 0.8 : 0), radius: fontSize * 0.25)
+                    .shadow(color: tint.opacity(0.55 * sin(fill * .pi)), radius: fontSize * 0.25)
             }
             .fixedSize()
     }

@@ -6,7 +6,7 @@ struct BigWordsEffect: LyricEffect {
         let words = context.layoutWords
         let index = min(words.count - 1, max(0, context.currentWordIndex ?? 0))
         let fill = context.fillForLayoutWord(index)
-        let pop = 1 + 0.08 * (1 - min(1, fill * 3))
+        let pop = 1 + 0.035 * sin(min(1, fill * 2) * .pi)
         let next = index + 1 < words.count ? words[index + 1].text : " "
 
         VStack(alignment: context.alignment.horizontalAlignment, spacing: context.fontSize * 0.2) {
@@ -23,7 +23,7 @@ struct BigWordsEffect: LyricEffect {
                 .minimumScaleFactor(0.4)
                 .scaleEffect(pop, anchor: context.alignment.unitPoint)
                 .id(index)
-                .transition(.asymmetric(insertion: .scale(scale: 0.7).combined(with: .opacity), removal: .opacity))
+                .transition(.asymmetric(insertion: .scale(scale: 0.96).combined(with: .opacity), removal: .opacity))
             Text(next)
                 .font(.system(size: context.fontSize * 0.9, weight: .semibold, design: .rounded))
                 .foregroundStyle(.secondary)
@@ -31,6 +31,6 @@ struct BigWordsEffect: LyricEffect {
                 .opacity(0.5)
         }
         .frame(maxWidth: .infinity, alignment: context.alignment.frameAlignment)
-        .animation(.spring(response: 0.28, dampingFraction: 0.7), value: index)
+        .animation(.spring(response: 0.24, dampingFraction: 0.92), value: index)
     }
 }

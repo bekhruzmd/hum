@@ -13,7 +13,11 @@ struct MusicSource: ScriptedSource {
     if pState is "stopped" then return "STOPPED"
     set t to current track
     set sep to ASCII character 31
-    return pState & sep & (name of t) & sep & (artist of t) & sep & (album of t) & sep & (duration of t) & sep & player position
+    set shuffleValue to ""
+    try
+        set shuffleValue to shuffle enabled as string
+    end try
+    return pState & sep & (name of t) & sep & (artist of t) & sep & (album of t) & sep & (duration of t) & sep & player position & sep & "" & sep & shuffleValue
     """
 
     private let artworkScriptBody = """

@@ -23,4 +23,9 @@ protocol PlaybackSource: Sendable {
     func nextTrack() async
     func previousTrack() async
     func seek(to position: TimeInterval) async
+    func setShuffle(_ enabled: Bool) async
+}
+
+extension PlaybackSource {
+    func setShuffle(_ enabled: Bool) async {}
 }

@@ -18,8 +18,9 @@ final class HumSaverView: ScreenSaverView {
     }
 
     private func setUp() {
+        model.start()
         // SwiftUI drives its own animation; the ScreenSaver timer only needs to tick rarely.
-        animationTimeInterval = 1
+        animationTimeInterval = 1.0 / 30.0
         let hosting = NSHostingView(rootView: SaverRoot(model: model))
         hosting.frame = bounds
         hosting.autoresizingMask = [.width, .height]
@@ -33,6 +34,20 @@ final class HumSaverView: ScreenSaverView {
             MainActor.assumeIsolated { self?.model.stop() }
         }
     }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window != nil {
+            model.start()
+        }
+    }
+
+    // Allow clicks to reach the SwiftUI music bar controls instead of dismissing the saver.
+    override func mouseDown(with event: NSEvent) {
+        // Let SwiftUI handle it; don't call super (which would dismiss the screensaver).
+    }
+    override func mouseUp(with event: NSEvent) {}
+    override func mouseDragged(with event: NSEvent) {}
 
     deinit {
         if let stopObserver {
@@ -50,7 +65,11 @@ final class HumSaverView: ScreenSaverView {
         model.stop()
     }
 
-    override func animateOneFrame() {}
+    override func animateOneFrame() {
+        if !model.isRunning {
+            model.start()
+        }
+    }
 
     override var hasConfigureSheet: Bool { false }
     override var configureSheet: NSWindow? { nil }
@@ -60,6 +79,6 @@ private struct SaverRoot: View {
     let model: SaverModel
 
     var body: some View {
-        CinematicScene(data: model.sceneData, animate: model.isRunning)
+        CinematicScene(data: model.sceneData, animate: true, playerActions: nil)
     }
 }

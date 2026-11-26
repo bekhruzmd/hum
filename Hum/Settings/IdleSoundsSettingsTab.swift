@@ -9,40 +9,87 @@ struct IdleSoundsSettingsTab: View {
         @Bindable var settings = environment.settings
         Form {
             Section {
-                Picker("Show after", selection: $settings.idleMinutes) {
+                Picker("Start idle scene", selection: $settings.idleMinutes) {
                     ForEach(Self.idleChoices, id: \.self) { minutes in
-                        Text(minutes == 0 ? "Never" : "\(minutes) minutes idle").tag(minutes)
+                        Text(minutes == 0 ? "Never (Manual Only)" : "After \(minutes) minutes of inactivity").tag(minutes)
                     }
                 }
-                Picker("Style", selection: $settings.idleStyle) {
+                Picker("Display style", selection: $settings.idleStyle) {
                     ForEach(IdleStyle.allCases) { Text($0.displayName).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                Picker("Cinematic lyrics", selection: $settings.cinematicEffect) {
+
+                Picker("Visual look", selection: $settings.cinematicLook) {
+                    ForEach(CinematicLook.allCases) { Text($0.displayName).tag($0) }
+                }
+
+                LabeledSlider(title: "Ambient edge glow", value: $settings.cinematicEdgeGlow, range: 0...3, step: 0.1) { value in
+                    value == 0 ? "Off" : "\(Int((value * 100).rounded()))%"
+                }
+
+                DisplayEdgeSettings(settings: settings)
+
+                Picker("Cinematic lyrics effect", selection: $settings.cinematicEffect) {
                     ForEach(LyricEffectKind.allCases) { Text($0.displayName).tag($0) }
                 }
-                Button("Preview idle screen") { environment.idleScreen.show() }
+
+                HStack {
+                    Spacer()
+                    Button {
+                        environment.idleScreen.show()
+                    } label: {
+                        Label("Preview Fullscreen Idle Scene", systemImage: "play.rectangle.on.rectangle")
+                    }
+                    .controlSize(.regular)
+                }
             } header: {
-                Text("Idle screen")
+                Text("Full-Screen Idle Screen")
             } footer: {
-                Text("Appears only while music plays. Any key, click or mouse move dismisses it. The macOS screensaver and lock screen always appear on top.")
+                Text("Appears while music is playing. Any keystroke, mouse movement, or click dismisses it instantly.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
 
-            ScreensaverSection(settings: settings)
+            Section {
+                Picker("Live desktop wallpaper", selection: $settings.desktopMode) {
+                    ForEach(DesktopMode.allCases) { Text($0.displayName).tag($0) }
+                }
+                .pickerStyle(.segmented)
+
+                if settings.desktopMode == .lyrics {
+                    Picker("Wallpaper background", selection: $settings.desktopLyricsBackground) {
+                        ForEach(DesktopLyricsBackground.allCases) { Text($0.displayName).tag($0) }
+                    }
+                }
+            } header: {
+                Text("Desktop Wallpaper Surface")
+            } footer: {
+                Text("Renders lyrics or a cinematic scene directly on your Mac desktop behind icons and open windows.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            ScreensaverSection(settings: settings, writer: environment.screensaverFeed, preview: environment.windows.showCinematicPreview)
 
             Section {
-                Toggle("Needle drop when playback starts", isOn: $settings.needleDropSound)
-                Toggle("Soft vinyl crackle while playing", isOn: $settings.crackleSound)
-                LabeledSlider(title: "Volume", value: $settings.soundVolume, range: 0...1, step: 0.05) {
+                Toggle("Needle drop when playback begins", isOn: $settings.needleDropSound)
+                Toggle("Continuous soft vinyl crackle during playback", isOn: $settings.crackleSound)
+                LabeledSlider(title: "Effects volume", value: $settings.soundVolume, range: 0...1, step: 0.05) {
                     "\(Int($0 * 100))%"
                 }
-                Button("Play needle drop") { environment.sounds.playNeedleDrop(volume: Float(settings.soundVolume)) }
+                HStack {
+                    Spacer()
+                    Button {
+                        environment.sounds.playNeedleDrop(volume: Float(settings.soundVolume))
+                    } label: {
+                        Label("Test Needle Drop", systemImage: "speaker.wave.2")
+                    }
+                    .controlSize(.small)
+                }
             } header: {
-                Text("Sounds")
+                Text("Audio Atmosphere")
             } footer: {
-                Text("Hum's sounds are generated on your Mac by its own code.")
+                Text("Hum's acoustic effects are procedurally generated in real time on your Mac—no internet connection or audio assets required.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -54,6 +101,8 @@ struct IdleSoundsSettingsTab: View {
 /// Install the Hum screensaver and keep its feed on.
 private struct ScreensaverSection: View {
     @Bindable var settings: SettingsStore
+    let writer: ScreensaverFeedWriter
+    let preview: () -> Void
     @State private var installed = ScreensaverInstaller.isInstalled
     @State private var justInstalled = false
     @State private var error: String?
@@ -66,8 +115,15 @@ private struct ScreensaverSection: View {
                 Button(installed ? "Reinstall" : "Install Screen Saver") { install() }
             }
             Toggle("Send the current song to the screensaver", isOn: $settings.screensaverFeed)
+            HStack {
+                Button("Preview live scene", action: preview)
+                Button("Screen Saver Settings…") { ScreensaverInstaller.openScreenSaverSettings() }
+            }
+            if settings.screensaverFeed, let message = writer.deliveryError {
+                Text(message).font(.caption).foregroundStyle(.orange)
+            }
             if justInstalled {
-                Label("Installed. Now choose Hum in \(ScreensaverInstaller.settingsLocation) (it may be listed under Other).",
+                Label("Installed. Close and reopen System Settings to reload Hum, then choose it under Other.",
                       systemImage: "checkmark.circle.fill")
                     .font(.callout)
                     .foregroundStyle(.green)
@@ -78,7 +134,7 @@ private struct ScreensaverSection: View {
         } header: {
             Text("Screensaver")
         } footer: {
-            Text("After installing, pick Hum in \(ScreensaverInstaller.settingsLocation). It shows the cinematic scene with live lyrics, and your lock settings keep working. macOS may ask once to let Hum access data from other apps; allow it so the screensaver can see what's playing.")
+            Text("After installing, pick Hum in \(ScreensaverInstaller.settingsLocation). Keep Hum running in the menu bar to receive live songs and lyrics. Your lock settings keep working. No additional file-access permission is needed.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }

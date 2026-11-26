@@ -10,6 +10,18 @@ struct HumApp: App {
         } label: {
             MenuBarLabel(ticker: AppEnvironment.shared.ticker)
         }
+        .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings…") { AppEnvironment.shared.windows.showSettings() }
+                    .keyboardShortcut(",")
+            }
+            CommandGroup(after: .windowArrangement) {
+                Button("Show Mini Player") { AppEnvironment.shared.windows.showMiniPlayer() }
+                    .keyboardShortcut("m", modifiers: [.command, .shift])
+                Button("Show Live Scene") { AppEnvironment.shared.windows.showCinematicPreview() }
+                    .keyboardShortcut("l", modifiers: [.command, .shift])
+            }
+        }
     }
 }
 

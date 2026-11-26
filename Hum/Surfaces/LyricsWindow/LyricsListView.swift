@@ -39,6 +39,7 @@ struct LyricGap: Equatable {
 struct LyricsListView: View {
     let lines: [TimedLine]
     let playbackState: PlaybackState
+    let animate: Bool
     let offset: TimeInterval
     let palette: AlbumPalette
     let fontSize: Double
@@ -48,7 +49,7 @@ struct LyricsListView: View {
     let onSeek: (TimeInterval) -> Void
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.1, paused: !playbackState.isPlaying)) { timeline in
+        TimelineView(.animation(minimumInterval: 0.1, paused: !(animate && playbackState.isPlaying))) { timeline in
             let time = playbackState.interpolatedPosition(at: timeline.date) + offset
             let activeIndex = lines.activeIndex(at: time)
             LyricLinesBody(
@@ -56,6 +57,7 @@ struct LyricsListView: View {
                 activeIndex: activeIndex,
                 gap: LyricGap.find(in: lines, activeIndex: activeIndex, time: time),
                 playbackState: playbackState,
+                animate: animate,
                 offset: offset,
                 palette: palette,
                 fontSize: fontSize,
@@ -70,10 +72,12 @@ struct LyricsListView: View {
 }
 
 private struct LyricLinesBody: View, Equatable {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let lines: [TimedLine]
     let activeIndex: Int?
     let gap: LyricGap?
     let playbackState: PlaybackState
+    let animate: Bool
     let offset: TimeInterval
     let palette: AlbumPalette
     let fontSize: Double
@@ -87,6 +91,7 @@ private struct LyricLinesBody: View, Equatable {
             && lhs.gap == rhs.gap
             && lhs.lines == rhs.lines
             && lhs.playbackState == rhs.playbackState
+            && lhs.animate == rhs.animate
             && lhs.offset == rhs.offset
             && lhs.palette == rhs.palette
             && lhs.fontSize == rhs.fontSize
@@ -95,7 +100,7 @@ private struct LyricLinesBody: View, Equatable {
             && lhs.effect == rhs.effect
     }
 
-    private var scrollSpring: Animation { .spring(response: 0.55, dampingFraction: 0.86) }
+    private var scrollSpring: Animation? { reduceMotion ? nil : .spring(response: 0.48, dampingFraction: 0.95) }
 
     var body: some View {
         switch visibleLinesMode {
@@ -157,7 +162,7 @@ private struct LyricLinesBody: View, Equatable {
                 gapDots(gap)
             }
             ForEach(indices, id: \.self) { index in
-                row(index).transition(.asymmetric(
+                row(index).transition(reduceMotion ? .opacity : .asymmetric(
                     insertion: .opacity.combined(with: .offset(y: 18)),
                     removal: .opacity.combined(with: .offset(y: -18))
                 ))
@@ -184,7 +189,7 @@ private struct LyricLinesBody: View, Equatable {
                         palette: palette,
                         fontSize: fontSize,
                         alignment: alignment,
-                        isPlaying: playbackState.isPlaying,
+                        isPlaying: animate && playbackState.isPlaying,
                         lyricTime: { playbackState.interpolatedPosition(at: $0) + offset }
                     )
                     .transition(.opacity.combined(with: .scale(scale: 0.97, anchor: alignment.unitPoint)))
@@ -208,7 +213,7 @@ private struct LyricLinesBody: View, Equatable {
             tint: palette.highlight,
             size: fontSize * 0.5,
             alignment: alignment,
-            isPlaying: playbackState.isPlaying,
+            isPlaying: animate && playbackState.isPlaying,
             lyricTime: { playbackState.interpolatedPosition(at: $0) + offset }
         )
         .transition(.opacity.combined(with: .scale(scale: 0.8, anchor: alignment.unitPoint)))
@@ -246,6 +251,7 @@ private struct InactiveLine: View {
 /// Three dots that fill one after another toward the next line, breathing gently, and
 /// swell away just before singing resumes.
 struct GapDots: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let gap: LyricGap
     let tint: Color
     let size: CGFloat
@@ -254,10 +260,10 @@ struct GapDots: View {
     let lyricTime: (Date) -> TimeInterval
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0, paused: !isPlaying)) { timeline in
+        TimelineView(.animation(minimumInterval: reduceMotion ? 0.1 : 1.0 / 30.0, paused: !isPlaying)) { timeline in
             let time = lyricTime(timeline.date)
             let progress = gap.progress(at: time)
-            let breathe = 1 + 0.06 * sin(timeline.date.timeIntervalSinceReferenceDate * 2.4)
+            let breathe = reduceMotion ? 1 : 1 + 0.06 * sin(timeline.date.timeIntervalSinceReferenceDate * 2.4)
             // In the last 8% the dots swell and fade, handing over to the next line.
             let exit = max(0, (progress - 0.92) / 0.08)
             HStack(spacing: size * 0.7) {
@@ -267,7 +273,7 @@ struct GapDots: View {
                         .fill(.primary.opacity(0.22))
                         .overlay(Circle().fill(tint).opacity(fill))
                         .frame(width: size, height: size)
-                        .scaleEffect((0.8 + 0.2 * fill) * breathe * (1 + exit * 0.5))
+                        .scaleEffect(reduceMotion ? 1 : (0.8 + 0.2 * fill) * breathe * (1 + exit * 0.5))
                 }
             }
             .opacity(1 - exit)

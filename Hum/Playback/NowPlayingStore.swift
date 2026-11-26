@@ -19,7 +19,12 @@ final class NowPlayingStore {
     private(set) var palette: AlbumPalette = .fallback
 
     var preferredPlayer: PreferredPlayer = .auto {
-        didSet { if oldValue != preferredPlayer { Task { await refresh() } } }
+        didSet {
+            if oldValue != preferredPlayer {
+                refreshGeneration &+= 1
+                Task { await refresh() }
+            }
+        }
     }
 
     /// Called whenever the track identity changes (including to nil).
@@ -30,6 +35,7 @@ final class NowPlayingStore {
     @ObservationIgnored private var pollTask: Task<Void, Never>?
     @ObservationIgnored private var artworkTask: Task<Void, Never>?
     @ObservationIgnored private var activeSourceID: PlayerApp?
+    @ObservationIgnored private var refreshGeneration: UInt64 = 0
     /// Set after a local seek/control so a stale poll result doesn't snap the UI back.
     @ObservationIgnored private var suppressPollUntil: Date = .distantPast
 
@@ -62,13 +68,16 @@ final class NowPlayingStore {
     }
 
     func stop() {
+        refreshGeneration &+= 1
         pollTask?.cancel()
         pollTask = nil
     }
 
     func refresh() async {
+        refreshGeneration &+= 1
+        let generation = refreshGeneration
         let result = await Self.readBest(from: sources, preferred: preferredPlayer)
-        guard Date() >= suppressPollUntil else { return }
+        guard !Task.isCancelled, generation == refreshGeneration, Date() >= suppressPollUntil else { return }
         apply(result)
     }
 
@@ -77,8 +86,9 @@ final class NowPlayingStore {
         let next = Self.smoothed(current: status, incoming: result)
         if status != next { status = next }
         if case .active(let state) = result { activeSourceID = state.track.player }
+        else { activeSourceID = nil }
         if previousTrack != currentTrack {
-            trackDidChange(to: currentTrack)
+            trackDidChange(to: currentTrack, previous: previousTrack)
         }
     }
 
@@ -90,7 +100,7 @@ final class NowPlayingStore {
     nonisolated static func smoothed(current: Status, incoming: Status) -> Status {
         guard
             case .active(let old) = current, case .active(let new) = incoming,
-            old.track == new.track, old.isPlaying == new.isPlaying
+            old.track == new.track, old.isPlaying == new.isPlaying, old.isShuffling == new.isShuffling
         else { return incoming }
         let drift = abs(old.interpolatedPosition(at: new.fetchedAt) - new.position)
         let tolerance: TimeInterval = new.isPlaying ? 0.3 : 0.05
@@ -119,15 +129,15 @@ final class NowPlayingStore {
 
     // MARK: Artwork
 
-    private func trackDidChange(to track: Track?) {
+    private func trackDidChange(to track: Track?, previous: Track?) {
         onTrackChange?(track)
         artworkTask?.cancel()
-        guard let track else {
+        if track == nil || track?.albumKey != previous?.albumKey {
             artworkData = nil
             artworkImage = nil
             palette = .fallback
-            return
         }
+        guard let track else { return }
         let source = sources.first { $0.id == track.player }
         artworkTask = Task { [weak self, artworkLoader] in
             let artwork = await artworkLoader.artwork(for: track, source: source)
@@ -160,6 +170,12 @@ final class NowPlayingStore {
         Task { await source.playPause() }
     }
 
+    func toggleShuffle() {
+        guard let source = activeSource, let state = playbackState, let shuffling = state.isShuffling else { return }
+        setOptimistic(state.with(position: state.interpolatedPosition(), isShuffling: !shuffling))
+        Task { await source.setShuffle(!shuffling) }
+    }
+
     func nextTrack() {
         guard let source = activeSource else { return }
         Task {
@@ -178,11 +194,15 @@ final class NowPlayingStore {
 
     func seek(to position: TimeInterval) {
         guard let source = activeSource, let state = playbackState else { return }
-        setOptimistic(state.with(position: max(0, position)))
-        Task { await source.seek(to: position) }
+        let boundedPosition = state.track.duration > 0
+            ? min(state.track.duration, max(0, position)) : max(0, position)
+        setOptimistic(state.with(position: boundedPosition))
+        Task { await source.seek(to: boundedPosition) }
     }
 
     private func setOptimistic(_ state: PlaybackState) {
+        // A poll that started before this action must never overwrite the immediate response.
+        refreshGeneration &+= 1
         status = .active(state)
         suppressPollUntil = Date().addingTimeInterval(0.8)
     }

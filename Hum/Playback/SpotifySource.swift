@@ -13,7 +13,11 @@ struct SpotifySource: ScriptedSource {
     if pState is "stopped" then return "STOPPED"
     set t to current track
     set sep to ASCII character 31
-    return pState & sep & (name of t) & sep & (artist of t) & sep & (album of t) & sep & (duration of t) & sep & player position & sep & (artwork url of t)
+    set shuffleValue to ""
+    try
+        if shuffling enabled then set shuffleValue to shuffling as string
+    end try
+    return pState & sep & (name of t) & sep & (artist of t) & sep & (album of t) & sep & (duration of t) & sep & player position & sep & (artwork url of t) & sep & shuffleValue
     """
 
     /// Spotify exposes artwork as a URL, loaded by `ArtworkLoader`.

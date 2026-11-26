@@ -9,14 +9,51 @@ struct GeneralSettingsTab: View {
 
     var body: some View {
         Form {
-            Section("Playback") {
-                Picker("Music player", selection: $settings.preferredPlayer) {
-                    ForEach(PreferredPlayer.allCases) { Text($0.displayName).tag($0) }
+            // App Identity Hero Header
+            Section {
+                HStack(spacing: 16) {
+                    if let icon = NSImage(named: NSImage.applicationIconName) {
+                        Image(nsImage: icon)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 56, height: 56)
+                            .shadow(color: .black.opacity(0.18), radius: 4, x: 0, y: 2)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Text("Hum")
+                                .font(.title3.weight(.semibold))
+                            Text("1.0 (Production)")
+                                .font(.caption)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Capsule().fill(.quaternary))
+                                .foregroundStyle(.secondary)
+                        }
+                        Text("Live synced lyrics, ambient album glow, and screensaver.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .padding(.vertical, 4)
             }
 
-            Section("System") {
-                Toggle("Launch at login", isOn: $launchAtLogin)
+            Section {
+                Picker("Music player", selection: $settings.preferredPlayer) {
+                    ForEach(PreferredPlayer.allCases) { player in
+                        Text(player.displayName).tag(player)
+                    }
+                }
+            } header: {
+                Text("Playback Source")
+            } footer: {
+                Text("Hum automatically connects to whichever player is actively playing music when set to Auto.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("Startup") {
+                Toggle("Launch Hum automatically at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in updateLaunchAtLogin(enabled) }
                 if let launchAtLoginError {
                     Text(launchAtLoginError)
@@ -25,10 +62,21 @@ struct GeneralSettingsTab: View {
                 }
             }
 
-            Section("Privacy") {
-                Text("Hum runs on your Mac. It sends song titles only to LRCLIB to find lyrics, and has no accounts, analytics or tracking.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+            Section("Privacy & Data") {
+                HStack(alignment: .top, spacing: 10) {
+                    Image(systemName: "lock.shield")
+                        .font(.title3)
+                        .foregroundStyle(.secondary)
+                        .frame(width: 24)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Private and local on your Mac")
+                            .font(.subheadline.weight(.medium))
+                        Text("Hum sends song titles and artist names exclusively to LRCLIB to find synchronized lyrics. There are no user accounts, no analytics, and zero telemetry.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(.vertical, 2)
             }
         }
         .formStyle(.grouped)

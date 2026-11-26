@@ -77,3 +77,18 @@ enum IdleStyle: String, CaseIterable, Identifiable {
         }
     }
 }
+
+
+enum CinematicLook: String, CaseIterable, Identifiable {
+    case album
+    case monochrome
+    var id: String { rawValue }
+    var displayName: String { self == .album ? "Album color" : "Monochrome poster" }
+}
+
+
+enum CinematicGlow {
+    static func clamped(_ value: Double) -> Double {
+        value.isFinite ? min(3, max(0, value)) : 1
+    }
+}

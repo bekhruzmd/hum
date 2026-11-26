@@ -11,15 +11,11 @@ final class IdleScreenController {
     private var windows: [NSWindow] = []
     private var monitors: [Any] = []
     private var checkTask: Task<Void, Never>?
-    private var shownAt: Date = .distantPast
-    private var mouseTravel: CGFloat = 0
 
     private(set) var isShowing = false
 
     static let level = NSWindow.Level.popUpMenu
     static let checkInterval: Duration = .seconds(15)
-    /// Input in the first moments after showing is ignored so the trigger itself doesn't dismiss.
-    static let graceInterval: TimeInterval = 0.8
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -28,6 +24,9 @@ final class IdleScreenController {
     func start() {
         observeContinuously(self) { controller in
             controller.restartIdleCheck(minutes: controller.environment.settings.idleMinutes)
+        }
+        observeContinuously(self) { controller in
+            if !controller.environment.renderGate.canAnimate { controller.dismiss() }
         }
     }
 
@@ -39,6 +38,7 @@ final class IdleScreenController {
         checkTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(for: Self.checkInterval)
+                guard !Task.isCancelled else { return }
                 self?.checkIdle(minutes: minutes)
             }
         }
@@ -62,8 +62,6 @@ final class IdleScreenController {
     func show() {
         guard !isShowing else { return }
         isShowing = true
-        shownAt = Date()
-        mouseTravel = 0
         for screen in NSScreen.screens {
             windows.append(makeWindow(for: screen))
         }
@@ -95,7 +93,7 @@ final class IdleScreenController {
         window.alphaValue = 0
         window.orderFrontRegardless()
         NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.6
+            context.duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.35
             window.animator().alphaValue = 1
         }
         return window
@@ -103,7 +101,8 @@ final class IdleScreenController {
 
     private func installMonitors() {
         let mask: NSEvent.EventTypeMask = [
-            .keyDown, .leftMouseDown, .rightMouseDown, .otherMouseDown, .scrollWheel, .mouseMoved
+            .keyDown, .flagsChanged, .leftMouseDown, .rightMouseDown, .otherMouseDown,
+            .scrollWheel, .mouseMoved, .leftMouseDragged, .rightMouseDragged, .otherMouseDragged
         ]
         if let local = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
             let consumed = MainActor.assumeIsolated { self?.handleInput(event) ?? false }
@@ -113,7 +112,7 @@ final class IdleScreenController {
         }
         // Global mouse events still arrive if another app grabs focus. (Global key events
         // would need Accessibility permission, which Hum doesn't ask for.)
-        if let global = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDown, .rightMouseDown], handler: { [weak self] event in
+        if let global = NSEvent.addGlobalMonitorForEvents(matching: [.mouseMoved, .leftMouseDown, .rightMouseDown, .otherMouseDown, .scrollWheel], handler: { [weak self] event in
             MainActor.assumeIsolated { _ = self?.handleInput(event) }
         }) {
             monitors.append(global)
@@ -122,11 +121,7 @@ final class IdleScreenController {
 
     /// Returns true when the event dismissed the idle screen (and should be swallowed).
     private func handleInput(_ event: NSEvent) -> Bool {
-        guard isShowing, Date().timeIntervalSince(shownAt) > Self.graceInterval else { return isShowing }
-        if event.type == .mouseMoved {
-            mouseTravel += abs(event.deltaX) + abs(event.deltaY)
-            guard mouseTravel > 6 else { return true }
-        }
+        guard isShowing else { return false }
         dismiss()
         return true
     }

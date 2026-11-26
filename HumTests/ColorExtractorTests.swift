@@ -41,4 +41,21 @@ final class ColorExtractorTests: XCTestCase {
         XCTAssertTrue(ColorExtractor.dominantColors(in: [], k: 3).isEmpty)
         XCTAssertNil(ColorExtractor.palette(from: Data([1, 2, 3])))
     }
+
+    func testDominantGlowColorSelection() {
+        // 1. Cover with dark neutral background and a vibrant accent:
+        // Dominant cluster is near-black, accent is cyan/magenta.
+        let darkBg = RGB(r: 0.04, g: 0.04, b: 0.05)
+        let midGrey = RGB(r: 0.12, g: 0.12, b: 0.14)
+        let vibrantPink = RGB(r: 0.95, g: 0.15, b: 0.65)
+        let paletteWithDarkBg = AlbumPalette(colors: [darkBg, midGrey, vibrantPink])
+        XCTAssertEqual(paletteWithDarkBg.dominantGlowColor, vibrantPink, "Should select standout accent when dominant is dark neutral")
+
+        // 2. Cover with bright rich dominant color (e.g. orange album cover):
+        let richOrange = RGB(r: 0.90, g: 0.45, b: 0.10)
+        let softYellow = RGB(r: 0.85, g: 0.70, b: 0.20)
+        let darkBrown = RGB(r: 0.25, g: 0.15, b: 0.08)
+        let paletteWithVibrantDominant = AlbumPalette(colors: [richOrange, softYellow, darkBrown])
+        XCTAssertEqual(paletteWithVibrantDominant.dominantGlowColor, richOrange, "Should select dominant color when it is vibrant")
+    }
 }

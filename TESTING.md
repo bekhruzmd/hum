@@ -122,3 +122,76 @@ the ♪ in the menu bar.
 - [ ] Play a song and start the screensaver (hot corner or wait). The scene shows the playing song
       with lyrics in time. Pause in your player → within ~1 s the lyrics stop moving.
 - [ ] With "Require password after screen saver" on, waking still asks for your Mac password as usual.
+
+## Screensaver feed recovery and layout
+
+- [x] Keep Hum running; play Spotify, then start Hum from macOS Screen Saver settings. Confirm the host receives fresh song/lyrics data and paused → playing updates.
+- [ ] Repeat live validation with Apple Music and multiple displays.
+- [ ] Change songs, seek, pause and resume: lyrics should follow within a few seconds, and pause should stop lyric progression.
+- [x] Apple’s legacyScreenSaver host loaded build 2 and read the current shared-home feed (69 synced lines), without a file-access prompt.
+- [ ] Quit Hum while the saver is visible. Within 20 seconds, cached music should clear and “Open Hum to connect your music” should appear. Relaunch Hum and confirm recovery.
+- [ ] Disable “Send the current song to the screensaver.” Old artwork and lyrics should clear; re-enable and confirm recovery.
+- [ ] Verify an instrumental / song without synced lyrics shows a readable title and explanatory subtitle.
+- [ ] Check full screen and the small Settings preview: artwork remains square and uncropped, lyrics are legible, and the clock does not overlap content.
+- [ ] Enable Reduce Motion: ambient movement and lyric motion stop while song changes still update.
+- [ ] After reinstalling a new saver build, end the current saver session and start a fresh one; macOS may retain an already loaded bundle until the host exits.
+
+
+## Playback and motion regression pass — November 26, 2026
+
+- [x] 56 permanent unit tests pass; one temporary full-size/thumbnail render test also passed and was removed.
+- [x] Visual checks: Constellation with a long line, 320×180 preview, and disconnected state. Crowded star labels are omitted while the full line stays readable.
+- [x] Playback tests cover out-of-order polls and seek invalidation/bounds. Feed tests cover shared paths, expiry, disabled sharing, cover repair and failed-install preservation.
+- [ ] Enable Reduce Motion while music plays: active lines continue changing, with no word movement.
+- [ ] Hide the lyrics window, close Settings and stop the saver: hidden views should stop animation work.
+- [ ] Open idle preview and immediately press a key, click, scroll or move the pointer: it dismisses without an input grace period.
+- [ ] Skip songs rapidly and reload lyrics during a song change: previous covers/lyrics must not reappear.
+
+- [x] Compared cinematic layout with the supplied 18.9-second MP4: centered monochrome artwork, poster frame, serif clock, moving edge light and constellation overlay. Verified full-size and 320px renders.
+- [ ] Extended thermal/battery and animation smoothness check on the final Release saver, including multiple displays. Debug saver was 26–31% of one CPU core in a short sample; background Hum was 0.8–1.0%. Do not treat Debug rendering as the Release baseline.
+
+- [x] Both app and saver contain the `humRefraction` Metal function; tests load their actual bundled Metal libraries.
+- [x] Verified Album color and Monochrome poster reference renders, including an enabled GPU effect.
+- [ ] Preview live scene opens and closes cleanly; occluding the preview pauses motion.
+- [ ] Switch Cinematic look during playback: app scene and system saver both adopt the choice.
+
+- [x] Final clean Release build 3 installed; actual Apple host connected with 72 lyric lines and compiled its shaders successfully.
+- [x] Short Release sample: Hum 1.4–2.0% CPU; saver 19.1–23.6% of one core, ~525 MB including graphics resources. Extended soak and further rendering optimization remain open.
+- [ ] Automatic start: current macOS warning says display sleep precedes the 20-minute saver delay. Choose an earlier saver delay if automatic activation is wanted; retain the owner's lock/sleep policy.
+
+
+## Clock removal and adjustable edge glow — build 4
+
+- [x] Removed Hum's clock/date from the shared cinematic scene; the macOS clock is independent.
+- [x] Feed round-trip preserves edge glow and defaults older feeds to 100%.
+- [x] Rendered Off, 100% and 300%; 300% adds a broader halo and brighter continuous rim. No clock remains.
+- [ ] Settings → Idle & Sounds → Edge glow persists across launch and updates the system saver while running.
+
+
+### Build 4: reference music player
+
+- The music-note menu offers **Show Mini Player** and **Show Live Scene**. The glass player uses
+  real playback state, inline elapsed/remaining times, shuffle, previous, play/pause and next.
+  The laptop button opens the current music app. Clicking the cover expands/collapses its artwork.
+- Verify repeat expansion/reversal, hover and press feedback, drag the window by the card background,
+  close/reopen, paused playback, song changes and long titles. The panel must stay bounded to its
+  contents; closing/occlusion stops its timelines. Reduce Motion removes cover travel and button scaling;
+  Reduce Transparency gives the card an opaque background.
+- Click/drag the progress bar and release. Only one seek is sent on release, and a track change during
+  a drag cancels that seek. Changing a lyric offset must not change music progress. Shuffle reflects
+  the active app and is unavailable when that playback context does not support it.
+- The actual macOS saver and idle screen show a read-only live music card. Input still wakes/dismisses
+  them; interactive controls live in the mini player and live scene. No authentication controls exist.
+- The cinematic lyric position leaves room for the card. Verify full-size and small saver previews,
+  playback paused/resumed, missing lyrics/artwork, and new tracks. The classic idle clock is also removed.
+- Automated checks cover shuffle parsing/propagation/clock smoothing, separate player/lyric anchors,
+  old feed decoding, mini-player window sizing and close lifecycle. Temporary player/scene PNG render
+  checks were inspected and removed.
+
+- Final verification: 61 permanent tests passed; optimized Release build and strict code-signature
+  verification passed. Native app checks confirmed cover expansion/collapse, real Spotify play/pause,
+  seeking with lyric updates, and the live scene's clear lyric/card spacing. macOS Settings' Hum saver
+  preview displayed the new card and a changed song. The Window menu has Mini Player (⇧⌘M) and Live
+  Scene (⇧⌘L); Hum's application menu now provides Settings (⌘,).
+- Existing AppIntents metadata/SwiftUI settings diagnostics remain. Extended performance soak and
+  Apple Music playback-control validation were not repeated in this pass.

@@ -24,7 +24,7 @@ struct LyricsWindowView: View {
             AlbumBackground(
                 palette: nowPlaying.palette,
                 tinted: settings.tintWithAlbumColors,
-                animated: nowPlaying.isPlaying && environment.renderGate.canAnimate
+                animated: nowPlaying.isPlaying && environment.renderGate.canAnimate && environment.windows.canRenderLyrics
             )
         }
     }
@@ -62,7 +62,7 @@ struct LyricsWindowView: View {
             }
             .overlay(alignment: .bottom) {
                 if isHovering {
-                    ControlBar(nowPlaying: nowPlaying, state: state)
+                    ControlBar(nowPlaying: nowPlaying, state: state, animate: environment.renderGate.canAnimate && environment.windows.canRenderLyrics)
                         .padding(12)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
@@ -110,6 +110,7 @@ struct LyricsWindowView: View {
             LyricsListView(
                 lines: lyrics.timedLines,
                 playbackState: state,
+                animate: environment.renderGate.canAnimate && environment.windows.canRenderLyrics,
                 offset: environment.offsets.offset(for: state.track),
                 palette: nowPlaying.palette,
                 fontSize: settings.fontSize,
@@ -219,7 +220,7 @@ private struct CompactLyricLine: View {
     let fontSize: Double
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.1, paused: !state.isPlaying)) { timeline in
+        TimelineView(.animation(minimumInterval: 0.1, paused: !(state.isPlaying && environment.renderGate.canAnimate && environment.windows.canRenderLyrics))) { timeline in
             let index = lines.activeIndex(at: environment.lyricTime(state, at: timeline.date))
             Group {
                 if let index {
@@ -229,7 +230,7 @@ private struct CompactLyricLine: View {
                         palette: environment.nowPlaying.palette,
                         fontSize: fontSize,
                         alignment: .leading,
-                        isPlaying: state.isPlaying,
+                        isPlaying: state.isPlaying && environment.renderGate.canAnimate && environment.windows.canRenderLyrics,
                         lyricTime: { environment.lyricTime(state, at: $0) }
                     )
                     .lineLimit(1)
@@ -248,11 +249,12 @@ private struct CompactLyricLine: View {
 private struct ControlBar: View {
     let nowPlaying: NowPlayingStore
     let state: PlaybackState
+    let animate: Bool
 
     var body: some View {
         VStack(spacing: 6) {
             TransportControls(nowPlaying: nowPlaying, isPlaying: state.isPlaying)
-            Scrubber(state: state, tint: nowPlaying.palette.highlight) { nowPlaying.seek(to: $0) }
+            Scrubber(state: state, tint: nowPlaying.palette.highlight, animate: animate) { nowPlaying.seek(to: $0) }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
@@ -306,6 +308,7 @@ private struct OffsetShortcuts: View {
 /// Translucent material washed with the album's colors. While music plays, three soft pools
 /// of light drift slowly (15 fps, radial gradients only: no blur filters); paused, they rest.
 struct AlbumBackground: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     let palette: AlbumPalette
     let tinted: Bool
     var animated: Bool = false
@@ -320,7 +323,7 @@ struct AlbumBackground: View {
                     endPoint: .bottomTrailing
                 )
                 .opacity(0.22)
-                TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: !animated)) { timeline in
+                TimelineView(.animation(minimumInterval: 1.0 / 15.0, paused: !animated || reduceMotion)) { timeline in
                     DriftingLight(palette: palette, time: timeline.date.timeIntervalSinceReferenceDate)
                 }
                 .opacity(0.55)

@@ -6,11 +6,19 @@ import SwiftUI
 @Observable
 @MainActor
 final class WindowManager: NSObject, NSWindowDelegate {
+    private(set) var canRenderCinematicPreview = false
+    private(set) var canRenderMiniPlayer = false
+    private(set) var isMiniPlayerVisible = false
+    var isPlayerArtworkExpanded = false
     private(set) var isLyricsVisible = false
+    private(set) var isLyricsOccluded = false
+    var canRenderLyrics: Bool { isLyricsVisible && !isLyricsOccluded }
 
     @ObservationIgnored private unowned let environment: AppEnvironment
     @ObservationIgnored private var lyricsWindow: NSWindow?
     @ObservationIgnored private var settingsWindow: NSWindow?
+    @ObservationIgnored private var cinematicPreviewWindow: NSWindow?
+    @ObservationIgnored private var miniPlayerWindow: NSWindow?
 
     init(environment: AppEnvironment) {
         self.environment = environment
@@ -24,6 +32,8 @@ final class WindowManager: NSObject, NSWindowDelegate {
         lyricsWindow = window
         window.orderFrontRegardless()
         isLyricsVisible = true
+        isLyricsOccluded = !window.occlusionState.contains(.visible)
+        applyLyricsWindowSettings()
     }
 
     func hideLyrics() {
@@ -94,7 +104,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
         // AppKit re-layout every frame until it threw an exception and the app quit.
         hosting.sizingOptions = []
         let window = NSWindow(contentViewController: hosting)
-        window.title = "Hum Settings"
+        window.title = "Settings"
         window.styleMask = [.titled, .closable]
         window.setContentSize(SettingsView.size)
         window.isReleasedWhenClosed = false
@@ -103,17 +113,146 @@ final class WindowManager: NSObject, NSWindowDelegate {
         return window
     }
 
+    func showCinematicPreview() {
+        if let window = cinematicPreviewWindow {
+            NSApp.activate(ignoringOtherApps: true)
+            window.makeKeyAndOrderFront(nil)
+            return
+        }
+        let hosting = NSHostingController(rootView: CinematicPreview(environment: environment))
+        hosting.sizingOptions = []
+        let window = NSWindow(contentViewController: hosting)
+        window.title = "Hum · Live Preview"
+        window.styleMask = [.titled, .closable, .resizable, .miniaturizable]
+        window.setContentSize(NSSize(width: 960, height: 600))
+        window.minSize = NSSize(width: 480, height: 320)
+        window.isReleasedWhenClosed = false
+        window.delegate = self
+        window.center()
+        cinematicPreviewWindow = window
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        canRenderCinematicPreview = window.occlusionState.contains(.visible)
+    }
+
+    func toggleMiniPlayer() {
+        if isMiniPlayerVisible { miniPlayerWindow?.close() } else { showMiniPlayer() }
+    }
+
+    func showMiniPlayer() {
+        let window = miniPlayerWindow ?? makeMiniPlayer()
+        miniPlayerWindow = window
+        isMiniPlayerVisible = true
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        canRenderMiniPlayer = window.occlusionState.contains(.visible)
+    }
+
+    private func makeMiniPlayer() -> NSWindow {
+        isPlayerArtworkExpanded = false
+        let window = MusicPlayerPanel(contentRect: NSRect(x: 0, y: 0, width: MusicBar.width + 32,
+                                                          height: MusicBar.cardHeight + 32),
+                                      styleMask: [.borderless], backing: .buffered, defer: false)
+        window.title = "Hum · Mini Player"
+        window.isOpaque = false
+        window.backgroundColor = .clear
+        window.isMovableByWindowBackground = true
+        window.isReleasedWhenClosed = false
+        window.hasShadow = false
+        window.level = .floating
+        window.collectionBehavior = [.fullScreenAuxiliary]
+        window.delegate = self
+        let hosting = NSHostingController(rootView: MiniPlayerContent(environment: environment))
+        hosting.sizingOptions = []
+        window.contentViewController = hosting
+        window.setContentSize(NSSize(width: MusicBar.width + 32, height: MusicBar.cardHeight + 32))
+        window.center()
+        return window
+    }
+
+    func resizeMiniPlayer() {
+        guard let window = miniPlayerWindow else { return }
+        var frame = window.frame
+        frame.size.height = (isPlayerArtworkExpanded ? MusicBar.expandedHeight : MusicBar.cardHeight) + 32
+        if let screen = window.screen, frame.maxY > screen.visibleFrame.maxY {
+            frame.origin.y = screen.visibleFrame.maxY - frame.height
+        }
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion ? 0 : 0.28
+            context.timingFunction = CAMediaTimingFunction(controlPoints: 0.23, 1, 0.32, 1)
+            window.animator().setFrame(frame, display: true)
+        }
+    }
+
     // MARK: NSWindowDelegate
+
+    func windowDidChangeOcclusionState(_ notification: Notification) {
+        guard let window = notification.object as? NSWindow else { return }
+        if window === lyricsWindow { isLyricsOccluded = !window.occlusionState.contains(.visible) }
+        if window === cinematicPreviewWindow { canRenderCinematicPreview = window.occlusionState.contains(.visible) }
+        if window === miniPlayerWindow { canRenderMiniPlayer = window.occlusionState.contains(.visible) }
+    }
 
     func windowWillClose(_ notification: Notification) {
         let window = notification.object as? NSWindow
         if window === lyricsWindow {
             isLyricsVisible = false
+        } else if window === cinematicPreviewWindow {
+            canRenderCinematicPreview = false
+            cinematicPreviewWindow?.contentViewController = nil
+            cinematicPreviewWindow = nil
+        } else if window === miniPlayerWindow {
+            canRenderMiniPlayer = false
+            isMiniPlayerVisible = false
+            miniPlayerWindow?.contentViewController = nil
+            miniPlayerWindow = nil
         } else if window === settingsWindow {
             // Drop the SwiftUI content so the live effect preview stops drawing; it is rebuilt
             // the next time Settings opens.
             settingsWindow?.contentViewController = nil
             settingsWindow = nil
         }
+    }
+}
+
+
+private struct CinematicPreview: View {
+    let environment: AppEnvironment
+    var body: some View {
+        CinematicScene(data: environment.cinematicData(), animate: environment.renderGate.canAnimateHeavy && environment.windows.canRenderCinematicPreview,
+                       playerActions: environment.musicBarActions())
+    }
+}
+
+private final class MusicPlayerPanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+}
+
+private struct MiniPlayerContent: View {
+    let environment: AppEnvironment
+
+    var body: some View {
+        @Bindable var windows = environment.windows
+        MusicBar(data: environment.cinematicData(),
+                 animate: environment.renderGate.canAnimate && windows.canRenderMiniPlayer,
+                 isArtworkExpanded: $windows.isPlayerArtworkExpanded,
+                 actions: environment.nowPlaying.currentTrack == nil ? nil : environment.musicBarActions())
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .padding(16)
+            .overlay(alignment: .topTrailing) {
+                Button { windows.toggleMiniPlayer() } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.8))
+                        .frame(width: 18, height: 18)
+                        .background(.black.opacity(0.8), in: Circle())
+                }
+                .buttonStyle(MusicBarButtonStyle())
+                .padding(5)
+                .help("Close mini player")
+                .accessibilityLabel("Close mini player")
+            }
+            .onChange(of: windows.isPlayerArtworkExpanded) { _, _ in windows.resizeMiniPlayer() }
+            .onExitCommand { windows.toggleMiniPlayer() }
     }
 }

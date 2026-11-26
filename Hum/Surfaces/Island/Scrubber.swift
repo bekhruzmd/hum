@@ -4,12 +4,13 @@ import SwiftUI
 struct Scrubber: View {
     let state: PlaybackState
     let tint: Color
+    var animate = true
     let onSeek: (TimeInterval) -> Void
 
     @State private var dragFraction: Double?
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.5, paused: !state.isPlaying || dragFraction != nil)) { timeline in
+        TimelineView(.animation(minimumInterval: 0.5, paused: !animate || !state.isPlaying || dragFraction != nil)) { timeline in
             let duration = max(1, state.track.duration)
             let position = state.interpolatedPosition(at: timeline.date)
             let fraction = dragFraction ?? min(1, position / duration)
@@ -25,7 +26,7 @@ struct Scrubber: View {
                     .gesture(
                         DragGesture(minimumDistance: 0)
                             .onChanged { value in
-                                dragFraction = min(1, max(0, value.location.x / proxy.size.width))
+                                dragFraction = min(1, max(0, value.location.x / max(1, proxy.size.width)))
                             }
                             .onEnded { _ in
                                 if let dragFraction { onSeek(dragFraction * duration) }
@@ -53,7 +54,7 @@ struct Scrubber: View {
     }
 
     static func format(_ seconds: TimeInterval) -> String {
-        let total = Int(seconds.rounded(.down))
+        let total = seconds.isFinite ? Int(max(0, seconds).rounded(.down)) : 0
         return String(format: "%d:%02d", total / 60, total % 60)
     }
 }

@@ -28,7 +28,8 @@ targets:
         INFOPLIST_FILE: Hum/Info.plist
         GENERATE_INFOPLIST_FILE: NO
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "5"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     dependencies:
       - target: HumSaver
         embed: true
@@ -46,8 +47,15 @@ targets:
           - "Info.plist"
       - Hum/Effects
       - Hum/Surfaces/Cinematic/CinematicScene.swift
+      - Hum/Surfaces/Cinematic/MusicBar.swift
+      - Hum/Surfaces/Island/PlaybackBars.swift
+      - Hum/Surfaces/Cinematic/CinematicRefraction.metal
+      - Hum/Surfaces/Cinematic/CinematicEdgeGlow.metal
+      - Hum/Surfaces/Cinematic/DisplayEdgeGeometry.swift
+      - Hum/Surfaces/Cinematic/DisplayEdgeGlow.swift
       - Hum/Surfaces/Cinematic/MonochromeArtwork.swift
       - Hum/Surfaces/Cinematic/ScreensaverFeed.swift
+      - Hum/Surfaces/Cinematic/ScreensaverCommand.swift
       - Hum/Lyrics/WordTimingEstimator.swift
       - Hum/Lyrics/LyricsModels.swift
       - Hum/Playback/AlbumPalette.swift
@@ -63,7 +71,8 @@ targets:
         ENABLE_HARDENED_RUNTIME: YES
         SKIP_INSTALL: YES
         MARKETING_VERSION: "0.1.0"
-        CURRENT_PROJECT_VERSION: "1"
+        CURRENT_PROJECT_VERSION: "5"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
   HumTests:
     type: bundle.unit-test

@@ -9,31 +9,56 @@ struct MenuBarContent: View {
 
         if let track = environment.nowPlaying.currentTrack {
             Text("\(track.title) — \(track.artist)")
+                .font(.headline)
             Divider()
         }
 
+        // Core Window Actions
         Button(windows.isLyricsVisible ? "Hide Lyrics Window" : "Show Lyrics Window") {
             windows.toggleLyrics()
         }
-        Toggle("Show Island", isOn: $settings.islandEnabled)
-        Picker("Desktop", selection: $settings.desktopMode) {
-            ForEach(DesktopMode.allCases) { Text($0.displayName).tag($0) }
+
+        Button(windows.isMiniPlayerVisible ? "Hide Mini Player" : "Show Mini Player") {
+            windows.toggleMiniPlayer()
         }
-        Toggle("Float on Top", isOn: $settings.floatOnTop)
-        Toggle("Compact Subtitle Mode", isOn: $settings.compactMode)
-        Toggle("Lyrics in Menu Bar", isOn: $settings.menuBarLyrics)
+
+        Button("Show Live Scene") {
+            windows.showCinematicPreview()
+        }
+
+        Divider()
+
+        // Display Surfaces & Offsets
+        Menu("Desktop") {
+            ForEach(DesktopMode.allCases) { mode in
+                Button {
+                    settings.desktopMode = mode
+                } label: {
+                    HStack {
+                        Text(mode.displayName)
+                        if settings.desktopMode == mode {
+                            Image(systemName: "checkmark")
+                        }
+                    }
+                }
+            }
+        }
 
         Menu("Lyrics Offset") {
             Button("Earlier (+0.1 s)") { environment.nudgeOffset(by: OffsetStore.step) }
             Button("Later (−0.1 s)") { environment.nudgeOffset(by: -OffsetStore.step) }
-            Button("Reset") { environment.offsets.reset(environment.nowPlaying.currentTrack) }
+            Divider()
+            Button("Reset Offset") { environment.offsets.reset(environment.nowPlaying.currentTrack) }
         }
         .disabled(environment.nowPlaying.currentTrack == nil)
 
-        Button("Start Idle Screen") { environment.idleScreen.show() }
+        Button("Start Idle Screen") {
+            environment.idleScreen.show()
+        }
 
         Divider()
 
+        // App Management
         Button("Settings…") {
             windows.showSettings()
         }

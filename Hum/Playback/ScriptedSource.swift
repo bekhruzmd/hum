@@ -39,6 +39,11 @@ extension ScriptedSource {
         await command("set player position to \(seconds)")
     }
 
+    func setShuffle(_ enabled: Bool) async {
+        let property = id == .spotify ? "shuffling" : "shuffle enabled"
+        await command("set \(property) to \(enabled ? "true" : "false")")
+    }
+
     func command(_ verb: String) async {
         guard isRunning else { return }
         _ = try? await runner.execute(guarded(verb))

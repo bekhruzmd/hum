@@ -45,11 +45,11 @@ enum LyricEffectKind: String, CaseIterable, Identifiable, Sendable {
         }
     }
 
-    /// Frames per second the effect needs. Constellation only animates star pop-ins and a
-    /// slow sparkle, so 30 fps looks identical and halves the cost.
+    /// Continuous fills and movement use display cadence; discrete character reveals and
+    /// slow light changes need only 30 frames per second.
     var framesPerSecond: Double {
         switch self {
-        case .constellation: return 30
+        case .constellation, .typewriter, .glow: return 30
         default: return 60
         }
     }
@@ -93,20 +93,24 @@ struct LiveLyricEffect: View {
     var previous: TimedLine? = nil
     let lyricTime: (Date) -> TimeInterval
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / kind.framesPerSecond, paused: !isPlaying)) { timeline in
-            LyricEffectView(
-                kind: kind,
-                context: LyricRenderContext(
-                    line: line,
-                    time: lyricTime(timeline.date),
-                    palette: palette,
-                    fontSize: fontSize,
-                    alignment: alignment,
-                    previous: previous
-                )
-            )
+        if reduceMotion {
+            // The owning surface advances line selection. Static text needs no frame timer.
+            FadeEffect().render(context(at: Date()))
+        } else {
+            TimelineView(.animation(minimumInterval: 1.0 / kind.framesPerSecond, paused: !isPlaying)) { timeline in
+                LyricEffectView(kind: kind, context: context(at: timeline.date))
+            }
         }
+    }
+
+    private func context(at date: Date) -> LyricRenderContext {
+        LyricRenderContext(
+            line: line, time: lyricTime(date), palette: palette,
+            fontSize: fontSize, alignment: alignment, previous: previous
+        )
     }
 
     /// Effects too tall for one-row surfaces (island, compact bar) fall back to Karaoke Fill.

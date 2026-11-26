@@ -61,6 +61,7 @@ final class LyricsStore {
                 let content = try await service.lyrics(for: newTrack)
                 guard !Task.isCancelled else { return }
                 await cache.store(content, for: key)
+                guard !Task.isCancelled, self?.track?.cacheKey == key else { return }
                 self?.state = .loaded(content)
             } catch {
                 guard !Task.isCancelled else { return }
@@ -83,9 +84,12 @@ final class LyricsStore {
     func reload() {
         guard let current = track else { return }
         let key = current.cacheKey
-        track = nil
-        Task { [cache] in
+        fetchTask?.cancel()
+        state = .loading
+        fetchTask = Task { [weak self, cache] in
             await cache.remove(key)
+            guard !Task.isCancelled, let self, self.track?.cacheKey == key else { return }
+            self.track = nil
             self.update(for: current)
         }
     }

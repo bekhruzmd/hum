@@ -1,48 +1,60 @@
 import AppKit
 import CryptoKit
 import Foundation
+import OSLog
+import Observation
 
 /// Keeps the Hum screensaver's feed up to date (see `ScreensaverFeed`).
 ///
-/// Writes only on real changes (track, play/pause, seek, lyrics, cover, offset), never on a
-/// timer. Hum writes into the screensaver host's container only if that container already
-/// exists: creating another app's container by hand can stop macOS from launching it.
+/// Publishes changes immediately and refreshes a heartbeat every five seconds. Both
+/// processes use the user's real Application Support folder, without cross-container writes.
+@Observable
 @MainActor
 final class ScreensaverFeedWriter {
-    /// The sandboxed host that runs third-party screensavers (and its Intel twin on Apple silicon).
-    static let hostContainerIDs = [
-        "com.apple.ScreenSaver.Engine.legacyScreenSaver",
-        "com.apple.ScreenSaver.Engine.legacyScreenSaver.x86-64"
-    ]
+    private(set) var deliveryError: String?
 
-    private unowned let environment: AppEnvironment
-    private var lastFeed: ScreensaverFeed?
-    private var lastArtworkFile: String?
-    private var pendingWrite: Task<Void, Never>?
+    @ObservationIgnored private unowned let environment: AppEnvironment
+    @ObservationIgnored private var heartbeat: Task<Void, Never>?
+    @ObservationIgnored private var commandWatcher: Task<Void, Never>?
+    private let logger = Logger(subsystem: "com.yourname.hum", category: "ScreensaverFeed")
+    @ObservationIgnored private var pendingWrite: Task<Void, Never>?
 
     init(environment: AppEnvironment) {
         self.environment = environment
     }
 
     func start() {
+        guard heartbeat == nil else { return }
         observeContinuously(self) { writer in
-            guard writer.environment.settings.screensaverFeed else { return }
-            let feed = writer.makeFeed()
-            writer.schedule(feed)
+            writer.schedule(writer.currentFeed())
+        }
+        heartbeat = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(5))
+                guard !Task.isCancelled, let self else { return }
+                self.write(self.currentFeed())
+            }
+        }
+        // Poll command queue at 10 Hz (100ms) for snappy, near-instant responsiveness
+        commandWatcher = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(100))
+                guard !Task.isCancelled, let self else { return }
+                self.consumeCommand()
+            }
         }
     }
 
-    /// Folders the screensaver might read from: each existing host container, plus the
-    /// regular Application Support folder (used if the host ever runs unsandboxed).
-    static func targetDirectories(home: URL = FileManager.default.homeDirectoryForCurrentUser) -> [URL] {
-        let fileManager = FileManager.default
-        var directories = hostContainerIDs.compactMap { id -> URL? in
-            let support = home
-                .appendingPathComponent("Library/Containers/\(id)/Data/Library/Application Support", isDirectory: true)
-            return fileManager.fileExists(atPath: support.path) ? support : nil
+    /// One shared location, readable by the saver host without modifying its protected container.
+    static func targetDirectories(home: URL = ScreensaverFeed.realHomeDirectory) -> [URL] {
+        [ScreensaverFeed.directory(home: home)]
+    }
+
+    private func currentFeed() -> ScreensaverFeed {
+        guard environment.settings.screensaverFeed else {
+            return ScreensaverFeed(sharingEnabled: false, anchorDate: Date().timeIntervalSince1970)
         }
-        directories.append(home.appendingPathComponent("Library/Application Support", isDirectory: true))
-        return directories.map { $0.appendingPathComponent(ScreensaverFeed.folderName, isDirectory: true) }
+        return makeFeed()
     }
 
     private func makeFeed() -> ScreensaverFeed {
@@ -50,13 +62,19 @@ final class ScreensaverFeedWriter {
         let state = nowPlaying.playbackState
         let now = Date()
         return ScreensaverFeed(
-            track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album) },
+            sharingEnabled: true,
+            track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album, duration: $0.track.duration) },
             lyricAnchor: state.map { environment.lyricTime($0, at: now) } ?? 0,
             anchorDate: now.timeIntervalSince1970,
             isPlaying: state?.isPlaying ?? false,
+            playbackAnchor: state?.interpolatedPosition(at: now),
+            isShuffling: state?.isShuffling,
             palette: nowPlaying.palette,
             lines: environment.lyrics.timedLines,
             effect: environment.settings.cinematicEffect.rawValue,
+            look: environment.settings.cinematicLook.rawValue,
+            edgeGlow: environment.settings.cinematicEdgeGlow,
+            displayEdgeProfiles: environment.settings.displayEdgeProfiles,
             artworkFile: nowPlaying.artworkImage == nil ? nil : nowPlaying.artworkData.map(Self.artworkFileName)
         )
     }
@@ -68,22 +86,53 @@ final class ScreensaverFeedWriter {
             try? await Task.sleep(for: .milliseconds(250))
             guard let self, !Task.isCancelled else { return }
             self.write(feed)
+            self.consumeCommand()
+        }
+    }
+
+    /// Reads and executes a command from the screensaver, if one was written.
+    private func consumeCommand() {
+        guard let command = ScreensaverCommand.consume() else { return }
+        let nowPlaying = environment.nowPlaying
+        switch command.action {
+        case .playPause: nowPlaying.playPause()
+        case .next: nowPlaying.nextTrack()
+        case .previous: nowPlaying.previousTrack()
+        case .shuffle: nowPlaying.toggleShuffle()
+        case .seek:
+            if let position = command.seekPosition { nowPlaying.seek(to: position) }
         }
     }
 
     private func write(_ feed: ScreensaverFeed) {
-        guard feed != lastFeed, let json = try? JSONEncoder().encode(feed) else { return }
+        guard let json = try? JSONEncoder().encode(feed) else { return }
         let artwork = environment.nowPlaying.artworkData
+        var failed = false
         for directory in Self.targetDirectories() {
-            try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-            try? json.write(to: directory.appendingPathComponent(ScreensaverFeed.fileName), options: .atomic)
-            if let name = feed.artworkFile, name != lastArtworkFile, let artwork {
-                removeOldArtwork(in: directory, keeping: name)
-                try? artwork.write(to: directory.appendingPathComponent(name), options: .atomic)
+            do {
+                try Self.publish(feed: feed, json: json, artwork: artwork, to: directory)
+                if let name = feed.artworkFile { removeOldArtwork(in: directory, keeping: name) }
+            } catch {
+                failed = true
+                logger.error("Screensaver feed write failed: \(error.localizedDescription, privacy: .public)")
             }
         }
-        lastFeed = feed
-        lastArtworkFile = feed.artworkFile
+        deliveryError = failed
+            ? "Hum couldn't save the current song for the screensaver. Check that your Library/Application Support folder is writable."
+            : nil
+    }
+
+    /// Publish the cover before the JSON so readers never see a reference to a missing file.
+    static func publish(feed: ScreensaverFeed, json: Data, artwork: Data?, to directory: URL) throws {
+        let fm = FileManager.default
+        try fm.createDirectory(at: directory, withIntermediateDirectories: true)
+        if let name = feed.artworkFile {
+            let file = directory.appendingPathComponent(name)
+            if !fm.fileExists(atPath: file.path), let artwork {
+                try artwork.write(to: file, options: .atomic)
+            }
+        }
+        try json.write(to: directory.appendingPathComponent(ScreensaverFeed.fileName), options: .atomic)
     }
 
     private func removeOldArtwork(in directory: URL, keeping name: String) {
@@ -124,10 +173,26 @@ enum ScreensaverInstaller {
         }
         let fileManager = FileManager.default
         try fileManager.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
-        if fileManager.fileExists(atPath: destination.path) {
-            try fileManager.removeItem(at: destination)
+        try replaceBundle(from: source, at: destination)
+    }
+
+    /// Stage a complete bundle before replacing the installed copy, and roll back on failure.
+    static func replaceBundle(from source: URL, at destination: URL) throws {
+        let fm = FileManager.default
+        let parent = destination.deletingLastPathComponent()
+        let staging = parent.appendingPathComponent(".Hum-stage-" + UUID().uuidString)
+        let backup = parent.appendingPathComponent(".Hum-backup-" + UUID().uuidString)
+        try fm.copyItem(at: source, to: staging)
+        defer { try? fm.removeItem(at: staging) }
+        let hadPrevious = fm.fileExists(atPath: destination.path)
+        if hadPrevious { try fm.moveItem(at: destination, to: backup) }
+        do {
+            try fm.moveItem(at: staging, to: destination)
+        } catch {
+            if hadPrevious { try? fm.moveItem(at: backup, to: destination) }
+            throw error
         }
-        try fileManager.copyItem(at: source, to: destination)
+        if hadPrevious { try? fm.removeItem(at: backup) }
     }
 
     private static let screenSaverPaneID = "com.apple.ScreenSaver-Settings.extension"

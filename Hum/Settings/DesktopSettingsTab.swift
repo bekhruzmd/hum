@@ -6,17 +6,20 @@ struct DesktopSettingsTab: View {
     var body: some View {
         Form {
             Section {
-                Picker("Live desktop", selection: $settings.desktopMode) {
+                Picker("Live desktop mode", selection: $settings.desktopMode) {
                     ForEach(DesktopMode.allCases) { Text($0.displayName).tag($0) }
                 }
                 .pickerStyle(.segmented)
+
                 if settings.desktopMode == .lyrics {
-                    Picker("Background", selection: $settings.desktopLyricsBackground) {
+                    Picker("Background styling", selection: $settings.desktopLyricsBackground) {
                         ForEach(DesktopLyricsBackground.allCases) { Text($0.displayName).tag($0) }
                     }
                 }
+            } header: {
+                Text("Desktop Wallpaper Surface")
             } footer: {
-                Text("Draws on every display, above your wallpaper and below your desktop icons. It never takes clicks, and it pauses when covered, when the screen is locked, or in Low Power Mode.")
+                Text("Renders lyrics or a turntable directly on your Mac desktop behind icons and open windows. Automatically throttles and pauses during full-screen apps, lock screen, and Low Power Mode.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
