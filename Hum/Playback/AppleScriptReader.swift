@@ -44,7 +44,7 @@ enum AppleScriptReader {
     end tell
     """)
 
-    static func fetchActivePlayback() -> AppleScriptPlaybackResult {
+    static func fetchActivePlayback(preferredPlayer: PreferredPlayer = .auto) -> AppleScriptPlaybackResult {
         let runningBundleIDs = Set(
             NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
         )
@@ -52,10 +52,13 @@ enum AppleScriptReader {
         let spotifyRunning = runningBundleIDs.contains(MusicSource.spotify.bundleIdentifier)
         let musicRunning = runningBundleIDs.contains(MusicSource.appleMusic.bundleIdentifier)
 
+        let checkSpotify = spotifyRunning && (preferredPlayer == .auto || preferredPlayer == .spotify)
+        let checkMusic = musicRunning && (preferredPlayer == .auto || preferredPlayer == .appleMusic)
+
         var candidates: [PlaybackState] = []
         var unauthorizedSource: MusicSource?
 
-        if spotifyRunning {
+        if checkSpotify {
             switch query(.spotify) {
             case .playing(let state):
                 if state.isPlaying { return .playing(state) }
@@ -67,7 +70,7 @@ enum AppleScriptReader {
             }
         }
 
-        if musicRunning {
+        if checkMusic {
             switch query(.appleMusic) {
             case .playing(let state):
                 if state.isPlaying { return .playing(state) }
@@ -88,6 +91,54 @@ enum AppleScriptReader {
         }
 
         return .nothingPlaying
+    }
+
+    static func seek(to position: TimeInterval, in source: MusicSource) {
+        let clamped = max(0, position)
+        let formatted = String(format: "%.2f", locale: Locale(identifier: "en_US_POSIX"), clamped)
+        let appName = source.rawValue
+        let sourceCode = """
+        tell application "\(appName)"
+            set player position to \(formatted)
+        end tell
+        """
+        var errorInfo: NSDictionary?
+        NSAppleScript(source: sourceCode)?.executeAndReturnError(&errorInfo)
+    }
+
+    static func fetchAppleMusicArtworkURL(for track: Track) -> URL? {
+        guard track.source == .appleMusic else { return nil }
+        let runningBundleIDs = Set(
+            NSWorkspace.shared.runningApplications.compactMap(\.bundleIdentifier)
+        )
+        guard runningBundleIDs.contains(MusicSource.appleMusic.bundleIdentifier) else {
+            return nil
+        }
+
+        let script = NSAppleScript(source: """
+        tell application "Music"
+            if (count of artworks of current track) > 0 then
+                return raw data of artwork 1 of current track
+            end if
+        end tell
+        """)
+        var errorInfo: NSDictionary?
+        guard let descriptor = script?.executeAndReturnError(&errorInfo), errorInfo == nil else {
+            return nil
+        }
+
+        let data = descriptor.data
+        guard !data.isEmpty else { return nil }
+
+        let safeHash = abs(track.cacheKey.hashValue)
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent("hum-artwork-\(safeHash).img")
+        do {
+            try data.write(to: tempURL, options: .atomic)
+            return tempURL
+        } catch {
+            return nil
+        }
     }
 
     private static func query(_ source: MusicSource) -> AppleScriptPlaybackResult {

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct WindowAccessor: NSViewRepresentable {
     let isFloating: Bool
+    let opacity: Double
     var onWindowAvailable: ((NSWindow) -> Void)?
 
     func makeNSView(context: Context) -> NSView {
@@ -24,6 +25,7 @@ struct WindowAccessor: NSViewRepresentable {
 
     private func configure(window: NSWindow) {
         window.level = isFloating ? .floating : .normal
+        window.alphaValue = min(max(opacity, 0.35), 1.0)
         window.isMovableByWindowBackground = true
         window.isOpaque = false
         window.backgroundColor = .clear

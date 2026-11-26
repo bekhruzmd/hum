@@ -8,6 +8,10 @@ struct HumApp: App {
     @State private var isFloating = true
     @State private var mainWindow: NSWindow?
 
+    @AppStorage("windowOpacity") private var windowOpacity: Double = 0.95
+    @AppStorage("compactMode") private var compactMode: Bool = false
+    @AppStorage("preferredPlayer") private var preferredPlayer: PreferredPlayer = .auto
+
     @Environment(\.openWindow) private var openWindow
 
     var body: some Scene {
@@ -17,12 +21,17 @@ struct HumApp: App {
                 lyricsStore: lyricsStore
             )
             .background(
-                WindowAccessor(isFloating: isFloating) { window in
+                WindowAccessor(isFloating: isFloating, opacity: windowOpacity) { window in
                     mainWindow = window
                 }
             )
             .onAppear {
+                nowPlayingStore.preferredPlayer = preferredPlayer
                 nowPlayingStore.startPolling()
+            }
+            .onChange(of: preferredPlayer) { _, newValue in
+                nowPlayingStore.preferredPlayer = newValue
+                nowPlayingStore.pollOnce()
             }
             .onChange(of: nowPlayingStore.currentTrack) { _, newTrack in
                 lyricsStore.update(for: newTrack)
@@ -32,12 +41,24 @@ struct HumApp: App {
         .windowResizability(.contentSize)
         .defaultSize(width: 360, height: 480)
 
+        Settings {
+            SettingsView()
+        }
+
         MenuBarExtra("Hum", systemImage: "music.note") {
             Button(isWindowVisible ? "Hide Window" : "Show Window") {
                 toggleWindow()
             }
 
             Toggle("Float on Top", isOn: $isFloating)
+            Toggle("Compact Subtitle Mode", isOn: $compactMode)
+
+            Divider()
+
+            SettingsLink {
+                Text("Settings…")
+            }
+            .keyboardShortcut(",")
 
             Divider()
 

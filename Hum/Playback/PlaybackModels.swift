@@ -1,5 +1,21 @@
 import Foundation
 
+enum PreferredPlayer: String, CaseIterable, Identifiable, Sendable {
+    case auto
+    case spotify
+    case appleMusic
+
+    var displayName: String {
+        switch self {
+        case .auto: return "Auto"
+        case .spotify: return "Spotify"
+        case .appleMusic: return "Apple Music"
+        }
+    }
+
+    var id: String { rawValue }
+}
+
 enum MusicSource: String, Sendable, Equatable, Hashable {
     case spotify = "Spotify"
     case appleMusic = "Music"

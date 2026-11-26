@@ -11,6 +11,7 @@
 		1AB042E49CC532C4230DE769 /* LyricsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F67D8C16036969879B647DD /* LyricsListView.swift */; };
 		247E22CFAA66D6D83D55D037 /* PlaybackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59C6CE678DE3FCD27BAFCD13 /* PlaybackModels.swift */; };
 		2712BFE4B30D4479B7A1D370 /* LRCParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7214A89BA961F2B8081A78 /* LRCParserTests.swift */; };
+		5277D9D909AD010CF79D77B9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BA96D0B13E569154AC31512 /* SettingsView.swift */; };
 		7B7573DC2FFDF6607D4FB2FC /* WindowAccessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0FAEDAE032B784FB4E09941 /* WindowAccessor.swift */; };
 		7E69EE42182E2D6F881DE28E /* LRCLibClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */; };
 		7F479D963D8CFA3F867FBA08 /* AppleScriptReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0F73A4C6896B230D41BE33F /* AppleScriptReader.swift */; };
@@ -34,6 +35,7 @@
 
 /* Begin PBXFileReference section */
 		0599596A435B25EF251F0E95 /* LyricsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsStore.swift; sourceTree = "<group>"; };
+		0BA96D0B13E569154AC31512 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		21606E340A0D4C9324CB58F4 /* LyricsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsModels.swift; sourceTree = "<group>"; };
 		3A0E044C31080E1A01B85C31 /* LRCLibClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCLibClient.swift; sourceTree = "<group>"; };
 		585010E332D2C8FFD45F5DF1 /* HumTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = HumTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -85,6 +87,7 @@
 				97E9071EBB2C4261AC9890C8 /* ContentView.swift */,
 				6F3B26321174DAA2F1A0263C /* HeaderView.swift */,
 				7F67D8C16036969879B647DD /* LyricsListView.swift */,
+				0BA96D0B13E569154AC31512 /* SettingsView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 				C082C048388EB64B12973A59 /* LyricsStore.swift in Sources */,
 				F3CB78D4ED05BFAB9617D6CA /* NowPlayingStore.swift in Sources */,
 				247E22CFAA66D6D83D55D037 /* PlaybackModels.swift in Sources */,
+				5277D9D909AD010CF79D77B9 /* SettingsView.swift in Sources */,
 				7B7573DC2FFDF6607D4FB2FC /* WindowAccessor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
