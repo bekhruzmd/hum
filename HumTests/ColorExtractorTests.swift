@@ -15,7 +15,14 @@ final class ColorExtractorTests: XCTestCase {
     }
 
     func testDeterministic() {
-        let pixels = (0..<500).map { i in SIMD3<Double>(Double(i % 7) / 7, Double(i % 11) / 11, Double(i % 13) / 13) }
+        // Spelled out with explicit types: older compilers time out type-checking the one-liner.
+        var pixels: [SIMD3<Double>] = []
+        for i in 0..<500 {
+            let r: Double = Double(i % 7) / 7
+            let g: Double = Double(i % 11) / 11
+            let b: Double = Double(i % 13) / 13
+            pixels.append(SIMD3<Double>(r, g, b))
+        }
         XCTAssertEqual(ColorExtractor.dominantColors(in: pixels, k: 3), ColorExtractor.dominantColors(in: pixels, k: 3))
     }
 
