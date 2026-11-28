@@ -35,6 +35,7 @@ final class SaverModel {
             edgeGlow: feed.edgeGlowIntensity,
             glowAppearance: feed.glowAppearance ?? .default,
             showsPlayerBar: feed.playerBar ?? true,
+            surfaceMaterial: feed.material ?? .frosted,
             displayEdgeProfiles: feed.displayEdgeProfiles ?? [:],
             isPlaying: feed.isPlaying,
             isShuffling: feed.isShuffling,
