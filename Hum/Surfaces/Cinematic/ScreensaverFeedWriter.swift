@@ -77,6 +77,7 @@ final class ScreensaverFeedWriter {
             displayEdgeProfiles: environment.settings.displayEdgeProfiles,
             glowAppearance: environment.settings.glowAppearance,
             playerBar: environment.settings.idlePlayerBar,
+            material: environment.settings.surfaceMaterial,
             artworkFile: nowPlaying.artworkImage == nil ? nil : nowPlaying.artworkData.map(Self.artworkFileName)
         )
     }

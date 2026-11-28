@@ -9,9 +9,20 @@ struct IslandSettingsPage: View {
                 FeatureToggleRow(title: "Island", caption: "Around the notch while music plays (a pill under the menu bar on other displays)",
                                  isOn: $settings.islandEnabled)
                 PreviewWell(height: 190) {
-                    IslandPreview(motion: settings.islandMotion, size: settings.islandSize, showsBars: settings.islandShowsBars)
+                    IslandPreview(motion: settings.islandMotion, size: settings.islandSize, showsBars: settings.islandShowsBars,
+                                  material: settings.surfaceMaterial)
                 }
             }
+
+            Section {
+                MaterialPicker(selection: $settings.surfaceMaterial)
+            } header: {
+                Text("Material")
+            } footer: {
+                Text("Also used by the glass music player on the idle scene and screensaver, and by the lyrics window's controls.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            .disabled(!settings.islandEnabled)
 
             Section {
                 Picker("Open with", selection: $settings.islandTrigger) {
@@ -66,6 +77,7 @@ struct IslandPreview: View {
     let motion: IslandMotion
     let size: IslandSize
     let showsBars: Bool
+    var material: SurfaceMaterial = .frosted
 
     @State private var open = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -87,10 +99,10 @@ struct IslandPreview: View {
             ZStack(alignment: .top) {
                 let shape = IslandShape(shoulder: (open ? 10 : 7) * scale, bottomRadius: (open ? 26 : 11) * scale)
                 ZStack {
-                    shape.fill(.ultraThinMaterial)
+                    SurfaceBackground(material: material, shape: shape, darkening: material == .liquidGlass ? 0.25 : 0.5)
                     shape.fill(LinearGradient(stops: [
                         .init(color: .black, location: 0), .init(color: .black, location: 0.2),
-                        .init(color: .black.opacity(0.7), location: 0.45), .init(color: .black.opacity(0.5), location: 1)
+                        .init(color: .black.opacity(0.3), location: 0.45), .init(color: .clear, location: 1)
                     ], startPoint: .top, endPoint: .bottom))
                     shape.fill(.black).opacity(open ? 0 : 1)
                 }
@@ -171,5 +183,28 @@ struct IslandPreview: View {
             .foregroundStyle(.white)
         }
         .padding(.horizontal, 22 * scale)
+    }
+}
+
+/// Liquid Glass / Frosted / Solid, with a note when Liquid Glass isn't available.
+struct MaterialPicker: View {
+    @Binding var selection: SurfaceMaterial
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+
+    var body: some View {
+        Picker("Material", selection: $selection) {
+            ForEach(SurfaceMaterial.allCases) { material in
+                Text(material.displayName).tag(material)
+                    .disabled(material == .liquidGlass && !SurfaceMaterial.isLiquidGlassAvailable)
+            }
+        }
+        .pickerStyle(.segmented)
+        if !SurfaceMaterial.isLiquidGlassAvailable {
+            Text("Liquid Glass needs macOS 26 or later; Frosted is used instead.")
+                .font(.caption).foregroundStyle(.secondary)
+        } else if reduceTransparency && selection != .solid {
+            Text("Reduce Transparency is on, so surfaces are drawn solid.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
     }
 }

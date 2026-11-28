@@ -77,6 +77,7 @@
 		813E38A2BD57EFF9DE30EC45 /* ScreensaverFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4287C57AE7F90E7371D8E9D7 /* ScreensaverFeed.swift */; };
 		831262743C2E2CEB843A9834 /* ScreensaverFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4287C57AE7F90E7371D8E9D7 /* ScreensaverFeed.swift */; };
 		83DF9C920F9531075CB20666 /* LyricsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3AD6D449149B285C1989F7B /* LyricsService.swift */; };
+		876E49123A22B75C92127668 /* SurfaceBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169F5A9AE1B57DE1165D6EDD /* SurfaceBackground.swift */; };
 		88CB770BDB8A1A694A4879F9 /* IslandGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C2459F18FDA90885BC10A4 /* IslandGeometryTests.swift */; };
 		8A1913EE512CAD2CFEDBB099 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 776D070219A09279C9E0DB1B /* SettingsComponents.swift */; };
 		8CCF4318693BA852DF543925 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B30E72C8B66DFB711666 /* KeyCombo.swift */; };
@@ -133,6 +134,7 @@
 		F96ED34CC8D31C0F746D621C /* LyricEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = B12A126AB01E328A235275D0 /* LyricEffect.swift */; };
 		F99B1BE6F1451837B21696BE /* DisplayEdgeGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 427C41D563A0C3BB6556F09A /* DisplayEdgeGeometry.swift */; };
 		FBC31F9A1E9C3AE82BA2B00F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */; };
+		FC7B8149C9C97DDFF5C86AA5 /* SurfaceBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 169F5A9AE1B57DE1165D6EDD /* SurfaceBackground.swift */; };
 		FDDDF182CAE9E768859A99A7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28812388702A693285E830 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -180,6 +182,7 @@
 		125840F517B2119BC66C15E2 /* SettingsTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTypes.swift; sourceTree = "<group>"; };
 		13DC146A3DB8BA742CE42ECB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		16823897C5481A247283F5ED /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		169F5A9AE1B57DE1165D6EDD /* SurfaceBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SurfaceBackground.swift; sourceTree = "<group>"; };
 		1801AF342FE81E51F83A2918 /* OffsetStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OffsetStore.swift; sourceTree = "<group>"; };
 		21606E340A0D4C9324CB58F4 /* LyricsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsModels.swift; sourceTree = "<group>"; };
 		2181F6E98C5075554C34286F /* BeatGlowSettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BeatGlowSettingsPage.swift; sourceTree = "<group>"; };
@@ -460,6 +463,7 @@
 				4C4B8F07648DB88929BBB312 /* KaraokeFillEffect.swift */,
 				B12A126AB01E328A235275D0 /* LyricEffect.swift */,
 				F55D4A74849F57CB916B6431 /* SeededRandom.swift */,
+				169F5A9AE1B57DE1165D6EDD /* SurfaceBackground.swift */,
 				C47D4E0620D74779652D07A2 /* TypewriterEffect.swift */,
 				6E8EC69BCE561E698BEA2DB9 /* WaveEffect.swift */,
 			);
@@ -701,6 +705,7 @@
 				813E38A2BD57EFF9DE30EC45 /* ScreensaverFeed.swift in Sources */,
 				E20B27695BEBD90B77728AC9 /* SeededRandom.swift in Sources */,
 				D135720F1A0100B8335A132A /* SettingsTypes.swift in Sources */,
+				876E49123A22B75C92127668 /* SurfaceBackground.swift in Sources */,
 				AA41B5DD20C95881698EC00D /* TypewriterEffect.swift in Sources */,
 				D1FA942B8ECE3654DC10782A /* WaveEffect.swift in Sources */,
 				0B09B3779EB2F66BD806EC4A /* WordTimingEstimator.swift in Sources */,
@@ -793,6 +798,7 @@
 				102F3A98ABF9582A50733C15 /* SoundSynth.swift in Sources */,
 				3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */,
 				459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */,
+				FC7B8149C9C97DDFF5C86AA5 /* SurfaceBackground.swift in Sources */,
 				DE418A81078C068ABD99F202 /* Track.swift in Sources */,
 				37181D55EF1B60C1486C0385 /* TransportControls.swift in Sources */,
 				E98FF0BB9A98C6A2EF784CBC /* TurntableView.swift in Sources */,

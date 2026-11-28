@@ -62,14 +62,14 @@ enum SettingsPage: String, CaseIterable, Identifiable {
     var keywords: String {
         switch self {
         case .nowPlaying: return "track song player source offset"
-        case .island: return "notch hover pull animation haptic peek"
+        case .island: return "notch hover pull animation haptic peek liquid glass material frosted"
         case .screenSaver: return "idle lock screen player bar record controls install"
         case .desktop: return "wallpaper turntable cinematic"
         case .lyrics: return "effect font window menu bar karaoke constellation"
         case .sound: return "needle crackle volume"
         case .beatGlow: return "edge light color spectrum pulse orbit display calibration"
         case .keys: return "shortcuts hotkeys"
-        case .general: return "login privacy about"
+        case .general: return "login privacy about appearance liquid glass material"
         }
     }
 

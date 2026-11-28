@@ -102,3 +102,33 @@ final class GlowAndIslandSettingsTests: XCTestCase {
         XCTAssertEqual(frame.midX, 756)
     }
 }
+
+final class SurfaceMaterialTests: XCTestCase {
+    func testResolutionRules() {
+        XCTAssertEqual(SurfaceMaterial.liquidGlass.resolved(reduceTransparency: true), .solid)
+        XCTAssertEqual(SurfaceMaterial.frosted.resolved(reduceTransparency: true), .solid)
+        XCTAssertEqual(SurfaceMaterial.solid.resolved(reduceTransparency: false), .solid)
+        XCTAssertEqual(SurfaceMaterial.frosted.resolved(reduceTransparency: false), .frosted)
+        XCTAssertEqual(SurfaceMaterial.liquidGlass.resolved(reduceTransparency: false),
+                       SurfaceMaterial.isLiquidGlassAvailable ? .liquidGlass : .frosted)
+    }
+
+    func testFeedCarriesMaterialAndOldFeedsDecode() throws {
+        var feed = ScreensaverFeed()
+        feed.material = .liquidGlass
+        let decoded = try JSONDecoder().decode(ScreensaverFeed.self, from: JSONEncoder().encode(feed))
+        XCTAssertEqual(decoded.material, .liquidGlass)
+        let legacy = try JSONDecoder().decode(ScreensaverFeed.self, from: Data(#"{"version":1,"lyricAnchor":0,"anchorDate":0,"isPlaying":false,"palette":{"colors":[]},"lines":[],"effect":"constellation"}"#.utf8))
+        XCTAssertNil(legacy.material)
+    }
+
+    @MainActor func testSettingPersistsAndDefaultsToFrosted() throws {
+        let suite = "hum.tests.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = SettingsStore(defaults: defaults)
+        XCTAssertEqual(store.surfaceMaterial, .frosted)
+        store.surfaceMaterial = .liquidGlass
+        XCTAssertEqual(SettingsStore(defaults: defaults).surfaceMaterial, .liquidGlass)
+    }
+}

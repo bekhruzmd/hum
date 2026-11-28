@@ -92,20 +92,20 @@ struct IslandView: View {
         let band = geometry.hasNotch ? geometry.notchHeight : 0
         let height = geometry.expandedSize(content: model.size.expanded).height
         let bandStop = min(0.6, band / max(1, height))
+        let material = environment.settings.surfaceMaterial.resolved(reduceTransparency: reduceTransparency)
         ZStack {
-            if !reduceTransparency {
-                shape.fill(.ultraThinMaterial)
+            SurfaceBackground(material: material, shape: shape, darkening: material == .liquidGlass ? 0.25 : 0.5)
+            if material != .solid {
+                // Solid black where the island meets the notch, easing into the material below.
                 shape.fill(LinearGradient(stops: [
                     .init(color: .black, location: 0),
                     .init(color: .black, location: bandStop),
-                    .init(color: .black.opacity(0.72), location: min(1, bandStop + 0.22)),
-                    .init(color: .black.opacity(0.5), location: 1)
+                    .init(color: .black.opacity(material == .liquidGlass ? 0.25 : 0.35), location: min(1, bandStop + 0.25)),
+                    .init(color: .clear, location: 1)
                 ], startPoint: .top, endPoint: .bottom))
-                // Light catching the lower edge of the glass.
+                // Light catching the lower edge.
                 shape.stroke(LinearGradient(colors: [.clear, .clear, .white.opacity(0.16)],
                                             startPoint: .top, endPoint: .bottom), lineWidth: 1)
-            } else {
-                shape.fill(Color(white: 0.06))
             }
             // Closed: solid black, indistinguishable from the notch.
             shape.fill(.black).opacity(open ? 0 : 1)

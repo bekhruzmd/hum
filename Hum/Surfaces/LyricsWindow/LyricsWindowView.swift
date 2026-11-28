@@ -62,7 +62,8 @@ struct LyricsWindowView: View {
             }
             .overlay(alignment: .bottom) {
                 if isHovering {
-                    ControlBar(nowPlaying: nowPlaying, state: state, animate: environment.renderGate.canAnimate && environment.windows.canRenderLyrics)
+                    ControlBar(nowPlaying: nowPlaying, state: state, animate: environment.renderGate.canAnimate && environment.windows.canRenderLyrics,
+                               material: settings.surfaceMaterial)
                         .padding(12)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
@@ -250,6 +251,7 @@ private struct ControlBar: View {
     let nowPlaying: NowPlayingStore
     let state: PlaybackState
     let animate: Bool
+    var material: SurfaceMaterial = .frosted
 
     var body: some View {
         VStack(spacing: 6) {
@@ -258,7 +260,8 @@ private struct ControlBar: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .background(SurfaceBackground(material: material, shape: RoundedRectangle(cornerRadius: 14, style: .continuous),
+                                      darkening: 0, interactive: true, solidColor: Color(nsColor: .windowBackgroundColor)))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).strokeBorder(.white.opacity(0.08)))
         .shadow(color: .black.opacity(0.2), radius: 10, y: 4)
     }

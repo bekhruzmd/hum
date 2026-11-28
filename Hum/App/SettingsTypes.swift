@@ -250,3 +250,37 @@ struct GlowAppearance: Codable, Equatable, Sendable {
         colorMode == .custom ? customColor : palette.dominantGlowColor
     }
 }
+
+// MARK: Surface material (shared with the screensaver)
+
+/// What Hum's floating surfaces are made of: the island, the glass music player and the
+/// lyrics window's control bar.
+enum SurfaceMaterial: String, CaseIterable, Identifiable, Codable, Sendable {
+    case liquidGlass
+    case frosted
+    case solid
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .liquidGlass: return "Liquid Glass"
+        case .frosted: return "Frosted"
+        case .solid: return "Solid"
+        }
+    }
+
+    /// Liquid Glass needs macOS 26 or later.
+    static var isLiquidGlassAvailable: Bool {
+        if #available(macOS 26, *) { return true }
+        return false
+    }
+
+    /// The material actually drawn: Reduce Transparency forces Solid, and Liquid Glass falls
+    /// back to Frosted on systems that don't have it.
+    func resolved(reduceTransparency: Bool) -> SurfaceMaterial {
+        if reduceTransparency { return .solid }
+        if self == .liquidGlass && !Self.isLiquidGlassAvailable { return .frosted }
+        return self
+    }
+}

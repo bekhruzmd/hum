@@ -64,6 +64,7 @@ final class AppEnvironment {
             edgeGlow: settings.cinematicEdgeGlow,
             glowAppearance: settings.glowAppearance,
             showsPlayerBar: settings.idlePlayerBar,
+            surfaceMaterial: settings.surfaceMaterial,
             displayEdgeProfiles: settings.displayEdgeProfiles,
             isPlaying: state?.isPlaying ?? false,
             isShuffling: state?.isShuffling,

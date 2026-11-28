@@ -21,6 +21,7 @@ struct CinematicSceneData {
     var glowAppearance: GlowAppearance = .default
     /// Show the glass player. Interactive only when the scene is given `playerActions`.
     var showsPlayerBar = true
+    var surfaceMaterial: SurfaceMaterial = .frosted
     var displayEdgeProfiles: [String: DisplayEdgeProfile] = [:]
     var isPlaying = false
     var isShuffling: Bool? = nil

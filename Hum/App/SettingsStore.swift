@@ -22,6 +22,9 @@ final class SettingsStore {
 
     var menuBarLyrics: Bool { didSet { defaults.set(menuBarLyrics, forKey: "menuBarLyrics") } }
 
+    /// Island, glass music player and lyrics control bar material.
+    var surfaceMaterial: SurfaceMaterial { didSet { defaults.set(surfaceMaterial.rawValue, forKey: "surfaceMaterial") } }
+
     // Island
     var islandEnabled: Bool { didSet { defaults.set(islandEnabled, forKey: "islandEnabled") } }
     var islandShowsOverFullScreen: Bool { didSet { defaults.set(islandShowsOverFullScreen, forKey: "islandShowsOverFullScreen") } }
@@ -85,6 +88,7 @@ final class SettingsStore {
         tintWithAlbumColors = defaults.object(forKey: "tintWithAlbumColors") as? Bool ?? true
         lyricEffect = LyricEffectKind(rawValue: defaults.string(forKey: "lyricEffect") ?? "") ?? .karaokeFill
         menuBarLyrics = defaults.bool(forKey: "menuBarLyrics")
+        surfaceMaterial = SurfaceMaterial(rawValue: defaults.string(forKey: "surfaceMaterial") ?? "") ?? .frosted
         islandEnabled = defaults.object(forKey: "islandEnabled") as? Bool ?? true
         islandShowsOverFullScreen = defaults.bool(forKey: "islandShowsOverFullScreen")
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true

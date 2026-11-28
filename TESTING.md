@@ -228,3 +228,12 @@ the ♪ in the menu bar.
       in the matching direction.
 - [ ] Menu bar items right next to the island stay clickable when it's closed.
 - [ ] System Settings › Accessibility › Display › Reduce transparency → the island becomes solid dark.
+
+## Liquid Glass material
+- [ ] Settings › Island › Material (also General › Appearance): Liquid Glass / Frosted / Solid.
+- [ ] Liquid Glass: the open island, the idle scene's music player and the lyrics window's control
+      bar use Apple's glass (refracts and catches light from what's behind). The island stays black
+      where it meets the notch.
+- [ ] Frosted looks like before; Solid is opaque dark (adapts to light mode in the lyrics window).
+- [ ] Reduce Transparency on → everything is Solid, and Settings says why.
+- [ ] Hum screensaver (after Reinstall): the music player uses the chosen material.

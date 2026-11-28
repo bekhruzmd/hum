@@ -97,11 +97,8 @@ struct MusicBar: View {
             .frame(width: Self.width, height: Self.cardHeight)
             .background {
                 let shape = RoundedRectangle(cornerRadius: 21, style: .continuous)
-                if reduceTransparency {
-                    shape.fill(Color(white: 0.07))
-                } else {
-                    shape.fill(.ultraThinMaterial)
-                    shape.fill(.black.opacity(0.38))
+                SurfaceBackground(material: data.surfaceMaterial, shape: shape, darkening: 0.38)
+                if data.surfaceMaterial.resolved(reduceTransparency: reduceTransparency) == .frosted {
                     shape.fill(LinearGradient(colors: [.white.opacity(0.08), .clear, .white.opacity(0.025)],
                                               startPoint: .topLeading, endPoint: .bottomTrailing))
                 }

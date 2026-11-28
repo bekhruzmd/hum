@@ -52,6 +52,15 @@ struct GeneralSettingsTab: View {
                     .foregroundStyle(.secondary)
             }
 
+            Section {
+                MaterialPicker(selection: $settings.surfaceMaterial)
+            } header: {
+                Text("Appearance")
+            } footer: {
+                Text("The material of the island, the glass music player and the lyrics window's controls.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+
             Section("Startup") {
                 Toggle("Launch Hum automatically at login", isOn: $launchAtLogin)
                     .onChange(of: launchAtLogin) { _, enabled in updateLaunchAtLogin(enabled) }
