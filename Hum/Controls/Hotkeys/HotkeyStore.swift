@@ -55,6 +55,14 @@ final class HotkeyStore {
     private(set) var bindings: [HotkeyAction: KeyCombo]
     /// True while the Settings recorder is capturing, so global hotkeys are paused.
     var isRecording = false
+    /// The most recent shortcut used, so onboarding can notice when someone tries one.
+    private(set) var lastTriggered: HotkeyAction?
+    private(set) var triggerCount = 0
+
+    func noteTriggered(_ action: HotkeyAction) {
+        lastTriggered = action
+        triggerCount += 1
+    }
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults

@@ -74,6 +74,9 @@ final class SettingsStore {
     var crackleSound: Bool { didSet { defaults.set(crackleSound, forKey: "crackleSound") } }
     var soundVolume: Double { didSet { defaults.set(soundVolume, forKey: "soundVolume") } }
 
+    /// Set once the first-run welcome has been seen.
+    var hasCompletedOnboarding: Bool { didSet { defaults.set(hasCompletedOnboarding, forKey: "hasCompletedOnboarding") } }
+
     // Playback
     var preferredPlayer: PreferredPlayer { didSet { defaults.set(preferredPlayer.rawValue, forKey: "preferredPlayer") } }
 
@@ -118,6 +121,7 @@ final class SettingsStore {
         needleDropSound = defaults.bool(forKey: "needleDropSound")
         crackleSound = defaults.bool(forKey: "crackleSound")
         soundVolume = defaults.object(forKey: "soundVolume") as? Double ?? 0.5
+        hasCompletedOnboarding = defaults.bool(forKey: "hasCompletedOnboarding")
         preferredPlayer = PreferredPlayer(rawValue: defaults.string(forKey: "preferredPlayer") ?? "") ?? .auto
     }
 }

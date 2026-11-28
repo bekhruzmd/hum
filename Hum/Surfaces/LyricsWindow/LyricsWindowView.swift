@@ -9,6 +9,8 @@ struct LyricsWindowView: View {
 
     @State private var isHovering = false
     @State private var hideControlsTask: Task<Void, Never>?
+    @State private var isDropTargeted = false
+    @State private var toast: HumToast.Message?
 
     var body: some View {
         Group {
@@ -63,18 +65,61 @@ struct LyricsWindowView: View {
             .overlay(alignment: .bottom) {
                 if isHovering {
                     ControlBar(nowPlaying: nowPlaying, state: state, animate: environment.renderGate.canAnimate && environment.windows.canRenderLyrics,
-                               material: settings.surfaceMaterial)
+                               material: settings.surfaceMaterial,
+                               hint: { action in
+                                   action == .playPause ? "Space" : environment.hotkeyStore.bindings[action]?.displayString
+                               })
                         .padding(12)
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .background { PlaybackShortcuts(nowPlaying: nowPlaying) }
+            .background { PlaybackShortcuts(nowPlaying: nowPlaying, onClose: { environment.windows.hideLyrics() }) }
+            .dropDestination(for: URL.self) { urls, _ in
+                importLyrics(from: urls)
+            } isTargeted: { isDropTargeted = $0 }
+            .overlay { if isDropTargeted { DropHighlight(label: "Drop to use these lyrics") } }
+            .overlay(alignment: .top) {
+                if let toast {
+                    HumToast(message: toast)
+                        .padding(.top, 84)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .animation(.spring(response: 0.3, dampingFraction: 1), value: toast)
+            .animation(.easeOut(duration: 0.15), value: isDropTargeted)
             .onContinuousHover { phase in
                 switch phase {
                 case .active: showControls()
                 case .ended: hideControls(after: .milliseconds(300))
                 }
             }
+        }
+    }
+
+    /// Uses a dropped .lrc or .txt file as this song's lyrics, and confirms with a toast.
+    private func importLyrics(from urls: [URL]) -> Bool {
+        guard let url = urls.first(where: LyricsImporter.canImport) else {
+            show(HumToast.Message(text: "Drop a .lrc or .txt lyrics file", symbol: "exclamationmark.circle"))
+            return false
+        }
+        guard let content = LyricsImporter.content(from: url) else {
+            show(HumToast.Message(text: "Couldn't read those lyrics", symbol: "exclamationmark.circle"))
+            return false
+        }
+        lyrics.override(with: content)
+        if case .synced = content {
+            show(HumToast.Message(text: "Synced lyrics added", symbol: "checkmark.circle.fill"))
+        } else {
+            show(HumToast.Message(text: "Lyrics added (not timed)", symbol: "checkmark.circle.fill"))
+        }
+        return true
+    }
+
+    private func show(_ message: HumToast.Message) {
+        toast = message
+        Task {
+            try? await Task.sleep(for: .seconds(2.2))
+            if toast == message { toast = nil }
         }
     }
 
@@ -252,10 +297,11 @@ private struct ControlBar: View {
     let state: PlaybackState
     let animate: Bool
     var material: SurfaceMaterial = .frosted
+    var hint: (HotkeyAction) -> String? = { _ in nil }
 
     var body: some View {
         VStack(spacing: 6) {
-            TransportControls(nowPlaying: nowPlaying, isPlaying: state.isPlaying)
+            TransportControls(nowPlaying: nowPlaying, isPlaying: state.isPlaying, hint: hint)
             Scrubber(state: state, tint: nowPlaying.palette.highlight, animate: animate) { nowPlaying.seek(to: $0) }
         }
         .padding(.horizontal, 14)
@@ -270,6 +316,7 @@ private struct ControlBar: View {
 /// Space plays/pauses; ← / → seek 5 s back/forward (when the lyrics window is focused).
 private struct PlaybackShortcuts: View {
     let nowPlaying: NowPlayingStore
+    var onClose: () -> Void = {}
 
     var body: some View {
         ZStack {
@@ -279,6 +326,8 @@ private struct PlaybackShortcuts: View {
                 .keyboardShortcut(.leftArrow, modifiers: [])
             Button("") { skip(5) }
                 .keyboardShortcut(.rightArrow, modifiers: [])
+            Button("", action: onClose)
+                .keyboardShortcut("w")
         }
         .opacity(0)
         .accessibilityHidden(true)

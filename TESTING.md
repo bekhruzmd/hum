@@ -237,3 +237,19 @@ the ♪ in the menu bar.
 - [ ] Frosted looks like before; Solid is opaque dark (adapts to light mode in the lyrics window).
 - [ ] Reduce Transparency on → everything is Solid, and Settings says why.
 - [ ] Hum screensaver (after Reinstall): the music player uses the chosen material.
+
+## Native macOS polish
+- [ ] First launch (or `defaults delete com.yourname.hum hasCompletedOnboarding`): a single welcome
+      window. Press ⌃⌥L → the lyrics window opens and the card turns into "That's it." Return = Get
+      Started, Esc closes. It doesn't come back.
+- [ ] Menu bar menu: Play/Pause, Next, Previous, Show Lyrics, Start Idle Scene and Lyrics Offset show
+      your global shortcuts; Island, Beat Glow and Lyrics in Menu Bar are checkable.
+- [ ] Settings: ⌘F focuses search, Esc clears it, ⌘1–⌘9 jump to pages, ⌘↑/⌘↓ step through, ⌘W or
+      Esc closes. A search with no matches shows "No Results". Hovering a sidebar row shows its ⌘ number.
+- [ ] Settings › Now Playing with nothing playing: one centered message with "Open Spotify"/"Open Music".
+- [ ] General shows the real version.
+- [ ] Lyrics window: drag a .lrc file onto it → dashed outline, then "Synced lyrics added". A .txt gives
+      plain lyrics. Another file type → a short message, nothing changes.
+- [ ] Drag the artwork (lyrics window header or Settings › Now Playing) to the Desktop → a PNG named
+      after the song. Drag a lyric line into Notes → the text.
+- [ ] Lyrics window: ⌘W hides it; hovering the controls shows their shortcuts.

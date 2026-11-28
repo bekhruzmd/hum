@@ -38,6 +38,8 @@ struct HeaderView: View {
     var body: some View {
         HStack(spacing: 12) {
             ArtworkView(image: artwork, size: 48, cornerRadius: 8)
+                .onDrag { ArtworkDrag.provider(for: artwork, title: "\(track.artist) - \(track.title)") }
+                .help("Drag the artwork into another app or the Finder")
                 .id(track.albumKey)
                 .transition(.opacity.combined(with: .scale(scale: 0.9)))
                 .shadow(color: .black.opacity(0.25), radius: 6, y: 3)

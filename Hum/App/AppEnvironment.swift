@@ -116,6 +116,7 @@ final class AppEnvironment {
     }
 
     func perform(_ action: HotkeyAction) {
+        hotkeyStore.noteTriggered(action)
         switch action {
         case .playPause: nowPlaying.playPause()
         case .nextTrack: nowPlaying.nextTrack()

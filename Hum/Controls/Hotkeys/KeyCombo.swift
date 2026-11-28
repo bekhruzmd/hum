@@ -60,3 +60,48 @@ struct KeyCombo: Codable, Equatable, Hashable, Sendable {
         specialKeys[Int(keyCode)] ?? "Key \(keyCode)"
     }
 }
+
+import SwiftUI
+
+extension KeyCombo {
+    /// The SwiftUI key equivalent, so menus can show (and honor) the global shortcut.
+    /// Nil for keys menus can't display, such as function keys.
+    var keyEquivalent: KeyEquivalent? {
+        switch Int(keyCode) {
+        case kVK_Space: return .space
+        case kVK_Return: return .return
+        case kVK_Tab: return .tab
+        case kVK_Delete: return .delete
+        case kVK_Escape: return .escape
+        case kVK_LeftArrow: return .leftArrow
+        case kVK_RightArrow: return .rightArrow
+        case kVK_UpArrow: return .upArrow
+        case kVK_DownArrow: return .downArrow
+        default:
+            let name = Self.keyName(keyCode)
+            guard name.count == 1, let character = name.lowercased().first else { return nil }
+            return KeyEquivalent(character)
+        }
+    }
+
+    var eventModifiers: SwiftUI.EventModifiers {
+        var modifiers: SwiftUI.EventModifiers = []
+        if carbonModifiers & UInt32(cmdKey) != 0 { modifiers.insert(.command) }
+        if carbonModifiers & UInt32(optionKey) != 0 { modifiers.insert(.option) }
+        if carbonModifiers & UInt32(controlKey) != 0 { modifiers.insert(.control) }
+        if carbonModifiers & UInt32(shiftKey) != 0 { modifiers.insert(.shift) }
+        return modifiers
+    }
+}
+
+extension View {
+    /// Shows a global hotkey next to a menu item (and lets it work while the menu is open).
+    @ViewBuilder
+    func globalShortcut(_ combo: KeyCombo?) -> some View {
+        if let combo, let key = combo.keyEquivalent {
+            keyboardShortcut(key, modifiers: combo.eventModifiers)
+        } else {
+            self
+        }
+    }
+}

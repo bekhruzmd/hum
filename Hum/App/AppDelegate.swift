@@ -5,7 +5,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard !AppEnvironment.isRunningTests else { return }
         let env = AppEnvironment.shared
         env.start()
-        env.windows.showSettings()
+        if env.settings.hasCompletedOnboarding {
+            env.windows.showSettings()
+        } else {
+            env.windows.showOnboarding()
+        }
     }
 
     /// Hum is a menu bar app; closing the last window must not quit it.

@@ -199,6 +199,7 @@ private struct LyricLinesBody: View, Equatable {
             }
             .buttonStyle(.plain)
             .accessibilityHint("Plays from this line")
+            .modifier(DraggableLyric(text: line.text))
 
             if isActive, let gap {
                 gapDots(gap)
@@ -281,5 +282,18 @@ struct GapDots: View {
             .padding(.vertical, size * 0.4)
         }
         .accessibilityLabel("Instrumental break")
+    }
+}
+
+/// Lyric lines can be dragged out as text (into Notes, Messages, a document…).
+private struct DraggableLyric: ViewModifier {
+    let text: String
+
+    func body(content: Content) -> some View {
+        if text.isEmpty {
+            content
+        } else {
+            content.draggable(text)
+        }
     }
 }

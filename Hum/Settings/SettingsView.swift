@@ -9,6 +9,7 @@ struct SettingsView: View {
     let environment: AppEnvironment
     @State private var selection: SettingsPage
     @State private var search = ""
+    @FocusState private var searchFocused: Bool
 
     init(environment: AppEnvironment, initialPage: SettingsPage = .nowPlaying) {
         self.environment = environment
@@ -33,6 +34,7 @@ struct SettingsView: View {
         // Draw under the transparent title bar; the sidebar leaves room for the traffic lights.
         .ignoresSafeArea()
         .animation(.easeOut(duration: 0.15), value: selection)
+        .background { keyboardShortcuts }
     }
 
     // MARK: Sidebar
@@ -46,7 +48,16 @@ struct SettingsView: View {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary)
                 TextField("Search", text: $search)
                     .textFieldStyle(.plain)
+                    .focused($searchFocused)
                     .onSubmit { if let first = matches.first { selection = first } }
+                    .onExitCommand { search.isEmpty ? (searchFocused = false) : (search = "") }
+                if !search.isEmpty {
+                    Button { search = "" } label: {
+                        Image(systemName: "xmark.circle.fill").foregroundStyle(.tertiary)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Clear search")
+                }
             }
             .padding(.horizontal, 8)
             .frame(height: 28)
@@ -66,6 +77,14 @@ struct SettingsView: View {
                         sectionLabel("Hum")
                         row(.general)
                     }
+                    if matches.isEmpty {
+                        VStack(spacing: 4) {
+                            Text("No Results").font(.system(size: 13, weight: .semibold))
+                            Text("Nothing matches “\(search)”.").font(.caption).foregroundStyle(.secondary)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, 40)
+                    }
                 }
                 .padding(.horizontal, 10)
             }
@@ -74,6 +93,32 @@ struct SettingsView: View {
     }
 
     private var matches: [SettingsPage] { SettingsPage.allCases.filter(visible) }
+
+    /// Sidebar order, for keyboard navigation.
+    private static let order: [SettingsPage] = [.nowPlaying] + SettingsPage.features + [.general]
+
+    /// ⌘F search, ⌘1–9 pages, ⌘↑/⌘↓ previous/next page, ⌘W or Esc close. Hum has no app
+    /// menu (it lives in the menu bar), so these are wired here instead.
+    private var keyboardShortcuts: some View {
+        ZStack {
+            Button("") { searchFocused = true }.keyboardShortcut("f")
+            Button("") { environment.windows.closeSettings() }.keyboardShortcut("w")
+            Button("") { if !searchFocused { environment.windows.closeSettings() } }.keyboardShortcut(.escape, modifiers: [])
+            Button("") { step(-1) }.keyboardShortcut(.upArrow, modifiers: .command)
+            Button("") { step(1) }.keyboardShortcut(.downArrow, modifiers: .command)
+            ForEach(Array(Self.order.prefix(9).enumerated()), id: \.offset) { index, page in
+                Button("") { selection = page }
+                    .keyboardShortcut(KeyEquivalent(Character(String(index + 1))), modifiers: .command)
+            }
+        }
+        .opacity(0)
+        .accessibilityHidden(true)
+    }
+
+    private func step(_ delta: Int) {
+        guard let index = Self.order.firstIndex(of: selection) else { return }
+        selection = Self.order[(index + delta + Self.order.count) % Self.order.count]
+    }
 
     private func visible(_ page: SettingsPage) -> Bool {
         let query = search.trimmingCharacters(in: .whitespaces).lowercased()
@@ -117,8 +162,14 @@ struct SettingsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .help(shortcutHint(page))
         .accessibilityLabel(page.title + (isOff(page) ? ", off" : ""))
         .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+
+    private func shortcutHint(_ page: SettingsPage) -> String {
+        guard let index = Self.order.firstIndex(of: page), index < 9 else { return page.title }
+        return "\(page.title)  ⌘\(index + 1)"
     }
 
     /// Features that are switched off show "Off" in the sidebar.

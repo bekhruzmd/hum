@@ -91,6 +91,40 @@ final class WindowManager: NSObject, NSWindowDelegate {
 
     // MARK: Settings window
 
+    // MARK: Onboarding
+
+    @ObservationIgnored private var onboardingWindow: NSWindow?
+
+    func showOnboarding() {
+        if onboardingWindow == nil {
+            let window = NSWindow(
+                contentRect: NSRect(origin: .zero, size: OnboardingView.size),
+                styleMask: [.titled, .closable, .fullSizeContentView],
+                backing: .buffered,
+                defer: false
+            )
+            window.title = "Welcome to Hum"
+            window.titlebarAppearsTransparent = true
+            window.titleVisibility = .hidden
+            window.isMovableByWindowBackground = true
+            window.isReleasedWhenClosed = false
+            window.delegate = self
+            let hosting = NSHostingView(rootView: OnboardingView(environment: environment) { [weak self] in
+                self?.onboardingWindow?.performClose(nil)
+            })
+            hosting.sizingOptions = []
+            window.contentView = hosting
+            window.center()
+            onboardingWindow = window
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        onboardingWindow?.makeKeyAndOrderFront(nil)
+    }
+
+    func closeSettings() {
+        settingsWindow?.performClose(nil)
+    }
+
     func showSettings() {
         let window = settingsWindow ?? makeSettingsWindow()
         settingsWindow = window
@@ -215,6 +249,10 @@ final class WindowManager: NSObject, NSWindowDelegate {
             isMiniPlayerVisible = false
             miniPlayerWindow?.contentViewController = nil
             miniPlayerWindow = nil
+        } else if window === onboardingWindow {
+            environment.settings.hasCompletedOnboarding = true
+            onboardingWindow?.contentView = nil
+            onboardingWindow = nil
         } else if window === settingsWindow {
             // Drop the SwiftUI content so the live effect preview stops drawing; it is rebuilt
             // the next time Settings opens.

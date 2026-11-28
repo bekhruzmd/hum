@@ -6,12 +6,14 @@ struct NowPlayingSettingsPage: View {
 
     var body: some View {
         let nowPlaying = environment.nowPlaying
-        SettingsPageScaffold(page: .nowPlaying) {
-            Section {
-                if let state = nowPlaying.playbackState {
+        if let state = nowPlaying.playbackState {
+            SettingsPageScaffold(page: .nowPlaying) {
+                Section {
                     HStack(spacing: 14) {
                         ArtworkView(image: nowPlaying.artworkImage, size: 76, cornerRadius: 10)
                             .shadow(color: nowPlaying.palette.highlight.opacity(0.4), radius: 10, y: 4)
+                            .onDrag { ArtworkDrag.provider(for: nowPlaying.artworkImage, title: state.track.title) }
+                            .help("Drag the artwork into another app or the Finder")
                         VStack(alignment: .leading, spacing: 3) {
                             Text(state.track.title).font(.system(size: 15, weight: .semibold))
                             Text(state.track.artist).foregroundStyle(.secondary)
@@ -24,34 +26,69 @@ struct NowPlayingSettingsPage: View {
                     }
                     .padding(.vertical, 6)
                     Scrubber(state: state, tint: nowPlaying.palette.highlight, animate: true) { nowPlaying.seek(to: $0) }
-                } else {
-                    Label("Nothing playing. Play a song in Spotify or Apple Music.", systemImage: "music.note")
-                        .foregroundStyle(.secondary)
-                        .padding(.vertical, 8)
+                }
+
+                Section {
+                    let offset = environment.offsets.offset(for: state.track)
+                    LabeledContent("Lyrics offset for this song") {
+                        HStack(spacing: 6) {
+                            Button("Later") { environment.nudgeOffset(by: -OffsetStore.step) }
+                            Text(String(format: "%+.1f s", offset)).monospacedDigit().frame(width: 52)
+                            Button("Earlier") { environment.nudgeOffset(by: OffsetStore.step) }
+                            Button("Reset") { environment.offsets.reset(state.track) }
+                                .disabled(offset == 0)
+                        }
+                        .controlSize(.small)
+                    }
+                    Button("Show Lyrics Window") { environment.windows.showLyrics() }
+                } header: {
+                    Text("Lyrics")
+                } footer: {
+                    Text("If lyrics run early or late, nudge them here or with ⌃⌥] and ⌃⌥[. Hum remembers the offset for each song. You can also drop a .lrc file on the lyrics window.")
+                        .font(.caption).foregroundStyle(.secondary)
                 }
             }
-
-            Section {
-                let offset = environment.offsets.offset(for: nowPlaying.currentTrack)
-                LabeledContent("Lyrics offset for this song") {
-                    HStack(spacing: 6) {
-                        Button("Later") { environment.nudgeOffset(by: -OffsetStore.step) }
-                        Text(String(format: "%+.1f s", offset)).monospacedDigit().frame(width: 52)
-                        Button("Earlier") { environment.nudgeOffset(by: OffsetStore.step) }
-                        Button("Reset") { environment.offsets.reset(nowPlaying.currentTrack) }
-                            .disabled(offset == 0)
-                    }
-                    .controlSize(.small)
-                }
-                .disabled(nowPlaying.currentTrack == nil)
-                Button("Show Lyrics Window") { environment.windows.showLyrics() }
-            } header: {
-                Text("Lyrics")
-            } footer: {
-                Text("If lyrics run early or late, nudge them here or with ⌃⌥] and ⌃⌥[. Hum remembers the offset for each song.")
-                    .font(.caption).foregroundStyle(.secondary)
+        } else {
+            VStack(spacing: 0) {
+                SettingsPageHeader(page: .nowPlaying)
+                NothingPlayingEmptyState()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+    }
+}
+
+/// Centered placeholder with a way forward: open whichever players are installed.
+struct NothingPlayingEmptyState: View {
+    private static let players: [(name: String, bundleID: String)] = [
+        ("Spotify", PlayerApp.spotify.bundleIdentifier),
+        ("Music", PlayerApp.appleMusic.bundleIdentifier)
+    ]
+
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "music.note")
+                .font(.system(size: 34, weight: .light))
+                .foregroundStyle(.tertiary)
+            Text("Nothing Playing")
+                .font(.system(size: 17, weight: .semibold))
+            Text("Play a song in Spotify or Apple Music and it appears here.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+            HStack(spacing: 8) {
+                ForEach(Self.players.filter { NSWorkspace.shared.urlForApplication(withBundleIdentifier: $0.bundleID) != nil },
+                        id: \.bundleID) { player in
+                    Button("Open \(player.name)") { open(player.bundleID) }
+                }
+            }
+            .padding(.top, 6)
+        }
+        .padding(.bottom, 60)
+    }
+
+    private func open(_ bundleID: String) {
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else { return }
+        NSWorkspace.shared.openApplication(at: url, configuration: NSWorkspace.OpenConfiguration())
     }
 }
 

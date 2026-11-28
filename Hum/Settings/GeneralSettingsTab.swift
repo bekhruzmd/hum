@@ -23,7 +23,7 @@ struct GeneralSettingsTab: View {
                         HStack(alignment: .firstTextBaseline, spacing: 8) {
                             Text("Hum")
                                 .font(.title3.weight(.semibold))
-                            Text("1.0 (Production)")
+                            Text(Self.versionString)
                                 .font(.caption)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
@@ -90,6 +90,13 @@ struct GeneralSettingsTab: View {
         }
         .formStyle(.grouped)
         .onAppear { launchAtLogin = SMAppService.mainApp.status == .enabled }
+    }
+
+    private static var versionString: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = info?["CFBundleVersion"] as? String ?? "1"
+        return "Version \(version) (\(build))"
     }
 
     private func updateLaunchAtLogin(_ enabled: Bool) {

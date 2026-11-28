@@ -1,74 +1,71 @@
 import SwiftUI
 
+/// The menu bar menu: what's playing, playback, surfaces, and the app. Every action that has a
+/// global shortcut shows it, so the menu doubles as a reminder of the shortcuts.
 struct MenuBarContent: View {
     let environment: AppEnvironment
 
     var body: some View {
         @Bindable var settings = environment.settings
         let windows = environment.windows
+        let nowPlaying = environment.nowPlaying
+        let keys = environment.hotkeyStore.bindings
+        let hasTrack = nowPlaying.currentTrack != nil
 
-        if let track = environment.nowPlaying.currentTrack {
+        if let track = nowPlaying.currentTrack {
             Text("\(track.title) — \(track.artist)")
-                .font(.headline)
+            Divider()
+        } else {
+            Text("Nothing Playing")
             Divider()
         }
 
-        // Core Window Actions
-        Button(windows.isLyricsVisible ? "Hide Lyrics Window" : "Show Lyrics Window") {
-            windows.toggleLyrics()
-        }
-
-        Button(windows.isMiniPlayerVisible ? "Hide Mini Player" : "Show Mini Player") {
-            windows.toggleMiniPlayer()
-        }
-
-        Button("Show Live Scene") {
-            windows.showCinematicPreview()
-        }
+        // Playback
+        Button(nowPlaying.isPlaying ? "Pause" : "Play") { nowPlaying.playPause() }
+            .globalShortcut(keys[.playPause])
+            .disabled(!hasTrack)
+        Button("Next Track") { nowPlaying.nextTrack() }
+            .globalShortcut(keys[.nextTrack])
+            .disabled(!hasTrack)
+        Button("Previous Track") { nowPlaying.previousTrack() }
+            .globalShortcut(keys[.previousTrack])
+            .disabled(!hasTrack)
 
         Divider()
 
-        // Display Surfaces & Offsets
-        Menu("Desktop") {
-            ForEach(DesktopMode.allCases) { mode in
-                Button {
-                    settings.desktopMode = mode
-                } label: {
-                    HStack {
-                        Text(mode.displayName)
-                        if settings.desktopMode == mode {
-                            Image(systemName: "checkmark")
-                        }
-                    }
-                }
-            }
-        }
+        // Windows
+        Button(windows.isLyricsVisible ? "Hide Lyrics Window" : "Show Lyrics Window") { windows.toggleLyrics() }
+            .globalShortcut(keys[.showLyrics])
+        Button(windows.isMiniPlayerVisible ? "Hide Mini Player" : "Show Mini Player") { windows.toggleMiniPlayer() }
+        Button("Start Idle Scene") { environment.idleScreen.show() }
+            .globalShortcut(keys[.idleScreen])
 
+        Divider()
+
+        // Surfaces
+        Toggle("Island", isOn: $settings.islandEnabled)
+        Toggle("Beat Glow", isOn: $settings.beatGlowEnabled)
+        Toggle("Lyrics in Menu Bar", isOn: $settings.menuBarLyrics)
+        Picker("Desktop", selection: $settings.desktopMode) {
+            ForEach(DesktopMode.allCases) { Text($0.displayName).tag($0) }
+        }
         Menu("Lyrics Offset") {
             Button("Earlier (+0.1 s)") { environment.nudgeOffset(by: OffsetStore.step) }
+                .globalShortcut(keys[.offsetEarlier])
             Button("Later (−0.1 s)") { environment.nudgeOffset(by: -OffsetStore.step) }
+                .globalShortcut(keys[.offsetLater])
             Divider()
-            Button("Reset Offset") { environment.offsets.reset(environment.nowPlaying.currentTrack) }
+            Button("Reset Offset") { environment.offsets.reset(nowPlaying.currentTrack) }
         }
-        .disabled(environment.nowPlaying.currentTrack == nil)
-
-        Button("Start Idle Screen") {
-            environment.idleScreen.show()
-        }
+        .disabled(!hasTrack)
 
         Divider()
 
-        // App Management
-        Button("Settings…") {
-            windows.showSettings()
-        }
-        .keyboardShortcut(",")
-
+        Button("Show Live Scene") { windows.showCinematicPreview() }
+        Button("Settings…") { windows.showSettings() }
+            .keyboardShortcut(",")
         Divider()
-
-        Button("Quit Hum") {
-            NSApplication.shared.terminate(nil)
-        }
-        .keyboardShortcut("q")
+        Button("Quit Hum") { NSApplication.shared.terminate(nil) }
+            .keyboardShortcut("q")
     }
 }
