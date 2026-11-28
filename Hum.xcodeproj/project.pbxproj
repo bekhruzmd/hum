@@ -31,6 +31,7 @@
 		2DD8E95EE30160377DCFFC35 /* CinematicScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676432FDFFD2CDCE8E51B4E9 /* CinematicScene.swift */; };
 		2E7DED855F837A96C85A1DCD /* CinematicEdgeGlow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 014A282913D986DD15545055 /* CinematicEdgeGlow.metal */; };
 		34552D1BBE9A612356490721 /* EffectPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */; };
+		34F1ED675421DEF2B2D3C7DF /* thumbnail.png in Resources */ = {isa = PBXBuildFile; fileRef = 548908DD9E0B7599AA36043E /* thumbnail.png */; };
 		37181D55EF1B60C1486C0385 /* TransportControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46983A1546382B9DF6B1E1D /* TransportControls.swift */; };
 		3A1A654F469F50B7D8FC76CD /* IslandShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B187FD5885E616971AE5C7C4 /* IslandShape.swift */; };
 		3B3E27123E68133E87379C6E /* CinematicEdgeGlow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 014A282913D986DD15545055 /* CinematicEdgeGlow.metal */; };
@@ -58,6 +59,7 @@
 		62727B7D47D07C9CF10D0DEE /* MusicSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F3F0BCD510BF4E347F126B /* MusicSource.swift */; };
 		65542DA029F1DADDEB0F1024 /* BeatGlowSettingsPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2181F6E98C5075554C34286F /* BeatGlowSettingsPage.swift */; };
 		65922239CB743CE534DBB4EE /* GlowEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48396037ECE92EF085910DE4 /* GlowEffect.swift */; };
+		6717B6033A15A12FEA3E8700 /* thumbnail@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD2C09C49E883BD973C3B941 /* thumbnail@2x.png */; };
 		6769129D357E7FF107D85688 /* BigWordsEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 96BA20483F4439840A9EC17C /* BigWordsEffect.swift */; };
 		683A7C4AB439CFA789AE1C44 /* DisplayEdgeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63A6ED1258E68784878367DF /* DisplayEdgeSettings.swift */; };
 		697A5DA5770D661572AAA33B /* MusicBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72255BDA2B66902988D97CDD /* MusicBar.swift */; };
@@ -214,6 +216,7 @@
 		520756362A1A2BC99BE8D896 /* NativePolishTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativePolishTests.swift; sourceTree = "<group>"; };
 		5253A7D2821D2A81A57242B4 /* HumSaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumSaverView.swift; sourceTree = "<group>"; };
 		52A8E9D6131A898CA1083E27 /* DesktopController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopController.swift; sourceTree = "<group>"; };
+		548908DD9E0B7599AA36043E /* thumbnail.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thumbnail.png; sourceTree = "<group>"; };
 		55A69ABDE98D49A939A15989 /* WordTimingEstimatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordTimingEstimatorTests.swift; sourceTree = "<group>"; };
 		56BEBAE3AA677A60AB342415 /* IslandGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandGeometry.swift; sourceTree = "<group>"; };
 		57B9288A709985A92958A959 /* PlayerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerApp.swift; sourceTree = "<group>"; };
@@ -265,6 +268,7 @@
 		C6C1C5EBAE539DDF5879B59E /* IslandSettingsPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandSettingsPage.swift; sourceTree = "<group>"; };
 		C9379A7AACC1030C0834725A /* ColorExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtractorTests.swift; sourceTree = "<group>"; };
 		CBBDBA185A81060893684A1E /* RenderGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderGate.swift; sourceTree = "<group>"; };
+		CD2C09C49E883BD973C3B941 /* thumbnail@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "thumbnail@2x.png"; sourceTree = "<group>"; };
 		D1B7A4FDB14D4BF2E992B667 /* DisplayEdgeGlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisplayEdgeGlow.swift; sourceTree = "<group>"; };
 		D2AD9493A58311456C2EE8A1 /* NowPlayingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingStore.swift; sourceTree = "<group>"; };
 		D2B609EA470037C5FB877BF0 /* SpotifySource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifySource.swift; sourceTree = "<group>"; };
@@ -350,6 +354,15 @@
 				07A6A6AD08CFB98CC994D668 /* HumTests */,
 				F445627DA0DD0026192EE98F /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		47F0979ECE95E2C9410DF631 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				548908DD9E0B7599AA36043E /* thumbnail.png */,
+				CD2C09C49E883BD973C3B941 /* thumbnail@2x.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		5A91365A2DF31294B545BCCD /* IdleScreen */ = {
@@ -463,6 +476,7 @@
 			children = (
 				5253A7D2821D2A81A57242B4 /* HumSaverView.swift */,
 				988A92A1AD736C1F565EE776 /* SaverModel.swift */,
+				47F0979ECE95E2C9410DF631 /* Resources */,
 			);
 			path = HumSaver;
 			sourceTree = "<group>";
@@ -600,6 +614,7 @@
 			buildConfigurationList = 3586FFBEC2FFB0180742BCE9 /* Build configuration list for PBXNativeTarget "HumSaver" */;
 			buildPhases = (
 				73CE5DF69255CB8E4BBFAF63 /* Sources */,
+				DA6E0FD5E1340E2B004F14ED /* Resources */,
 			);
 			buildRules = (
 			);
@@ -671,6 +686,15 @@
 			files = (
 				274BFE47073C7EA70918BC59 /* AppIcon.icns in Resources */,
 				E0184287C512019F22127415 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DA6E0FD5E1340E2B004F14ED /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				34F1ED675421DEF2B2D3C7DF /* thumbnail.png in Resources */,
+				6717B6033A15A12FEA3E8700 /* thumbnail@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
