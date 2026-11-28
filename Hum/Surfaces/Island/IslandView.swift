@@ -1,5 +1,10 @@
 import SwiftUI
 
+enum IslandPage: Int, CaseIterable {
+    case player
+    case lyrics
+}
+
 @Observable
 @MainActor
 final class IslandModel {
@@ -9,27 +14,31 @@ final class IslandModel {
     var isHinting = false
     var size: IslandSize = .regular
     var motion: IslandMotion = .smooth
+    var page: IslandPage = .player
+    /// +1 when moving to a later page, -1 when moving back; drives the slide direction.
+    var pageDirection: CGFloat = 1
 }
 
 /// What the island asks its controller to do.
 struct IslandInteractions {
-    var hover: (Bool) -> Void
     var tap: () -> Void
     /// Pull down (true) to open, push up (false) to close.
     var pull: (Bool) -> Void
+    var selectPage: (IslandPage) -> Void
 }
 
-/// The island's SwiftUI content. The panel is sized by `IslandController`; this view draws the
-/// black silhouette at the top center and morphs it between closed and open.
+/// The island, drawn at the top center of a fixed-size, transparent panel.
 ///
-/// Opening: the silhouette springs out of the notch and the content, laid out at its final
-/// size, is revealed by the growing shape, then sharpens in from a slight blur. Closing: the
-/// content fades quickly and the shape settles back without overshoot.
+/// Closed, it is solid black and reads as part of the notch. Open, it springs down out of the
+/// notch: solid black where it meets the notch, fading into translucent glass, with the content
+/// revealed by the growing shape and sharpening in from a slight blur. Because the panel never
+/// resizes, every open and close is a plain spring that can be interrupted and reversed.
 struct IslandView: View {
     let environment: AppEnvironment
     let model: IslandModel
     let interactions: IslandInteractions
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     private var nowPlaying: NowPlayingStore { environment.nowPlaying }
 
@@ -39,38 +48,74 @@ struct IslandView: View {
             let openSize = geometry.expandedSize(content: model.size.expanded)
             let size = open ? openSize : geometry.collapsedSize
             ZStack(alignment: .top) {
-                silhouette(open: open, geometry: geometry)
-                    .shadow(color: .black.opacity(open || !geometry.hasNotch ? 0.4 : 0), radius: open ? 18 : 8, y: open ? 8 : 3)
+                background(open: open, geometry: geometry)
 
                 ZStack(alignment: .top) {
                     if open {
-                        expandedContent(state: state, geometry: geometry)
+                        IslandOpenContent(environment: environment, model: model, interactions: interactions,
+                                          state: state, geometry: geometry)
                             .frame(width: openSize.width, height: openSize.height, alignment: .top)
                             .transition(revealTransition)
                     } else {
-                        collapsedContent(state: state, geometry: geometry)
+                        IslandClosedContent(environment: environment, model: model, state: state, geometry: geometry)
                             .frame(width: geometry.collapsedSize.width, height: geometry.collapsedSize.height)
-                            .transition(.opacity.animation(.easeOut(duration: 0.18).delay(open ? 0 : 0.12)))
+                            .transition(.opacity.animation(.easeOut(duration: 0.16).delay(0.1)))
                     }
                 }
                 .frame(width: size.width, height: size.height, alignment: .top)
-                .mask(silhouette(open: open, geometry: geometry))
+                .mask(shape(open: open, geometry: geometry))
             }
             .frame(width: size.width, height: size.height)
-            .contentShape(Rectangle())
-            .onHover(perform: interactions.hover)
+            .contentShape(shape(open: open, geometry: geometry))
             .onTapGesture { if !open { interactions.tap() } }
             .simultaneousGesture(pullGesture(open: open))
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .animation(reduceMotion ? .easeOut(duration: 0.15) : (open ? model.motion.open : model.motion.close), value: open)
-            .animation(.spring(response: 0.28, dampingFraction: 0.75), value: model.isHinting)
+            .animation(.spring(response: 0.25, dampingFraction: 1), value: model.isHinting)
             .environment(\.colorScheme, .dark)
         }
     }
 
+    // MARK: Material
+
+    private func shape(open: Bool, geometry: IslandGeometry) -> AnyShape {
+        if geometry.hasNotch {
+            return AnyShape(IslandShape(shoulder: open ? 10 : 7, bottomRadius: open ? 26 : 11))
+        }
+        return AnyShape(RoundedRectangle(cornerRadius: open ? 24 : geometry.collapsedSize.height / 2, style: .continuous))
+    }
+
+    /// Solid black where it meets the notch, frosted glass below. Closed, it is solid black.
+    @ViewBuilder
+    private func background(open: Bool, geometry: IslandGeometry) -> some View {
+        let shape = shape(open: open, geometry: geometry)
+        let band = geometry.hasNotch ? geometry.notchHeight : 0
+        let height = geometry.expandedSize(content: model.size.expanded).height
+        let bandStop = min(0.6, band / max(1, height))
+        ZStack {
+            if !reduceTransparency {
+                shape.fill(.ultraThinMaterial)
+                shape.fill(LinearGradient(stops: [
+                    .init(color: .black, location: 0),
+                    .init(color: .black, location: bandStop),
+                    .init(color: .black.opacity(0.72), location: min(1, bandStop + 0.22)),
+                    .init(color: .black.opacity(0.5), location: 1)
+                ], startPoint: .top, endPoint: .bottom))
+                // Light catching the lower edge of the glass.
+                shape.stroke(LinearGradient(colors: [.clear, .clear, .white.opacity(0.16)],
+                                            startPoint: .top, endPoint: .bottom), lineWidth: 1)
+            } else {
+                shape.fill(Color(white: 0.06))
+            }
+            // Closed: solid black, indistinguishable from the notch.
+            shape.fill(.black).opacity(open ? 0 : 1)
+        }
+        .shadow(color: .black.opacity(open ? 0.35 : (geometry.hasNotch ? 0 : 0.3)), radius: open ? 22 : 8, y: open ? 10 : 3)
+    }
+
     /// Vertical drags pull the island open or push it closed; horizontal drags are left to the scrubber.
     private func pullGesture(open: Bool) -> some Gesture {
-        DragGesture(minimumDistance: 6)
+        DragGesture(minimumDistance: 8)
             .onChanged { value in
                 let dy = value.translation.height, dx = value.translation.width
                 guard abs(dy) > abs(dx) * 1.4 else { return }
@@ -83,43 +128,54 @@ struct IslandView: View {
         if reduceMotion { return .opacity }
         return .asymmetric(
             insertion: .modifier(active: IslandReveal(progress: 0), identity: IslandReveal(progress: 1))
-                .animation(model.motion.open.delay(0.06)),
-            removal: .opacity.animation(.easeOut(duration: 0.12))
+                .animation(model.motion.open.delay(0.05)),
+            removal: .opacity.animation(.easeOut(duration: 0.1))
         )
     }
+}
 
-    /// Wraps the notch on notched displays; a free-floating rounded pill elsewhere.
-    @ViewBuilder
-    private func silhouette(open: Bool, geometry: IslandGeometry) -> some View {
-        if geometry.hasNotch {
-            IslandShape(shoulder: open ? 18 : 7, bottomRadius: open ? 32 : 11).fill(.black)
-        } else {
-            RoundedRectangle(cornerRadius: open ? 30 : geometry.collapsedSize.height / 2, style: .continuous)
-                .fill(.black)
-        }
+/// Reveal for the open island's content: sharpens in from a slight blur while settling down
+/// toward its place, as if it were pulled out of the notch.
+private struct IslandReveal: ViewModifier {
+    let progress: Double
+
+    func body(content: Content) -> some View {
+        content
+            .opacity(progress)
+            .blur(radius: (1 - progress) * 5)
+            .scaleEffect(0.96 + 0.04 * progress, anchor: .top)
+            .offset(y: (1 - progress) * -10)
     }
+}
 
-    // MARK: Closed
+// MARK: - Closed
 
-    private func collapsedContent(state: PlaybackState, geometry: IslandGeometry) -> some View {
+private struct IslandClosedContent: View {
+    let environment: AppEnvironment
+    let model: IslandModel
+    let state: PlaybackState
+    let geometry: IslandGeometry
+
+    var body: some View {
+        let nowPlaying = environment.nowPlaying
         let coverSize = geometry.hasNotch ? max(16, geometry.notchHeight - 12) : 20
         let hint = model.isHinting
-        return HStack(spacing: 8) {
+        HStack(spacing: 8) {
             ArtworkView(image: nowPlaying.artworkImage, size: coverSize, cornerRadius: 5)
-                .scaleEffect(hint ? 1.12 : 1)
+                .scaleEffect(hint ? 1.1 : 1)
             if geometry.hasNotch {
                 Spacer(minLength: geometry.notchWidth)
             } else {
                 Text(state.track.title)
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white.opacity(0.9))
+                    .foregroundStyle(.white.opacity(0.92))
                     .lineLimit(1)
                 Spacer(minLength: 4)
             }
             if environment.settings.islandShowsBars {
                 PlaybackBars(isPlaying: state.isPlaying && environment.renderGate.canAnimate,
                              color: nowPlaying.palette.highlight, barWidth: 2.5, height: 12)
-                    .scaleEffect(hint ? 1.15 : 1)
+                    .scaleEffect(hint ? 1.12 : 1)
             }
         }
         .padding(.horizontal, geometry.hasNotch ? 16 : 10)
@@ -127,113 +183,235 @@ struct IslandView: View {
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Now playing: \(state.track.title) by \(state.track.artist)")
         .accessibilityAddTraits(.isButton)
-        .accessibilityAction { interactions.tap() }
-    }
-
-    // MARK: Open
-
-    private func expandedContent(state: PlaybackState, geometry: IslandGeometry) -> some View {
-        let size = model.size
-        let large = size == .large
-        return VStack(spacing: large ? 12 : 9) {
-            if geometry.hasNotch {
-                Color.clear.frame(height: geometry.notchHeight - 4)
-            }
-            HStack(spacing: 12) {
-                Button {
-                    environment.windows.showLyrics()
-                } label: {
-                    ArtworkView(image: nowPlaying.artworkImage, size: size.artworkSize, cornerRadius: large ? 13 : 10)
-                        .shadow(color: nowPlaying.palette.highlight.opacity(0.35), radius: 10, y: 3)
-                }
-                .buttonStyle(MusicBarButtonStyle())
-                .help("Open the lyrics window")
-                .accessibilityLabel("Open the lyrics window")
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(state.track.title)
-                        .font(.system(size: large ? 16 : 14, weight: .semibold))
-                        .foregroundStyle(.white)
-                    Text(state.track.artist)
-                        .font(.system(size: large ? 13 : 12))
-                        .foregroundStyle(.white.opacity(0.6))
-                }
-                .lineLimit(1)
-                .contentTransition(.opacity)
-                .accessibilityElement(children: .combine)
-
-                Spacer(minLength: 6)
-
-                TransportControls(nowPlaying: nowPlaying, isPlaying: state.isPlaying)
-            }
-
-            if environment.settings.islandShowsLyrics && size != .compact {
-                IslandLyricLine(environment: environment, state: state, fontSize: large ? 16 : 14)
-                    .frame(height: large ? 44 : 34)
-            }
-
-            Scrubber(state: state, tint: nowPlaying.palette.highlight, animate: environment.renderGate.canAnimate) {
-                nowPlaying.seek(to: $0)
-            }
-        }
-        .padding(.horizontal, geometry.hasNotch ? 36 : 22)
-        .padding(.top, geometry.hasNotch ? 0 : 14)
-        .padding(.bottom, 12)
     }
 }
 
-/// Reveal for the open island's content: sharpens in from a slight blur while settling down.
-private struct IslandReveal: ViewModifier {
-    let progress: Double
+// MARK: - Open
 
-    func body(content: Content) -> some View {
-        content
-            .opacity(progress)
-            .blur(radius: (1 - progress) * 6)
-            .scaleEffect(0.94 + 0.06 * progress, anchor: .top)
-            .offset(y: (1 - progress) * -8)
-    }
-}
+private struct IslandOpenContent: View {
+    let environment: AppEnvironment
+    let model: IslandModel
+    let interactions: IslandInteractions
+    let state: PlaybackState
+    let geometry: IslandGeometry
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-struct TransportControls: View {
-    let nowPlaying: NowPlayingStore
-    let isPlaying: Bool
+    private var showsLyricsPage: Bool { environment.settings.islandShowsLyrics }
 
     var body: some View {
-        HStack(spacing: 14) {
-            button("backward.fill", label: "Previous track", size: 13) { nowPlaying.previousTrack() }
-            button(isPlaying ? "pause.fill" : "play.fill", label: isPlaying ? "Pause" : "Play", size: 19) {
-                nowPlaying.playPause()
+        VStack(spacing: 0) {
+            band
+            Group {
+                switch showsLyricsPage ? model.page : .player {
+                case .player:
+                    IslandPlayerPage(environment: environment, state: state, size: model.size)
+                        .transition(pageTransition)
+                case .lyrics:
+                    IslandLyricsPage(environment: environment, state: state, size: model.size)
+                        .transition(pageTransition)
+                }
             }
-            button("forward.fill", label: "Next track", size: 13) { nowPlaying.nextTrack() }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .clipped()
+            .animation(reduceMotion ? .easeOut(duration: 0.15) : .spring(response: 0.34, dampingFraction: 1), value: model.page)
         }
-        .foregroundStyle(.primary)
     }
 
-    private func button(_ symbol: String, label: String, size: CGFloat, action: @escaping () -> Void) -> some View {
+    /// The strip beside the notch: page dots on the left, expand on the right.
+    private var band: some View {
+        HStack(spacing: 0) {
+            if showsLyricsPage {
+                IslandPageDots(page: model.page, select: interactions.selectPage)
+            }
+            Spacer(minLength: geometry.hasNotch ? geometry.notchWidth + 16 : 8)
+            Button {
+                environment.windows.showLyrics()
+            } label: {
+                Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .frame(width: 24, height: 24)
+                    .background(.white.opacity(0.12), in: Circle())
+                    .contentShape(Circle())
+            }
+            .buttonStyle(MusicBarButtonStyle())
+            .help("Open the lyrics window")
+            .accessibilityLabel("Open the lyrics window")
+        }
+        .padding(.horizontal, 22)
+        .frame(height: geometry.hasNotch ? geometry.notchHeight : 34)
+    }
+
+    private var pageTransition: AnyTransition {
+        if reduceMotion { return .opacity }
+        let forward = model.pageDirection > 0
+        return .asymmetric(
+            insertion: .move(edge: forward ? .trailing : .leading).combined(with: .opacity),
+            removal: .move(edge: forward ? .leading : .trailing).combined(with: .opacity)
+        )
+    }
+}
+
+private struct IslandPageDots: View {
+    let page: IslandPage
+    let select: (IslandPage) -> Void
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(IslandPage.allCases, id: \.rawValue) { item in
+                Button { select(item) } label: {
+                    Capsule()
+                        .fill(.white.opacity(item == page ? 0.95 : 0.35))
+                        .frame(width: item == page ? 16 : 6, height: 6)
+                        .frame(height: 20)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(item == .player ? "Player" : "Lyrics")
+                .accessibilityAddTraits(item == page ? [.isSelected] : [])
+            }
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 1), value: page)
+    }
+}
+
+private struct IslandPlayerPage: View {
+    let environment: AppEnvironment
+    let state: PlaybackState
+    let size: IslandSize
+
+    var body: some View {
+        let nowPlaying = environment.nowPlaying
+        let transport = size.transportSizes
+        VStack(spacing: 0) {
+            HStack(spacing: 12) {
+                ArtworkView(image: nowPlaying.artworkImage, size: size.artworkSize, cornerRadius: size.artworkSize * 0.2)
+                    .shadow(color: .black.opacity(0.35), radius: 6, y: 3)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(state.track.title)
+                        .font(.system(size: size.titleSize, weight: .bold))
+                        .foregroundStyle(.white)
+                    Text(state.track.artist)
+                        .font(.system(size: size.titleSize - 2, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.62))
+                }
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentTransition(.opacity)
+                .accessibilityElement(children: .combine)
+                if environment.settings.islandShowsBars {
+                    PlaybackBars(isPlaying: state.isPlaying && environment.renderGate.canAnimate,
+                                 color: .white.opacity(0.85), barWidth: 2.5, height: 16)
+                }
+            }
+
+            IslandProgress(state: state, animate: environment.renderGate.canAnimate) { nowPlaying.seek(to: $0) }
+                .padding(.top, 12)
+
+            ZStack {
+                HStack(spacing: size == .compact ? 34 : 44) {
+                    control("backward.fill", label: "Previous track", size: transport.skip) { nowPlaying.previousTrack() }
+                    control(state.isPlaying ? "pause.fill" : "play.fill", label: state.isPlaying ? "Pause" : "Play",
+                            size: transport.play) { nowPlaying.playPause() }
+                    control("forward.fill", label: "Next track", size: transport.skip) { nowPlaying.nextTrack() }
+                }
+                HStack {
+                    Spacer()
+                    control("laptopcomputer", label: "Open \(state.track.player.displayName)", size: transport.skip - 4) {
+                        environment.musicBarActions().openPlayer()
+                    }
+                    .opacity(0.75)
+                }
+            }
+            .padding(.top, 8)
+        }
+        .padding(.horizontal, 22)
+        .padding(.top, 6)
+        .padding(.bottom, 12)
+    }
+
+    private func control(_ symbol: String, label: String, size: CGFloat, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: symbol)
                 .font(.system(size: size, weight: .semibold))
+                .foregroundStyle(.white)
                 .contentTransition(.symbolEffect(.replace))
-                .frame(width: 26, height: 26)
+                .frame(width: size + 14, height: size + 10)
                 .contentShape(Rectangle())
         }
         .buttonStyle(MusicBarButtonStyle())
+        .help(label)
         .accessibilityLabel(label)
     }
 }
 
-/// The current lyric line in the user's effect, sized for the island.
-private struct IslandLyricLine: View {
+/// Elapsed time, a thin bar you can drag or click, and the track length.
+private struct IslandProgress: View {
+    let state: PlaybackState
+    let animate: Bool
+    let onSeek: (TimeInterval) -> Void
+
+    @State private var dragFraction: Double?
+    @State private var isHovered = false
+
+    var body: some View {
+        TimelineView(.animation(minimumInterval: 0.5, paused: !animate || !state.isPlaying || dragFraction != nil)) { timeline in
+            let duration = max(1, state.track.duration)
+            let fraction = dragFraction ?? min(1, state.interpolatedPosition(at: timeline.date) / duration)
+            HStack(spacing: 10) {
+                Text(Scrubber.format(fraction * duration))
+                    .frame(width: 34, alignment: .leading)
+                GeometryReader { proxy in
+                    let active = dragFraction != nil || isHovered
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(.white.opacity(0.22))
+                        Capsule().fill(.white.opacity(0.9)).frame(width: max(0, proxy.size.width * fraction))
+                    }
+                    .frame(height: active ? 6 : 4)
+                    .frame(maxHeight: .infinity)
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { value in
+                                dragFraction = min(1, max(0, value.location.x / max(1, proxy.size.width)))
+                            }
+                            .onEnded { _ in
+                                if let dragFraction { onSeek(dragFraction * duration) }
+                                dragFraction = nil
+                            }
+                    )
+                    .onHover { isHovered = $0 }
+                    .animation(.spring(response: 0.2, dampingFraction: 1), value: active)
+                }
+                .frame(height: 16)
+                Text(Scrubber.format(duration))
+                    .frame(width: 34, alignment: .trailing)
+            }
+            .font(.system(size: 11, weight: .semibold).monospacedDigit())
+            .foregroundStyle(.white.opacity(0.62))
+        }
+        .accessibilityElement()
+        .accessibilityLabel("Playback position")
+        .accessibilityValue("\(Scrubber.format(state.interpolatedPosition())) of \(Scrubber.format(state.track.duration))")
+        .accessibilityAdjustableAction { direction in
+            onSeek(max(0, state.interpolatedPosition() + (direction == .increment ? 10 : -10)))
+        }
+    }
+}
+
+/// The current line in the user's lyric effect, large, with the next line waiting below.
+private struct IslandLyricsPage: View {
     let environment: AppEnvironment
     let state: PlaybackState
-    let fontSize: CGFloat
+    let size: IslandSize
 
     var body: some View {
         let lines = environment.lyrics.timedLines
-        TimelineView(.animation(minimumInterval: 0.1, paused: !(state.isPlaying && environment.renderGate.canAnimate))) { timeline in
+        let animate = state.isPlaying && environment.renderGate.canAnimate
+        let fontSize: CGFloat = size == .large ? 20 : (size == .compact ? 16 : 18)
+        TimelineView(.animation(minimumInterval: 0.1, paused: !animate)) { timeline in
             let index = lines.activeIndex(at: environment.lyricTime(state, at: timeline.date))
-            Group {
+            VStack(spacing: 8) {
                 if let index {
                     LiveLyricEffect(
                         kind: LiveLyricEffect.singleRow(environment.settings.lyricEffect),
@@ -241,20 +419,30 @@ private struct IslandLyricLine: View {
                         palette: environment.nowPlaying.palette,
                         fontSize: fontSize,
                         alignment: .center,
-                        isPlaying: state.isPlaying && environment.renderGate.canAnimate,
+                        isPlaying: animate,
                         lyricTime: { environment.lyricTime(state, at: $0) }
                     )
+                    .id(index)
+                    .transition(.opacity.combined(with: .offset(y: 8)))
+                    if index + 1 < lines.count {
+                        Text(lines[index + 1].displayText)
+                            .font(.system(size: fontSize * 0.72, weight: .semibold, design: .rounded))
+                            .foregroundStyle(.white.opacity(0.42))
+                            .lineLimit(1)
+                            .id("next-\(index)")
+                            .transition(.opacity)
+                    }
                 } else {
-                    Text(lines.isEmpty ? state.track.album : "♪")
-                        .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+                    Text(lines.isEmpty ? "No synced lyrics for this song" : "♪")
+                        .font(.system(size: fontSize * 0.8, weight: .semibold, design: .rounded))
                         .foregroundStyle(.white.opacity(0.5))
-                        .frame(maxWidth: .infinity)
                 }
             }
-            .id(index ?? -1)
-            .transition(.opacity)
-            .animation(.easeInOut(duration: 0.2), value: index)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(.spring(response: 0.35, dampingFraction: 1), value: index)
         }
+        .padding(.horizontal, 26)
+        .padding(.bottom, 14)
         .clipped()
     }
 }

@@ -216,3 +216,15 @@ the ♪ in the menu bar.
       skip, scrub and shuffle work; it hides after ~3 s still. A key or a click on empty space closes.
 - [ ] Hum screensaver (after Reinstall): the player shows live but can't be clicked (macOS ends the
       screensaver on any input). Glow color/style match the Beat Glow settings.
+
+## Island polish (glass, fixed panel, pages)
+- [ ] Open the island repeatedly, fast, from different angles, and while a song changes: it never
+      jumps, clips or opens-closes-opens. Move away mid-opening → it reverses smoothly from where it is.
+- [ ] Open: black where it meets the notch, fading into frosted glass that shows your wallpaper
+      blurred behind it. Page dots on the left of the notch, expand button on the right.
+- [ ] Player page: artwork, title/artist, live bars, elapsed time · scrubber · track length,
+      large previous / play-pause / next, and a laptop button that brings the player app forward.
+- [ ] Click the dots or swipe sideways → slides to Lyrics (current line + next line) and back,
+      in the matching direction.
+- [ ] Menu bar items right next to the island stay clickable when it's closed.
+- [ ] System Settings › Accessibility › Display › Reduce transparency → the island becomes solid dark.

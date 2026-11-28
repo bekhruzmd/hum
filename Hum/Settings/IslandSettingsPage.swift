@@ -31,7 +31,7 @@ struct IslandSettingsPage: View {
             } header: {
                 Text("Opening")
             } footer: {
-                Text("You can also pull the island down with a drag or a two-finger swipe, and push it back up. When it's open, swipe sideways to skip.")
+                Text("You can also pull the island down with a drag or a two-finger swipe, and push it back up. When it's open, swipe sideways or click the dots to switch between Player and Lyrics.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             .disabled(!settings.islandEnabled)
@@ -41,8 +41,7 @@ struct IslandSettingsPage: View {
                     ForEach(IslandSize.allCases) { Text($0.displayName).tag($0) }
                 }
                 .pickerStyle(.segmented)
-                Toggle("Current lyric line", isOn: $settings.islandShowsLyrics)
-                    .disabled(settings.islandSize == .compact)
+                Toggle("Lyrics page", isOn: $settings.islandShowsLyrics)
                 Toggle("Visualizer bars when closed", isOn: $settings.islandShowsBars)
             }
             .disabled(!settings.islandEnabled)
@@ -86,23 +85,31 @@ struct IslandPreview: View {
             Rectangle().fill(.black.opacity(0.25)).frame(height: notch.height * scale)
 
             ZStack(alignment: .top) {
-                IslandShape(shoulder: (open ? 18 : 7) * scale, bottomRadius: (open ? 32 : 11) * scale).fill(.black)
+                let shape = IslandShape(shoulder: (open ? 10 : 7) * scale, bottomRadius: (open ? 26 : 11) * scale)
+                ZStack {
+                    shape.fill(.ultraThinMaterial)
+                    shape.fill(LinearGradient(stops: [
+                        .init(color: .black, location: 0), .init(color: .black, location: 0.2),
+                        .init(color: .black.opacity(0.7), location: 0.45), .init(color: .black.opacity(0.5), location: 1)
+                    ], startPoint: .top, endPoint: .bottom))
+                    shape.fill(.black).opacity(open ? 0 : 1)
+                }
                 Group {
                     if open {
                         openContent(width: expanded.width)
                             .frame(width: expanded.width, height: expanded.height, alignment: .top)
-                            .transition(.opacity.combined(with: .scale(scale: 0.94, anchor: .top))
-                                .animation(motion.open.delay(0.06)))
+                            .transition(.opacity.combined(with: .scale(scale: 0.96, anchor: .top))
+                                .animation(motion.open.delay(0.05)))
                     } else {
                         closedContent(width: closed.width)
                             .transition(.opacity)
                     }
                 }
                 .frame(width: current.width, height: current.height, alignment: .top)
-                .mask(IslandShape(shoulder: (open ? 18 : 7) * scale, bottomRadius: (open ? 32 : 11) * scale))
+                .mask(shape)
             }
             .frame(width: current.width, height: current.height)
-            .shadow(color: .black.opacity(open ? 0.4 : 0), radius: 12, y: 6)
+            .shadow(color: .black.opacity(open ? 0.35 : 0), radius: 14, y: 6)
             .animation(reduceMotion ? .easeOut(duration: 0.15) : (open ? motion.open : motion.close), value: open)
         }
         .environment(\.colorScheme, .dark)
@@ -132,29 +139,36 @@ struct IslandPreview: View {
     }
 
     private func openContent(width: CGFloat) -> some View {
-        VStack(spacing: 7) {
-            Color.clear.frame(height: notch.height * scale - 2)
-            HStack(spacing: 8) {
-                RoundedRectangle(cornerRadius: 6).fill(LinearGradient(colors: [.orange, .pink, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: size.artworkSize * scale, height: size.artworkSize * scale)
-                VStack(alignment: .leading, spacing: 4) {
-                    Capsule().fill(.white.opacity(0.85)).frame(width: 70, height: 6)
-                    Capsule().fill(.white.opacity(0.4)).frame(width: 46, height: 5)
+        let art = size.artworkSize * scale
+        return VStack(spacing: 6) {
+            HStack {
+                HStack(spacing: 3) {
+                    Capsule().fill(.white).frame(width: 9, height: 3.5)
+                    Circle().fill(.white.opacity(0.35)).frame(width: 3.5, height: 3.5)
                 }
                 Spacer()
-                HStack(spacing: 9) {
-                    Image(systemName: "backward.fill")
-                    Image(systemName: "pause.fill").font(.system(size: 12))
-                    Image(systemName: "forward.fill")
+                Circle().fill(.white.opacity(0.15)).frame(width: 13, height: 13)
+            }
+            .frame(height: notch.height * scale)
+            HStack(spacing: 7) {
+                RoundedRectangle(cornerRadius: art * 0.2).fill(LinearGradient(colors: [.orange, .pink, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: art, height: art)
+                VStack(alignment: .leading, spacing: 4) {
+                    Capsule().fill(.white.opacity(0.9)).frame(width: 60, height: 5)
+                    Capsule().fill(.white.opacity(0.45)).frame(width: 40, height: 4)
                 }
-                .font(.system(size: 8))
-                .foregroundStyle(.white)
+                Spacer()
+                if showsBars { PlaybackBars(isPlaying: true, color: .white.opacity(0.85), barWidth: 1.6, height: 9) }
             }
-            if size != .compact {
-                Capsule().fill(.white.opacity(0.7)).frame(width: width * 0.45, height: 5)
+            Capsule().fill(.white.opacity(0.22)).frame(height: 2.5)
+                .overlay(alignment: .leading) { Capsule().fill(.white.opacity(0.9)).frame(width: width * 0.3, height: 2.5) }
+            HStack(spacing: 18) {
+                Image(systemName: "backward.fill")
+                Image(systemName: "pause.fill").font(.system(size: 15, weight: .semibold))
+                Image(systemName: "forward.fill")
             }
-            Capsule().fill(.white.opacity(0.2)).frame(height: 3)
-                .overlay(alignment: .leading) { Capsule().fill(.pink).frame(width: width * 0.25, height: 3) }
+            .font(.system(size: 11, weight: .semibold))
+            .foregroundStyle(.white)
         }
         .padding(.horizontal, 22 * scale)
     }

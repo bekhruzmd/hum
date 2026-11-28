@@ -118,30 +118,22 @@ enum IslandMotion: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Opening spring: the island is pulled out of the notch.
+    /// Opening spring. Smooth and Snappy are critically damped (no overshoot); only Bouncy
+    /// overshoots, for people who want a physical feel.
     var open: Animation {
         switch self {
-        case .smooth: return .spring(response: 0.44, dampingFraction: 0.84)
-        case .snappy: return .spring(response: 0.3, dampingFraction: 0.88)
-        case .bouncy: return .spring(response: 0.5, dampingFraction: 0.66)
+        case .smooth: return .spring(response: 0.38, dampingFraction: 1)
+        case .snappy: return .spring(response: 0.28, dampingFraction: 1)
+        case .bouncy: return .spring(response: 0.42, dampingFraction: 0.78)
         }
     }
 
-    /// Closing spring: always settles without overshoot so it tucks cleanly into the notch.
+    /// Closing spring: always critically damped so it tucks cleanly into the notch.
     var close: Animation {
         switch self {
-        case .smooth: return .spring(response: 0.36, dampingFraction: 0.95)
-        case .snappy: return .spring(response: 0.26, dampingFraction: 1)
-        case .bouncy: return .spring(response: 0.4, dampingFraction: 0.9)
-        }
-    }
-
-    /// How long a closing animation takes to settle before the panel can shrink.
-    var settleDuration: Duration {
-        switch self {
-        case .smooth: return .milliseconds(440)
-        case .snappy: return .milliseconds(320)
-        case .bouncy: return .milliseconds(520)
+        case .smooth: return .spring(response: 0.32, dampingFraction: 1)
+        case .snappy: return .spring(response: 0.24, dampingFraction: 1)
+        case .bouncy: return .spring(response: 0.34, dampingFraction: 1)
         }
     }
 }
@@ -161,21 +153,37 @@ enum IslandSize: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Content size below the notch.
+    /// Content size below the notch band (header row, progress, transport, padding).
     var expanded: CGSize {
         switch self {
-        // Fitted to the content: header, optional lyric line, scrubber, padding.
-        case .compact: return CGSize(width: 400, height: 104)
-        case .regular: return CGSize(width: 470, height: 158)
-        case .large: return CGSize(width: 560, height: 196)
+        case .compact: return CGSize(width: 400, height: 134)
+        case .regular: return CGSize(width: 450, height: 148)
+        case .large: return CGSize(width: 520, height: 166)
         }
     }
 
     var artworkSize: CGFloat {
         switch self {
-        case .compact: return 46
-        case .regular: return 58
-        case .large: return 76
+        case .compact: return 44
+        case .regular: return 52
+        case .large: return 62
+        }
+    }
+
+    /// Previous/next and play/pause symbol sizes.
+    var transportSizes: (skip: CGFloat, play: CGFloat) {
+        switch self {
+        case .compact: return (19, 26)
+        case .regular: return (22, 30)
+        case .large: return (24, 34)
+        }
+    }
+
+    var titleSize: CGFloat {
+        switch self {
+        case .compact: return 14
+        case .regular: return 15
+        case .large: return 17
         }
     }
 }

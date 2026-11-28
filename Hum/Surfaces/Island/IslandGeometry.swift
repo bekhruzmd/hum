@@ -64,6 +64,23 @@ struct IslandGeometry: Equatable {
         CGSize(width: content.width, height: content.height + (hasNotch ? notchHeight : 0))
     }
 
+    /// Room around the open island for its shadow.
+    static let shadowMargin: CGFloat = 40
+
+    /// The panel never resizes: it is always big enough for the largest open island, so
+    /// opening and closing are pure SwiftUI animation and can be interrupted at any point.
+    func panelFrame(maxContent: CGSize) -> CGRect {
+        let open = expandedSize(content: maxContent)
+        return frame(for: CGSize(width: open.width + 2 * Self.shadowMargin, height: open.height + Self.shadowMargin))
+    }
+
+    /// Where the pointer counts as "on the island", in screen coordinates. Extends to the top
+    /// of the screen so the pointer can rest in the menu bar strip above it.
+    func hitRect(open: Bool, content: CGSize) -> CGRect {
+        let base = open ? expandedFrame(content: content).insetBy(dx: -10, dy: -10) : collapsedFrame.insetBy(dx: -4, dy: -4)
+        return CGRect(x: base.minX, y: base.minY, width: base.width, height: screenFrame.maxY - base.minY)
+    }
+
     private func frame(for size: CGSize) -> CGRect {
         CGRect(x: screenFrame.midX - size.width / 2, y: top - size.height, width: size.width, height: size.height)
     }

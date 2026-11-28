@@ -31,6 +31,7 @@
 		2DD8E95EE30160377DCFFC35 /* CinematicScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 676432FDFFD2CDCE8E51B4E9 /* CinematicScene.swift */; };
 		2E7DED855F837A96C85A1DCD /* CinematicEdgeGlow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 014A282913D986DD15545055 /* CinematicEdgeGlow.metal */; };
 		34552D1BBE9A612356490721 /* EffectPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89EFA8A6160C53DB1CB00697 /* EffectPreview.swift */; };
+		37181D55EF1B60C1486C0385 /* TransportControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = B46983A1546382B9DF6B1E1D /* TransportControls.swift */; };
 		3A1A654F469F50B7D8FC76CD /* IslandShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = B187FD5885E616971AE5C7C4 /* IslandShape.swift */; };
 		3B3E27123E68133E87379C6E /* CinematicEdgeGlow.metal in Sources */ = {isa = PBXBuildFile; fileRef = 014A282913D986DD15545055 /* CinematicEdgeGlow.metal */; };
 		3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B609EA470037C5FB877BF0 /* SpotifySource.swift */; };
@@ -244,6 +245,7 @@
 		B12A126AB01E328A235275D0 /* LyricEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricEffect.swift; sourceTree = "<group>"; };
 		B187FD5885E616971AE5C7C4 /* IslandShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslandShape.swift; sourceTree = "<group>"; };
 		B3AD6D449149B285C1989F7B /* LyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricsService.swift; sourceTree = "<group>"; };
+		B46983A1546382B9DF6B1E1D /* TransportControls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransportControls.swift; sourceTree = "<group>"; };
 		B5A9345C897A934AD2D34F42 /* NetEaseLyricsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetEaseLyricsService.swift; sourceTree = "<group>"; };
 		C0E8451C99E7C665060C2E22 /* HumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HumApp.swift; sourceTree = "<group>"; };
 		C2D23C54EC0F5C1455294F93 /* LRCParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LRCParser.swift; sourceTree = "<group>"; };
@@ -398,6 +400,7 @@
 				E7331D2E9BA41F3E5E07D9B2 /* IslandView.swift */,
 				6700C5263256663716CE4892 /* PlaybackBars.swift */,
 				D453377494C2409DA65082B7 /* Scrubber.swift */,
+				B46983A1546382B9DF6B1E1D /* TransportControls.swift */,
 			);
 			path = Island;
 			sourceTree = "<group>";
@@ -791,6 +794,7 @@
 				3BDD68F3A81D775FB88DB61D /* SpotifySource.swift in Sources */,
 				459BC414D0B257CBB3E18EF1 /* StateView.swift in Sources */,
 				DE418A81078C068ABD99F202 /* Track.swift in Sources */,
+				37181D55EF1B60C1486C0385 /* TransportControls.swift in Sources */,
 				E98FF0BB9A98C6A2EF784CBC /* TurntableView.swift in Sources */,
 				78F4E03517445F65655CCF5B /* TypewriterEffect.swift in Sources */,
 				D918379592FEFA82655DC835 /* WaveEffect.swift in Sources */,
