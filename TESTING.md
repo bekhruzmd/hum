@@ -195,3 +195,24 @@ the ♪ in the menu bar.
   Scene (⇧⌘L); Hum's application menu now provides Settings (⌘,).
 - Existing AppIntents metadata/SwiftUI settings diagnostics remain. Extended performance soak and
   Apple Music playback-control validation were not repeated in this pass.
+
+## Island animation, Beat Glow, interactive player, new Settings
+- [ ] Settings opens as a sidebar window: Now Playing; Features (Island, Screen Saver, Desktop, Lyrics,
+      Sound, Beat Glow, Keys); General. Features that are off show "Off". Search filters the list.
+- [ ] Island page: the mini notch keeps opening and closing; switching Motion (Smooth/Snappy/Bouncy)
+      and Size changes it live.
+- [ ] Real island: hover → after the hover delay it springs out of the notch; content sharpens in.
+      Leave → content fades quickly and the shape tucks back without bouncing.
+- [ ] Open with "Click": hovering only nudges the cover/bars; a click opens it.
+- [ ] Pull the closed island down with a drag or a two-finger swipe down → opens. Swipe up → closes.
+      Open + swipe sideways → skips tracks.
+- [ ] Size Compact / Regular / Large changes the open island; Compact hides the lyric line.
+- [ ] Haptics off → no tap on a Force Touch trackpad. Peek length changes how long it stays open on song change.
+- [ ] Beat Glow on → a line of light runs around every display while music plays, flaring on sung words;
+      pause → fades out. Clicks pass through it.
+- [ ] Beat Glow page: Album / Custom (color picker) / Spectrum; Orbit / Pulse / Steady; speed,
+      thickness and brightness apply live to the preview and the real glow.
+- [ ] Idle scene (menu bar › Show Idle Scene): move the mouse → the glass player slides up; pause,
+      skip, scrub and shuffle work; it hides after ~3 s still. A key or a click on empty space closes.
+- [ ] Hum screensaver (after Reinstall): the player shows live but can't be clicked (macOS ends the
+      screensaver on any input). Glow color/style match the Beat Glow settings.

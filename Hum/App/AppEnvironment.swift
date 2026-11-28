@@ -15,6 +15,7 @@ final class AppEnvironment {
     let sounds = SoundEngine()
     private(set) lazy var windows = WindowManager(environment: self)
     private(set) lazy var island = IslandController(environment: self)
+    private(set) lazy var beatGlow = BeatGlowController(environment: self)
     private(set) lazy var desktop = DesktopController(environment: self)
     private(set) lazy var ticker = LyricsTicker(environment: self)
     private(set) lazy var screensaverFeed = ScreensaverFeedWriter(environment: self)
@@ -53,7 +54,6 @@ final class AppEnvironment {
     /// views calling this re-render when the track, artwork or lyrics change.
     func cinematicData() -> CinematicSceneData {
         let state = nowPlaying.playbackState
-        let offset = offsets.offset(for: state?.track)
         return CinematicSceneData(
             track: state.map { SceneTrackInfo(title: $0.track.title, artist: $0.track.artist, album: $0.track.album, duration: $0.track.duration) },
             artwork: nowPlaying.artworkImage,
@@ -62,6 +62,8 @@ final class AppEnvironment {
             effect: settings.cinematicEffect,
             look: settings.cinematicLook,
             edgeGlow: settings.cinematicEdgeGlow,
+            glowAppearance: settings.glowAppearance,
+            showsPlayerBar: settings.idlePlayerBar,
             displayEdgeProfiles: settings.displayEdgeProfiles,
             isPlaying: state?.isPlaying ?? false,
             isShuffling: state?.isShuffling,
@@ -102,7 +104,8 @@ final class AppEnvironment {
         }
         renderGate.start()
         nowPlaying.start()
-        // island.start() // Disabled for now per user request
+        island.start()
+        beatGlow.start()
         desktop.start()
         idleScreen.start()
         hotkeys.start()

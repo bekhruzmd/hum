@@ -18,6 +18,9 @@ struct CinematicSceneData {
     var effect: LyricEffectKind = .constellation
     var look: CinematicLook = .album
     var edgeGlow: Double = 1
+    var glowAppearance: GlowAppearance = .default
+    /// Show the glass player. Interactive only when the scene is given `playerActions`.
+    var showsPlayerBar = true
     var displayEdgeProfiles: [String: DisplayEdgeProfile] = [:]
     var isPlaying = false
     var isShuffling: Bool? = nil
@@ -33,6 +36,10 @@ struct CinematicScene: View {
     let animate: Bool
     var playerActions: MusicBarActions? = nil
     var displayOverride: DisplayEdgeGeometry? = nil
+    /// The idle screen hides the player until the pointer moves.
+    var playerBarVisible = true
+    /// Clicking empty space (not the player) — the idle screen uses it to close.
+    var onBackgroundTap: (() -> Void)? = nil
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var displayGeometry = DisplayEdgeGeometry()
     @State private var animationStart = Date()
@@ -62,13 +69,22 @@ struct CinematicScene: View {
                         CinematicLight(time: reduceMotion ? 0 : Double(time),
                                        hasArtwork: data.look == .monochrome && data.artwork != nil)
                         LinearGradient(colors: [.black.opacity(0.30), .clear, .black.opacity(0.20)], startPoint: .top, endPoint: .bottom)
-                        let glowRGB = data.palette.dominantGlowColor
                         DisplayEdgeGlow(contour: contour, time: reduceMotion ? 0 : Double(time),
-                                        intensity: data.edgeGlow, color: glowRGB)
+                                        intensity: data.edgeGlow, color: data.glowAppearance.color(for: data.palette),
+                                        appearance: data.glowAppearance,
+                                        pulse: reduceMotion ? 0 : BeatPulse.value(
+                                            lines: data.lines, time: data.lyricTime(timeline.date),
+                                            isPlaying: data.isPlaying && animate,
+                                            followsLyrics: data.glowAppearance.followsLyrics))
                     }
                     .frame(width: size.width, height: size.height)
                 }
                 .allowsHitTesting(false)
+                if let onBackgroundTap {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture(perform: onBackgroundTap)
+                }
                 if data.look == .monochrome {
                     title(unit: unit)
                         .position(x: size.width * 0.5, y: size.height * 0.065)
@@ -76,7 +92,7 @@ struct CinematicScene: View {
                 lyrics(size: size, unit: unit)
                     .opacity(isArtworkExpanded ? 0 : 1)
                     .animation(.easeOut(duration: 0.2), value: isArtworkExpanded)
-                if data.track != nil && playerActions != nil {
+                if data.track != nil && data.showsPlayerBar {
                     let scale = min(1, max(0.25, unit / 720))
                     MusicBar(data: data, animate: animate, isArtworkExpanded: $isArtworkExpanded,
                              actions: playerActions)
@@ -84,6 +100,10 @@ struct CinematicScene: View {
                         .frame(width: MusicBar.width * scale)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                         .padding(.bottom, unit * 0.045)
+                        .opacity(playerBarVisible ? 1 : 0)
+                        .offset(y: playerBarVisible ? 0 : unit * 0.03)
+                        .allowsHitTesting(playerBarVisible)
+                        .animation(reduceMotion ? .easeOut(duration: 0.15) : MusicBar.motion, value: playerBarVisible)
                 }
             }
             .frame(width: size.width, height: size.height)

@@ -53,9 +53,15 @@ struct IslandGeometry: Equatable {
 
     var collapsedFrame: CGRect { frame(for: collapsedSize) }
 
-    var expandedFrame: CGRect {
-        let height = Self.expandedSize.height + (hasNotch ? notchHeight : 0)
-        return frame(for: CGSize(width: Self.expandedSize.width, height: height))
+    var expandedFrame: CGRect { expandedFrame(content: Self.expandedSize) }
+
+    /// The open island: `content` below the notch (the notch height is added on notched displays).
+    func expandedFrame(content: CGSize) -> CGRect {
+        frame(for: expandedSize(content: content))
+    }
+
+    func expandedSize(content: CGSize) -> CGSize {
+        CGSize(width: content.width, height: content.height + (hasNotch ? notchHeight : 0))
     }
 
     private func frame(for size: CGSize) -> CGRect {

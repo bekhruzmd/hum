@@ -27,6 +27,21 @@ final class SettingsStore {
     var islandShowsOverFullScreen: Bool { didSet { defaults.set(islandShowsOverFullScreen, forKey: "islandShowsOverFullScreen") } }
     var islandShowsLyrics: Bool { didSet { defaults.set(islandShowsLyrics, forKey: "islandShowsLyrics") } }
     var islandPeekOnTrackChange: Bool { didSet { defaults.set(islandPeekOnTrackChange, forKey: "islandPeekOnTrackChange") } }
+    var islandTrigger: IslandTrigger { didSet { defaults.set(islandTrigger.rawValue, forKey: "islandTrigger") } }
+    /// Seconds the pointer must rest on the island before it opens (hover trigger).
+    var islandHoverDelay: Double { didSet { defaults.set(islandHoverDelay, forKey: "islandHoverDelay") } }
+    var islandMotion: IslandMotion { didSet { defaults.set(islandMotion.rawValue, forKey: "islandMotion") } }
+    var islandSize: IslandSize { didSet { defaults.set(islandSize.rawValue, forKey: "islandSize") } }
+    var islandShowsBars: Bool { didSet { defaults.set(islandShowsBars, forKey: "islandShowsBars") } }
+    var islandHaptics: Bool { didSet { defaults.set(islandHaptics, forKey: "islandHaptics") } }
+    var islandPeekDuration: Double { didSet { defaults.set(islandPeekDuration, forKey: "islandPeekDuration") } }
+
+    // Beat Glow (edge light over everything while music plays)
+    var beatGlowEnabled: Bool { didSet { defaults.set(beatGlowEnabled, forKey: "beatGlowEnabled") } }
+    var beatGlowIntensity: Double { didSet { defaults.set(beatGlowIntensity, forKey: "beatGlowIntensity") } }
+    var glowAppearance: GlowAppearance {
+        didSet { if let data = try? JSONEncoder().encode(glowAppearance) { defaults.set(data, forKey: "glowAppearance") } }
+    }
 
     // Desktop
     var desktopMode: DesktopMode { didSet { defaults.set(desktopMode.rawValue, forKey: "desktopMode") } }
@@ -44,6 +59,8 @@ final class SettingsStore {
     }
     var cinematicLook: CinematicLook { didSet { defaults.set(cinematicLook.rawValue, forKey: "cinematicLook") } }
     var cinematicEffect: LyricEffectKind { didSet { defaults.set(cinematicEffect.rawValue, forKey: "cinematicEffect") } }
+    /// Show the glass music player on the idle scene (interactive) and screensaver (display only).
+    var idlePlayerBar: Bool { didSet { defaults.set(idlePlayerBar, forKey: "idlePlayerBar") } }
     /// Write the screensaver feed. Turned on when the user installs the Hum screensaver.
     var screensaverFeed: Bool { didSet { defaults.set(screensaverFeed, forKey: "screensaverFeed") } }
 
@@ -72,6 +89,18 @@ final class SettingsStore {
         islandShowsOverFullScreen = defaults.bool(forKey: "islandShowsOverFullScreen")
         islandShowsLyrics = defaults.object(forKey: "islandShowsLyrics") as? Bool ?? true
         islandPeekOnTrackChange = defaults.object(forKey: "islandPeekOnTrackChange") as? Bool ?? true
+        islandTrigger = IslandTrigger(rawValue: defaults.string(forKey: "islandTrigger") ?? "") ?? .hover
+        islandHoverDelay = defaults.object(forKey: "islandHoverDelay") as? Double ?? 0.12
+        islandMotion = IslandMotion(rawValue: defaults.string(forKey: "islandMotion") ?? "") ?? .smooth
+        islandSize = IslandSize(rawValue: defaults.string(forKey: "islandSize") ?? "") ?? .regular
+        islandShowsBars = defaults.object(forKey: "islandShowsBars") as? Bool ?? true
+        islandHaptics = defaults.object(forKey: "islandHaptics") as? Bool ?? true
+        islandPeekDuration = defaults.object(forKey: "islandPeekDuration") as? Double ?? 3
+        beatGlowEnabled = defaults.bool(forKey: "beatGlowEnabled")
+        beatGlowIntensity = CinematicGlow.clamped(defaults.object(forKey: "beatGlowIntensity") as? Double ?? 1)
+        glowAppearance = defaults.data(forKey: "glowAppearance")
+            .flatMap { try? JSONDecoder().decode(GlowAppearance.self, from: $0) } ?? .default
+        idlePlayerBar = defaults.object(forKey: "idlePlayerBar") as? Bool ?? true
         desktopMode = DesktopMode(rawValue: defaults.string(forKey: "desktopMode") ?? "") ?? .off
         desktopLyricsBackground = DesktopLyricsBackground(rawValue: defaults.string(forKey: "desktopLyricsBackground") ?? "") ?? .wallpaper
         idleStyle = IdleStyle(rawValue: defaults.string(forKey: "idleStyle") ?? "") ?? .cinematic

@@ -4,13 +4,22 @@ import SwiftUI
 /// Shows the idle screen after N idle minutes (while music plays) or on demand.
 ///
 /// Windows sit at pop-up-menu level: above apps, the Dock and the menu bar, but below the
-/// screensaver and the system lock screen, which always cover it. Any input dismisses it.
+/// screensaver and the system lock screen, which always cover it.
+///
+/// With the player bar on, moving the mouse reveals the glass player (so you can pause, skip
+/// or scrub) instead of closing; any key or a click on empty space closes. With it off, any
+/// input closes.
 @MainActor
 final class IdleScreenController {
     private unowned let environment: AppEnvironment
     private var windows: [NSWindow] = []
     private var monitors: [Any] = []
     private var checkTask: Task<Void, Never>?
+    private let controls = IdleControlsModel()
+    private var hideControlsTask: Task<Void, Never>?
+
+    /// How long the player stays visible after the pointer stops moving.
+    static let controlsLinger: Duration = .seconds(3)
 
     private(set) var isShowing = false
 
@@ -62,6 +71,7 @@ final class IdleScreenController {
     func show() {
         guard !isShowing else { return }
         isShowing = true
+        controls.visible = false
         for screen in NSScreen.screens {
             windows.append(makeWindow(for: screen))
         }
@@ -74,6 +84,7 @@ final class IdleScreenController {
     func dismiss() {
         guard isShowing else { return }
         isShowing = false
+        hideControlsTask?.cancel()
         monitors.forEach(NSEvent.removeMonitor)
         monitors.removeAll()
         windows.forEach { $0.orderOut(nil) }
@@ -88,7 +99,10 @@ final class IdleScreenController {
         window.backgroundColor = .black
         window.acceptsMouseMovedEvents = true
         window.isReleasedWhenClosed = false
-        window.contentView = NSHostingView(rootView: IdleScreenRoot(environment: environment))
+        window.contentView = NSHostingView(rootView: IdleScreenRoot(
+            environment: environment, controls: controls,
+            onBackgroundTap: { [weak self] in self?.dismiss() }
+        ))
         window.setFrame(screen.frame, display: false)
         window.alphaValue = 0
         window.orderFrontRegardless()
@@ -119,11 +133,46 @@ final class IdleScreenController {
         }
     }
 
-    /// Returns true when the event dismissed the idle screen (and should be swallowed).
+    /// Returns true when the event should be swallowed.
     private func handleInput(_ event: NSEvent) -> Bool {
         guard isShowing else { return false }
-        dismiss()
-        return true
+        let interactive = environment.settings.idlePlayerBar && environment.settings.idleStyle == .cinematic
+            && environment.nowPlaying.currentTrack != nil
+        guard interactive else {
+            dismiss()
+            return true
+        }
+        let isOurWindow = windows.contains { $0 === event.window }
+        switch event.type {
+        case .mouseMoved, .leftMouseDragged, .scrollWheel:
+            revealControls()
+            return false
+        case .leftMouseDown, .leftMouseUp:
+            // Clicks in our windows go to SwiftUI: the player's buttons, or the background,
+            // which closes. Clicks in another app (global monitor) close.
+            if isOurWindow {
+                revealControls()
+                return false
+            }
+            dismiss()
+            return false
+        case .flagsChanged:
+            return false
+        default:
+            dismiss()
+            return true
+        }
+    }
+
+    private func revealControls() {
+        if !controls.visible { controls.visible = true }
+        hideControlsTask?.cancel()
+        hideControlsTask = Task { [weak self] in
+            try? await Task.sleep(for: Self.controlsLinger)
+            guard let self, !Task.isCancelled else { return }
+            self.controls.visible = false
+            NSCursor.setHiddenUntilMouseMoves(true)
+        }
     }
 }
 
@@ -132,14 +181,28 @@ private final class IdleWindow: NSWindow {
     override var canBecomeMain: Bool { true }
 }
 
+@Observable
+@MainActor
+final class IdleControlsModel {
+    var visible = false
+}
+
 /// Picks the idle screen style.
 private struct IdleScreenRoot: View {
     let environment: AppEnvironment
+    let controls: IdleControlsModel
+    let onBackgroundTap: () -> Void
 
     var body: some View {
         switch environment.settings.idleStyle {
         case .cinematic:
-            CinematicScene(data: environment.cinematicData(), animate: environment.renderGate.canAnimateHeavy)
+            CinematicScene(
+                data: environment.cinematicData(),
+                animate: environment.renderGate.canAnimateHeavy,
+                playerActions: environment.musicBarActions(),
+                playerBarVisible: controls.visible,
+                onBackgroundTap: onBackgroundTap
+            )
         case .classic:
             IdleScreenView(environment: environment)
         }

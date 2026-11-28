@@ -92,3 +92,153 @@ enum CinematicGlow {
         value.isFinite ? min(3, max(0, value)) : 1
     }
 }
+
+// MARK: Island customization
+
+enum IslandTrigger: String, CaseIterable, Identifiable {
+    case hover
+    case click
+
+    var id: String { rawValue }
+    var displayName: String { self == .hover ? "Hover" : "Click" }
+}
+
+enum IslandMotion: String, CaseIterable, Identifiable {
+    case smooth
+    case snappy
+    case bouncy
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .smooth: return "Smooth"
+        case .snappy: return "Snappy"
+        case .bouncy: return "Bouncy"
+        }
+    }
+
+    /// Opening spring: the island is pulled out of the notch.
+    var open: Animation {
+        switch self {
+        case .smooth: return .spring(response: 0.44, dampingFraction: 0.84)
+        case .snappy: return .spring(response: 0.3, dampingFraction: 0.88)
+        case .bouncy: return .spring(response: 0.5, dampingFraction: 0.66)
+        }
+    }
+
+    /// Closing spring: always settles without overshoot so it tucks cleanly into the notch.
+    var close: Animation {
+        switch self {
+        case .smooth: return .spring(response: 0.36, dampingFraction: 0.95)
+        case .snappy: return .spring(response: 0.26, dampingFraction: 1)
+        case .bouncy: return .spring(response: 0.4, dampingFraction: 0.9)
+        }
+    }
+
+    /// How long a closing animation takes to settle before the panel can shrink.
+    var settleDuration: Duration {
+        switch self {
+        case .smooth: return .milliseconds(440)
+        case .snappy: return .milliseconds(320)
+        case .bouncy: return .milliseconds(520)
+        }
+    }
+}
+
+enum IslandSize: String, CaseIterable, Identifiable {
+    case compact
+    case regular
+    case large
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .compact: return "Compact"
+        case .regular: return "Regular"
+        case .large: return "Large"
+        }
+    }
+
+    /// Content size below the notch.
+    var expanded: CGSize {
+        switch self {
+        // Fitted to the content: header, optional lyric line, scrubber, padding.
+        case .compact: return CGSize(width: 400, height: 104)
+        case .regular: return CGSize(width: 470, height: 158)
+        case .large: return CGSize(width: 560, height: 196)
+        }
+    }
+
+    var artworkSize: CGFloat {
+        switch self {
+        case .compact: return 46
+        case .regular: return 58
+        case .large: return 76
+        }
+    }
+}
+
+// MARK: Glow customization (shared with the screensaver)
+
+enum GlowColorMode: String, CaseIterable, Identifiable, Codable, Sendable {
+    case album
+    case custom
+    case spectrum
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .album: return "Album"
+        case .custom: return "Custom"
+        case .spectrum: return "Spectrum"
+        }
+    }
+}
+
+enum GlowStyle: String, CaseIterable, Identifiable, Codable, Sendable {
+    case orbit
+    case pulse
+    case steady
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .orbit: return "Orbit"
+        case .pulse: return "Pulse"
+        case .steady: return "Steady"
+        }
+    }
+
+    /// Index passed to the edge-glow shader.
+    var shaderIndex: Float {
+        switch self {
+        case .orbit: return 0
+        case .pulse: return 1
+        case .steady: return 2
+        }
+    }
+}
+
+/// How the edge glow looks, everywhere it's drawn (Beat Glow, idle scene, screensaver).
+struct GlowAppearance: Codable, Equatable, Sendable {
+    var colorMode: GlowColorMode = .album
+    var customColor = RGB(r: 0.45, g: 0.62, b: 1.0)
+    var style: GlowStyle = .orbit
+    /// Orbit and spectrum speed multiplier, 0.25…3.
+    var speed: Double = 1
+    /// Width multiplier for the light's falloff, 0.5…2.5.
+    var thickness: Double = 1
+    /// Flare on each sung word (from lyric word timings).
+    var followsLyrics = true
+
+    static let `default` = GlowAppearance()
+
+    /// The solid color to use with `palette` (spectrum is computed in the shader).
+    func color(for palette: AlbumPalette) -> RGB {
+        colorMode == .custom ? customColor : palette.dominantGlowColor
+    }
+}

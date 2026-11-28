@@ -99,14 +99,23 @@ final class WindowManager: NSObject, NSWindowDelegate {
     }
 
     private func makeSettingsWindow() -> NSWindow {
-        let hosting = NSHostingController(rootView: SettingsView(environment: environment))
-        // Fixed size: letting animated content (the effect preview) drive the window size made
-        // AppKit re-layout every frame until it threw an exception and the app quit.
-        hosting.sizingOptions = []
-        let window = NSWindow(contentViewController: hosting)
+        let window = NSWindow(
+            contentRect: NSRect(origin: .zero, size: SettingsView.size),
+            // The sidebar runs under the transparent title bar, like System Settings.
+            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
+            backing: .buffered,
+            defer: false
+        )
         window.title = "Settings"
-        window.styleMask = [.titled, .closable]
-        window.setContentSize(SettingsView.size)
+        window.titlebarAppearsTransparent = true
+        window.titleVisibility = .hidden
+        window.isMovableByWindowBackground = true
+        // A bare hosting view with no sizing options: animated previews must never drive the
+        // window size (that once made AppKit re-layout every frame until the app quit), and a
+        // hosting controller would add the title bar's height on top of the page.
+        let hosting = NSHostingView(rootView: SettingsView(environment: environment))
+        hosting.sizingOptions = []
+        window.contentView = hosting
         window.isReleasedWhenClosed = false
         window.delegate = self
         window.center()
@@ -210,6 +219,7 @@ final class WindowManager: NSObject, NSWindowDelegate {
             // Drop the SwiftUI content so the live effect preview stops drawing; it is rebuilt
             // the next time Settings opens.
             settingsWindow?.contentViewController = nil
+            settingsWindow?.contentView = nil
             settingsWindow = nil
         }
     }

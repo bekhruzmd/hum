@@ -33,6 +33,8 @@ final class SaverModel {
             effect: feed.effectKind,
             look: feed.cinematicLook,
             edgeGlow: feed.edgeGlowIntensity,
+            glowAppearance: feed.glowAppearance ?? .default,
+            showsPlayerBar: feed.playerBar ?? true,
             displayEdgeProfiles: feed.displayEdgeProfiles ?? [:],
             isPlaying: feed.isPlaying,
             isShuffling: feed.isShuffling,

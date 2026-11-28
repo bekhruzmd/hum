@@ -12,9 +12,17 @@ static float edgeBox(float2 p, float2 origin, float2 size, float topRadius, floa
 
 // Analytic light falloff gives the rim a continuous bloom without blurring a full-screen image.
 // contour: top corner radius, bottom corner radius, camera corner radius, camera is a pill.
+static half3 humHue(float h) {
+    float3 k = float3(1.0, 2.0 / 3.0, 1.0 / 3.0);
+    float3 p = abs(fract(float3(h) + k) * 6.0 - 3.0);
+    return half3(clamp(p - 1.0, 0.0, 1.0));
+}
+
+// look: x = style (0 orbit, 1 pulse, 2 steady), y = speed, z = thickness, w = spectrum (1) or solid (0).
+// pulse: 0…1 beat energy (flares on sung words).
 [[ stitchable ]] half4 humEdgeGlow(float2 position, half4 color, float2 size, float4 camera,
                                    float4 contour, float scale, float time, float intensity,
-                                   float4 glowColor) {
+                                   float4 glowColor, float4 look, float pulse) {
     if (intensity <= 0 || size.x <= 0 || size.y <= 0) return half4(0);
     float distance = edgeBox(position, float2(0), size, contour.x, contour.y);
     if (camera.z > 0 && camera.w > 0) {
@@ -51,7 +59,8 @@ static float edgeBox(float2 p, float2 origin, float2 size, float topRadius, floa
     float normS = fract(s / totalPerimeter);
 
     // Head of the travelling glow orbits perimeter once every ~6.0 seconds
-    float headSpeed = 0.165; // ~6.06 seconds per complete lap around screen
+    float speed = clamp(look.y, 0.1, 4.0);
+    float headSpeed = 0.165 * speed; // ~6 seconds per lap at speed 1
     float headPos = fract(time * headSpeed);
 
     // Shortest distance along the circular perimeter [0.0, 0.5]
@@ -70,17 +79,29 @@ static float edgeBox(float2 p, float2 origin, float2 size, float topRadius, floa
     // Contrast between the head and the rest of the perimeter:
     // The rest of the screen is dimmed (0.18 base brightness),
     // while the head and tail flare up to 1.0 (the full user-configured intensity level).
-    float travelingIntensity = 0.18 + (headFactor * 0.82 + tailFactor * 0.35);
+    float beat = clamp(pulse, 0.0, 1.0);
+    float travelingIntensity;
+    if (look.x < 0.5) {
+        // Orbit: a comet laps the screen; beats brighten the whole rim a little.
+        travelingIntensity = 0.18 + (headFactor * 0.82 + tailFactor * 0.35) + beat * 0.35;
+    } else if (look.x < 1.5) {
+        // Pulse: the whole rim breathes with the beat.
+        travelingIntensity = 0.28 + beat * 0.72;
+    } else {
+        // Steady: an even rim; beats add a gentle swell.
+        travelingIntensity = 0.75 + beat * 0.25;
+    }
     travelingIntensity = clamp(travelingIntensity, 0.0, 1.0);
+    float thickness = clamp(look.z, 0.3, 3.0);
 
     // Glowing falloff inward into the display:
     // Crisp inner bezel rim (0-8 pt)
-    float rim = exp(-pow(inward / (3.5 + boost * 1.5), 2.0));
+    float rim = exp(-pow(inward / ((3.5 + boost * 1.5) * thickness), 2.0));
     // Saturated aura (8-40 pt)
-    float aura = exp(-inward / (14.0 + boost * 8.0)) * 0.90;
+    float aura = exp(-inward / ((14.0 + boost * 8.0) * thickness)) * 0.90;
     // Ambient bloom (30-100 pt)
-    float bloom = exp(-inward / (40.0 + boost * 25.0)) * 0.55;
-    float haze = exp(-inward / (90.0 + boost * 40.0)) * 0.25;
+    float bloom = exp(-inward / ((40.0 + boost * 25.0) * thickness)) * 0.55;
+    float haze = exp(-inward / ((90.0 + boost * 40.0) * thickness)) * 0.25;
 
     // Total glow at this pixel, modulated by travelingIntensity (head at full user intensity, rest dimmed)
     float baseGlow = (rim * 1.35 + aura + bloom + haze) * boost * visible;
@@ -88,9 +109,14 @@ static float edgeBox(float2 p, float2 origin, float2 size, float topRadius, floa
     half alpha = half(clamp(glow, 0.0, 1.0));
 
     // Base dominant album color
-    half3 baseColor = half3(glowColor.rgb);
+    // Spectrum hue goes around the screen's center, so it stays seamless into the haze
+    // (the nearest-edge coordinate jumps across the corner diagonals).
+    float around = atan2(position.y - size.y * 0.5, position.x - size.x * 0.5) / (2.0 * M_PI_F) + 0.5;
+    half3 baseColor = look.w > 0.5
+        ? humHue(around + time * 0.04 * speed)
+        : half3(glowColor.rgb);
     // At the head of the travelling beam, the innermost rim glows white-hot
-    float coreWhite = clamp(rim * (0.6 + headFactor * 0.7), 0.0, 1.0);
+    float coreWhite = clamp(rim * (0.6 + (look.x < 0.5 ? headFactor : beat) * 0.7), 0.0, 1.0);
     half3 tint = mix(baseColor, half3(1.0, 1.0, 1.0), half(coreWhite));
     return half4(tint * alpha, alpha);
 }

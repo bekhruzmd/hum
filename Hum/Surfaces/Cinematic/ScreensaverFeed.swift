@@ -50,6 +50,9 @@ struct ScreensaverFeed: Codable, Equatable, Sendable {
     var look: String?
     var edgeGlow: Double?
     var displayEdgeProfiles: [String: DisplayEdgeProfile]?
+    /// Optional so older feeds still decode.
+    var glowAppearance: GlowAppearance?
+    var playerBar: Bool?
     var edgeGlowIntensity: Double { CinematicGlow.clamped(edgeGlow ?? 1) }
     var cinematicLook: CinematicLook { CinematicLook(rawValue: look ?? "") ?? .album }
 
